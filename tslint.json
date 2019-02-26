@@ -1,0 +1,46 @@
+{
+    "defaultSeverity": "error",
+    "extends": [
+        "tslint:recommended"
+    ],
+    "jsRules": {},
+    "rules": {
+        "quotemark": [
+            true,
+            "single"
+        ],
+        "trailing-comma": [
+            true,
+            "never"
+        ],
+        "object-literal-sort-keys": false,
+        "interface-name": false,
+        "space-before-function-paren": [
+            true,
+            {
+                "anonymous": "always",
+                "named": "always",
+                "asyncArrow": "always",
+                "method": "never",
+                "constructor": "never"
+            }
+        ],
+        "array-type": [
+            true,
+            "array"
+        ],
+        "arrow-parens": [
+            true,
+            "ban-single-arg-parens"
+        ],
+        "max-classes-per-file": false,
+        "no-console": false
+    },
+    "rulesDirectory": [],
+    "linterOptions": {
+        "exclude": [
+            "node_modules/**",
+            "./**/node_modules/**"
+        ]
+    }
+}

@@ -1,0 +1,17 @@
+{
+    "name": "accumulation_fund_management",
+    "version": "0.0.1",
+    "description": "Management system for accumulation fund",
+    "scripts": {},
+    "repository": {
+        "type": "git",
+        "url": "git@github.com:BlueSky1997AL/accumulation_fund_management.git"
+    },
+    "private": true,
+    "workspaces": {
+        "packages": [ "packages/*" ]
+    },
+    "keywords": [ "accumulation", "fund", "management" ],
+    "author": "liubingnan",
+    "license": "ISC"
+}
