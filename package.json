@@ -9,9 +9,15 @@
     },
     "private": true,
     "workspaces": {
-        "packages": [ "packages/*" ]
+        "packages": [
+            "packages/*"
+        ]
     },
-    "keywords": [ "accumulation", "fund", "management" ],
+    "keywords": [
+        "accumulation",
+        "fund",
+        "management"
+    ],
     "author": "liubingnan",
     "license": "ISC"
 }
