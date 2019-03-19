@@ -1,5 +1,3 @@
-// @ts-check
-
 const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
@@ -22,15 +20,14 @@ module.exports = (env, argv) => {
         output: {
             filename: isProdMode ? '[name].[chunkhash].js' : '[name].js',
             publicPath: '/static/',
-            path: path.resolve(__dirname, './dist')
+            path: path.resolve(__dirname, `../server/app/public`)
         },
         plugins: [
-            new CleanWebpackPlugin([ 'dist' ]),
+            new CleanWebpackPlugin(),
             new MiniCssExtractPlugin({
                 filename: '[name].[hash].css',
                 chunkFilename: '[name].[hash].css'
-            }),
-            new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
+            })
         ],
         resolve: {
             extensions: [ '.ts', '.tsx', '.js', '.json', '.jsx', '.css', '.less', '.json', '.yml' ],
@@ -38,8 +35,7 @@ module.exports = (env, argv) => {
                 '~components': path.resolve(__dirname, './src/components'),
                 '~containers': path.resolve(__dirname, './src/containers'),
                 '~static': path.resolve(__dirname, './src/static'),
-                '~utils': path.resolve(__dirname, './src/utils'),
-                '@ant-design/icons/lib/dist$': path.resolve(__dirname, './src/components/searchBar/icon.ts'),
+                '~util': path.resolve(__dirname, './src/util'),
                 static: path.resolve(__dirname, './src/static')
             }
         },
@@ -109,14 +105,14 @@ module.exports = (env, argv) => {
 
     FILES_IN_CONTAINER.forEach(filename => {
         const name = filename.match(/(.*)\.[^.]+$/i)[1];
-        config.entry[name] = [ 'babel-polyfill', path.join(ROOT_PATH, 'src/containers', filename) ];
+        config.entry[name] = [ '@babel/polyfill', path.join(ROOT_PATH, 'src/containers', filename) ];
         config.plugins.push(
             new HtmlWebpackPlugin({
-                filename: `templates/${name}.html`,
-                template: `./templates/${name}.html`,
+                filename: path.resolve(__dirname, `../server/app/view/${name}.html`),
+                template: `templates/${name}.html`,
                 name: name,
                 inject: true,
-                chunks: [ name ]
+                chunks: [ name, 'vendor', 'manifest' ]
             })
         );
     });

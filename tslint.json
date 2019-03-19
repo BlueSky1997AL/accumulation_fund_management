@@ -1,13 +1,17 @@
 {
     "defaultSeverity": "error",
     "extends": [
-        "tslint:recommended"
+        "tslint:recommended",
+        "tslint-react",
+        "tslint-config-prettier",
+        "tslint-react-hooks"
     ],
     "jsRules": {},
     "rules": {
         "quotemark": [
             true,
-            "single"
+            "single",
+            "jsx-double"
         ],
         "trailing-comma": [
             true,
@@ -34,13 +38,16 @@
             "ban-single-arg-parens"
         ],
         "max-classes-per-file": false,
-        "no-console": false
+        "no-console": false,
+        "jsx-no-lambda": false,
+        "jsx-no-multiline-js": false
     },
     "rulesDirectory": [],
     "linterOptions": {
         "exclude": [
             "node_modules/**",
-            "./**/node_modules/**"
+            "./**/node_modules/**",
+            "packages/server/typings/**"
         ]
     }
 }
