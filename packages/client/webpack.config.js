@@ -63,7 +63,17 @@ module.exports = (env, argv) => {
                 },
                 {
                     test: /\.less$/i,
-                    use: [ MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader', 'less-loader' ]
+                    use: [
+                        MiniCssExtractPlugin.loader,
+                        'css-loader',
+                        'postcss-loader',
+                        {
+                            loader: 'less-loader',
+                            options: {
+                                javascriptEnabled: true
+                            }
+                        }
+                    ]
                 },
                 {
                     test: /\.(png|jpe?g|gif|eot|svg|ttf|woff|woff2|mp4)\??.*$/,

@@ -1,9 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import Home from '~components/Home';
+import { LocaleProvider } from 'antd';
+import zhCN from 'antd/lib/locale-provider/zh_CN';
+
+import Router from '~components/router';
 
 ReactDOM.render(
-    <Home />,
+    <LocaleProvider locale={zhCN}>
+        <Router />
+    </LocaleProvider>,
     document.getElementById('main')
 );
