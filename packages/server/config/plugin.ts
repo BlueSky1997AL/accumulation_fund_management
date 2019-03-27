@@ -9,6 +9,10 @@ const plugin: EggPlugin = {
     ejs: {
         enable: true,
         package: 'egg-view-ejs'
+    },
+    mongoose: {
+        enable: true,
+        package: 'egg-mongoose'
     }
 };
 

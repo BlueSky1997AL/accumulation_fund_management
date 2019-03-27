@@ -20,6 +20,19 @@ export default (appInfo: EggAppInfo) => {
         }
     };
 
+    // config.security = {
+    //     csrf: {
+    //         enable: false
+    //     }
+    // }
+
+    config.mongoose = {
+        client: {
+            url: 'mongodb://127.0.0.1:27017/afm',
+            options: {},
+        }
+    };
+
     // add your special config in here
     const bizConfig = {
         sourceUrl: `https://github.com/eggjs/examples/tree/master/${appInfo.name}`
