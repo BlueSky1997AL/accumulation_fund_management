@@ -23,7 +23,9 @@ function LoginView (props: FormComponentProps) {
                 if (resp.message !== MsgType.LOGIN_SUCCESS) {
                     throw new Error(resp.message);
                 }
-                location.href = '/web';
+                setTimeout(() => {
+                    location.href = '/web';
+                }, 300);
             } catch (error) {
                 notification.error({
                     message: (error as Error).message
@@ -60,6 +62,7 @@ function LoginView (props: FormComponentProps) {
                                 prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
                                 type="password"
                                 placeholder="密码"
+                                onPressEnter={onSubmit}
                             />
                         )}
                     </Form.Item>
