@@ -5,4 +5,9 @@ export default class HomeController extends Controller {
         const { ctx } = this;
         await ctx.render('index.html');
     }
+
+    public async login() {
+        const { ctx } = this;
+        await ctx.render('login.html');
+    }
 }

@@ -1,9 +1,11 @@
 import { Application } from 'egg';
 
 export default (app: Application) => {
-    const { controller, router } = app;
+    const { controller, router, middleware } = app;
+    const authCheckMiddleware = middleware.authCheck();
 
-    router.get(/\/web|\/web\/*/, controller.home.index);
+    router.get(/\/web|\/web\/*/, authCheckMiddleware, controller.home.index);
+    router.get('/login', controller.home.login);
 
-    router.post('/login', app.controller.user.login);
+    router.post('/api/login', app.controller.user.login);
 };
