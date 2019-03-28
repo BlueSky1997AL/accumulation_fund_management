@@ -1,21 +1,13 @@
+import { Exception } from 'ant-design-pro';
 import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
 import Frame from '~components/frame';
 
-function SampleComponent1 () {
+function Page404 () {
     return (
-        <div className="sample-component">
-            Sample Text
-        </div>
-    )
-}
-function SampleComponent2 () {
-    return (
-        <div className="sample-component">
-            Sample Text 2
-        </div>
-    )
+        <Exception type="404" backText="返回首页" redirect="/web" />
+    );
 }
 
 export default function () {
@@ -23,8 +15,9 @@ export default function () {
         <BrowserRouter basename="/web">
             <Frame>
                 <Switch>
-                    <Route exact={true} path="/" component={SampleComponent1} />
-                    <Route exact={true} path="/test" component={SampleComponent2} />
+                    <Route exact={true} path="/" component={Page404} />
+                    <Route exact={true} path="/test" component={Page404} />
+                    <Route component={Page404} />
                 </Switch>
             </Frame>
         </BrowserRouter>

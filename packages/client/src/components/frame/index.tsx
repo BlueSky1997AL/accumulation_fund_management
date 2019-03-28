@@ -24,18 +24,70 @@ function Frame ({ children }: FrameProps) {
                 <div className="logo">
                     <div className="logo-text">公积金管理系统</div>
                 </div>
-                <Menu theme="dark" defaultSelectedKeys={[ '/' ]} mode="inline">
+                <Menu theme="dark" defaultSelectedKeys={[ '/' ]} defaultOpenKeys={[ 'account', 'fund', 'ticket', 'log' ]} mode="inline">
                     <SubMenu
-                        key="sub-menu-1"
+                        key="account"
                         title={
                             <span>
                                 <Icon type="user" />
-                                <span>测试子Menu</span>
+                                <span>账户管理</span>
                             </span>
                         }
                     >
-                        <Menu.Item key="/"><Link to="/">route 1</Link></Menu.Item>
-                        <Menu.Item key="/test"><Link to="/test">route 2</Link></Menu.Item>
+                        <Menu.Item key="/">
+                            <Link to="/">账户列表</Link>
+                        </Menu.Item>
+                        <Menu.Item key="/test">
+                            <Link to="/test">本账户操作</Link>
+                        </Menu.Item>
+                    </SubMenu>
+                    <SubMenu
+                        key="ticket"
+                        title={
+                            <span>
+                                <Icon type="tags" />
+                                <span>工单管理</span>
+                            </span>
+                        }
+                    >
+                        <Menu.Item key="/">
+                            <Link to="/">工单审核</Link>
+                        </Menu.Item>
+                    </SubMenu>
+                    <SubMenu
+                        key="fund"
+                        title={
+                            <span>
+                                <Icon type="money-collect" />
+                                <span>公积金管理</span>
+                            </span>
+                        }
+                    >
+                        <Menu.Item key="">
+                            <Link to="/123">汇缴</Link>
+                        </Menu.Item>
+                        <Menu.Item key="">
+                            <Link to="/123">补缴</Link>
+                        </Menu.Item>
+                        <Menu.Item key="">
+                            <Link to="/123">支取</Link>
+                        </Menu.Item>
+                        <Menu.Item key="">
+                            <Link to="/123">转入/转出</Link>
+                        </Menu.Item>
+                    </SubMenu>
+                    <SubMenu
+                        key="log"
+                        title={
+                            <span>
+                                <Icon type="exception" />
+                                <span>操作日志</span>
+                            </span>
+                        }
+                    >
+                        <Menu.Item key="">
+                            <Link to="/123">日志记录</Link>
+                        </Menu.Item>
                     </SubMenu>
                 </Menu>
             </Sider>

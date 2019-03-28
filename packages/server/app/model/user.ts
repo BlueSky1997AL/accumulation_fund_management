@@ -1,4 +1,8 @@
 import { Application } from 'egg';
+import { Document } from 'mongoose';
+
+import { User } from '../util/interface/user';
+interface UserDocument extends Document, User {}
 
 export default (app: Application) => {
     const mongoose = app.mongoose;
@@ -7,8 +11,9 @@ export default (app: Application) => {
     const UserSchema = new Schema({
         username: { type: String, unique: true, required: true },
         password: { type: String, required: true },
-        type: { type: Number, required: true }
+        type: { type: Number, required: true },
+        status: { type: Number, required: true }
     });
 
-    return mongoose.model('User', UserSchema);
+    return mongoose.model<UserDocument>('User', UserSchema);
 };
