@@ -16,7 +16,19 @@ export default function () {
             <Frame>
                 <Switch>
                     <Route exact={true} path="/" component={Page404} />
-                    <Route exact={true} path="/test" component={Page404} />
+                    <Route exact={true} path="/account/info" component={Page404} />
+                    <Route exact={true} path="/account/list" component={Page404} />
+
+                    <Route exact={true} path="/work_order/audit" component={Page404} />
+                    <Route exact={true} path="/work_order/mine" component={Page404} />
+
+                    <Route exact={true} path="/fund/remit" component={Page404} />
+                    <Route exact={true} path="/fund/back" component={Page404} />
+                    <Route exact={true} path="/fund/draw" component={Page404} />
+                    <Route exact={true} path="/fund/in_out" component={Page404} />
+
+                    <Route exact={true} path="/record/trace" component={Page404} />
+
                     <Route component={Page404} />
                 </Switch>
             </Frame>

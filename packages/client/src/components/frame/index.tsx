@@ -47,12 +47,12 @@ function Frame ({ children }: FrameProps) {
                 </div>
                 <Menu
                     theme="dark"
-                    defaultSelectedKeys={[ '/' ]}
-                    defaultOpenKeys={[ 'account', 'fund', 'ticket', 'log' ]}
+                    defaultSelectedKeys={[ '/account/info' ]}
+                    defaultOpenKeys={[ '/account', '/work_order', '/fund', '/record' ]}
                     mode="inline"
                 >
                     <SubMenu
-                        key="account"
+                        key="/account"
                         title={
                             <span>
                                 <Icon type="user" />
@@ -60,15 +60,15 @@ function Frame ({ children }: FrameProps) {
                             </span>
                         }
                     >
-                        <Menu.Item key="/">
-                            <Link to="/">账户列表</Link>
+                        <Menu.Item key="/account/info">
+                            <Link to="/account/info">账户信息</Link>
                         </Menu.Item>
-                        <Menu.Item key="/test">
-                            <Link to="/test">本账户操作</Link>
+                        <Menu.Item key="/account/list">
+                            <Link to="/account/list">账户列表</Link>
                         </Menu.Item>
                     </SubMenu>
                     <SubMenu
-                        key="ticket"
+                        key="/work_order"
                         title={
                             <span>
                                 <Icon type="tags" />
@@ -76,12 +76,15 @@ function Frame ({ children }: FrameProps) {
                             </span>
                         }
                     >
-                        <Menu.Item key="/">
-                            <Link to="/">工单审核</Link>
+                        <Menu.Item key="/work_order/audit">
+                            <Link to="/work_order/audit">工单审核</Link>
+                        </Menu.Item>
+                        <Menu.Item key="/work_order/mine">
+                            <Link to="/work_order/mine">我的工单</Link>
                         </Menu.Item>
                     </SubMenu>
                     <SubMenu
-                        key="fund"
+                        key="/fund"
                         title={
                             <span>
                                 <Icon type="money-collect" />
@@ -89,21 +92,21 @@ function Frame ({ children }: FrameProps) {
                             </span>
                         }
                     >
-                        <Menu.Item key="">
-                            <Link to="/123">汇缴</Link>
+                        <Menu.Item key="/fund/remit">
+                            <Link to="/fund/remit">汇缴</Link>
                         </Menu.Item>
-                        <Menu.Item key="">
-                            <Link to="/123">补缴</Link>
+                        <Menu.Item key="/fund/back">
+                            <Link to="/fund/back">补缴</Link>
                         </Menu.Item>
-                        <Menu.Item key="">
-                            <Link to="/123">支取</Link>
+                        <Menu.Item key="/fund/draw">
+                            <Link to="/fund/draw">支取</Link>
                         </Menu.Item>
-                        <Menu.Item key="">
-                            <Link to="/123">转入/转出</Link>
+                        <Menu.Item key="/fund/in_out">
+                            <Link to="/fund/in_out">转入/转出</Link>
                         </Menu.Item>
                     </SubMenu>
                     <SubMenu
-                        key="log"
+                        key="/record"
                         title={
                             <span>
                                 <Icon type="exception" />
@@ -111,8 +114,8 @@ function Frame ({ children }: FrameProps) {
                             </span>
                         }
                     >
-                        <Menu.Item key="">
-                            <Link to="/123">日志记录</Link>
+                        <Menu.Item key="/record/trace">
+                            <Link to="/record/trace">日志记录</Link>
                         </Menu.Item>
                     </SubMenu>
                 </Menu>
