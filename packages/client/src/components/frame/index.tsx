@@ -17,6 +17,7 @@ function Frame ({ children }: FrameProps) {
     return (
         <Layout style={{ minHeight: '100vh' }}>
             <Sider
+                theme="dark"
                 collapsible={true}
                 collapsed={sideBarCollapsed}
                 onCollapse={collapsed => setCollapseState(collapsed)}

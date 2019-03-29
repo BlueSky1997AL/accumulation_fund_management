@@ -71,6 +71,10 @@ module.exports = (env, argv) => {
                         {
                             loader: 'less-loader',
                             options: {
+                                modifyVars: {
+                                    'primary-color': '#FA541C',
+                                    'link-color': '#FA541C'
+                                },
                                 javascriptEnabled: true
                             }
                         }
