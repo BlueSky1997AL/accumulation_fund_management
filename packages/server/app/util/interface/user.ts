@@ -3,6 +3,7 @@ export interface User {
     password: string;
     type: UserType;
     status: UserStatus;
+    subUser?: User;
 }
 
 export enum UserType {

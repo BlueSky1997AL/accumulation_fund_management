@@ -10,4 +10,12 @@ export default class HomeController extends Controller {
         const { ctx } = this;
         await ctx.render('login.html');
     }
+
+    // 测试专用接口，上线前应清除
+    public async test() {
+        const { ctx } = this;
+        ctx.body = {
+            msg: 'ok'
+        };
+    }
 }
