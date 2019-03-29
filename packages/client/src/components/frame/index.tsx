@@ -1,4 +1,4 @@
-import { Icon, Layout, Menu, notification } from 'antd';
+import { Collapse, Icon, Layout, Menu, notification } from 'antd';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -34,16 +34,15 @@ function Frame ({ children }: FrameProps) {
         }
     }
 
+    function getLogoText (collapsed: boolean) {
+        return collapsed ? '公积金' : '公积金管理系统';
+    }
+
     return (
         <Layout style={{ minHeight: '100vh' }}>
-            <Sider
-                theme="dark"
-                collapsible={true}
-                collapsed={sideBarCollapsed}
-                onCollapse={collapsed => setCollapseState(collapsed)}
-            >
+            <Sider theme="dark" collapsible={true} collapsed={sideBarCollapsed} onCollapse={setCollapseState}>
                 <div className="frame-logo">
-                    <div className="logo-text">公积金管理系统</div>
+                    <div className="logo-text">{getLogoText(sideBarCollapsed)}</div>
                 </div>
                 <Menu
                     theme="dark"
