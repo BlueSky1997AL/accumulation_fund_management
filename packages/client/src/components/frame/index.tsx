@@ -1,11 +1,14 @@
-import { Icon, Layout, Menu } from 'antd';
+import { Icon, Layout, Menu, notification } from 'antd';
 import React, { useState } from 'react';
-import { Link, RouterChildContext } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const { Header, Content, Footer, Sider } = Layout;
 const SubMenu = Menu.SubMenu;
 
 import './index.less';
+
+import { MsgType } from '~server/app/util/interface/common';
+import { logout } from './request';
 
 interface FrameProps {
     children?: React.ReactChild;
@@ -13,6 +16,22 @@ interface FrameProps {
 
 function Frame ({ children }: FrameProps) {
     const [ sideBarCollapsed, setCollapseState ] = useState(false);
+
+    async function logoutHandler () {
+        try {
+            const resp = await logout();
+            if (resp.message !== MsgType.OPT_SUCCESS) {
+                throw new Error(resp.message);
+            }
+            setTimeout(() => {
+                location.href = '/login';
+            }, 100);
+        } catch (error) {
+            notification.error({
+                message: (error as Error).message
+            });
+        }
+    }
 
     return (
         <Layout style={{ minHeight: '100vh' }}>
@@ -22,10 +41,15 @@ function Frame ({ children }: FrameProps) {
                 collapsed={sideBarCollapsed}
                 onCollapse={collapsed => setCollapseState(collapsed)}
             >
-                <div className="logo">
+                <div className="frame-logo">
                     <div className="logo-text">公积金管理系统</div>
                 </div>
-                <Menu theme="dark" defaultSelectedKeys={[ '/' ]} defaultOpenKeys={[ 'account', 'fund', 'ticket', 'log' ]} mode="inline">
+                <Menu
+                    theme="dark"
+                    defaultSelectedKeys={[ '/' ]}
+                    defaultOpenKeys={[ 'account', 'fund', 'ticket', 'log' ]}
+                    mode="inline"
+                >
                     <SubMenu
                         key="account"
                         title={
@@ -93,11 +117,16 @@ function Frame ({ children }: FrameProps) {
                 </Menu>
             </Sider>
             <Layout>
-                <Header style={{ background: '#fff', padding: 0 }} />
+                <Header className="frame-header">
+                    <div className="username">
+                        当前用户：<span className="username-text">{window.username}</span>
+                    </div>
+                    <div className="logout" onClick={logoutHandler}>
+                        注销
+                    </div>
+                </Header>
                 <Content style={{ margin: '0 16px' }}>{children}</Content>
-                <Footer style={{ textAlign: 'center' }}>
-                    Accumulation Fund Management ©2019 Created by Allen Lawrence
-                </Footer>
+                <Footer style={{ textAlign: 'center' }}>公积金管理系统 ©2019 微机1501 刘秉楠</Footer>
             </Layout>
         </Layout>
     );

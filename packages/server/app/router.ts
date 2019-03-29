@@ -8,6 +8,7 @@ export default (app: Application) => {
     router.get('/login', controller.home.login);
 
     router.post('/api/login', app.controller.user.login);
+    router.post('/api/logout', controller.user.logout);
 
     // 测试专用接口，上线前应清除
     router.get('/api/test', app.controller.home.test);

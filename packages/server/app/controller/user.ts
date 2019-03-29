@@ -26,4 +26,18 @@ export default class UserController extends Controller {
 
         ctx.body = response;
     }
+
+    public async logout() {
+        const { ctx } = this;
+
+        const response: ResponseData<null> = {
+            message: MsgType.OPT_SUCCESS,
+            data: null
+        };
+
+        ctx.session.username = '';
+        ctx.session.password = '';
+
+        ctx.body = response;
+    }
 }

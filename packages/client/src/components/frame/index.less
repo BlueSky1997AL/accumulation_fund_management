@@ -1,13 +1,35 @@
 @import '~static/css/font.less';
 
-.logo {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.frame-logo {
     height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     .logo-text {
         color: white;
-        font-size: 20px;
         .fontRegular;
+        font-size: 20px;
+    }
+}
+
+.frame-header {
+    padding: 0;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    .username {
+        padding: 0 20px;
+        .username-text {
+            color: @primary-color;
+        }
+    }
+    .logout {
+        cursor: pointer;
+        padding-right: 20px;
+        text-decoration: underline;
+        &:hover {
+            color: @primary-color;
+        }
     }
 }

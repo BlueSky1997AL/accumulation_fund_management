@@ -16,7 +16,7 @@ export default (appInfo: EggAppInfo) => {
 
     config.view = {
         mapping: {
-            '.html': 'ejs'
+            '.html': 'nunjucks'
         }
     };
 
