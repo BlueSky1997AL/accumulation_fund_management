@@ -17,6 +17,7 @@ export default class UserController extends Controller {
         if (userInfo && userInfo.password === password) {
             ctx.session.username = username;
             ctx.session.password = password;
+            ctx.session.userType = userInfo.type;
             response.message = MsgType.LOGIN_SUCCESS;
         } else if (!userInfo) {
             response.message = MsgType.INCORRECT_USERNAME;
@@ -37,6 +38,7 @@ export default class UserController extends Controller {
 
         ctx.session.username = '';
         ctx.session.password = '';
+        ctx.session.userType = '';
 
         ctx.body = response;
     }

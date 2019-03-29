@@ -4,7 +4,8 @@ export default class HomeController extends Controller {
     public async index() {
         const { ctx } = this;
         await ctx.render('index.html', {
-            username: ctx.session.username
+            username: ctx.session.username,
+            userType: ctx.session.userType
         });
     }
 

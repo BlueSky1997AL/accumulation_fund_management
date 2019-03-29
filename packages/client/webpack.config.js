@@ -35,7 +35,7 @@ module.exports = (env, argv) => {
                 '~components': path.resolve(__dirname, './src/components'),
                 '~containers': path.resolve(__dirname, './src/containers'),
                 '~static': path.resolve(__dirname, './src/static'),
-                '~util': path.resolve(__dirname, './src/util'),
+                '~utils': path.resolve(__dirname, './src/utils'),
                 '~server': path.resolve(__dirname, '../server'),
                 static: path.resolve(__dirname, './src/static')
             }

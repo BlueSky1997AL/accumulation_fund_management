@@ -3,6 +3,7 @@ export interface User {
     password: string;
     type: UserType;
     status: UserStatus;
+    balance: number;
     subUser?: User;
 }
 

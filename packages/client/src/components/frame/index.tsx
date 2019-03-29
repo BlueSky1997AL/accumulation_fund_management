@@ -8,6 +8,7 @@ const SubMenu = Menu.SubMenu;
 import './index.less';
 
 import { MsgType } from '~server/app/util/interface/common';
+import { userTypeToString } from '~utils/user';
 import { logout } from './request';
 
 interface FrameProps {
@@ -119,7 +120,10 @@ function Frame ({ children }: FrameProps) {
             <Layout>
                 <Header className="frame-header">
                     <div className="username">
-                        当前用户：<span className="username-text">{window.username}</span>
+                        当前用户：<span className="highlight-text">{window.username}</span>
+                    </div>
+                    <div className="user-type">
+                        账户类型：<span className="highlight-text">{userTypeToString(window.userType)}</span>
                     </div>
                     <div className="logout" onClick={logoutHandler}>
                         注销

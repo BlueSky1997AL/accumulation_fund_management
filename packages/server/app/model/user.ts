@@ -13,6 +13,7 @@ export default (app: Application) => {
         password: { type: String, required: true },
         type: { type: Number, required: true },
         status: { type: Number, required: true },
+        balance: { type: Number, required: true },
         subUser: {
             type: [ Schema.Types.ObjectId ],
             validate(doc: string[]) {
