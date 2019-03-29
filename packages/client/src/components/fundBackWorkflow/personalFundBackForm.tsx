@@ -2,22 +2,20 @@ import { Button, Form, Icon, Input, InputNumber, Upload } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
 import React from 'react';
 
-import './index.less';
-
-interface FundBackSubmitData {
+interface PersonalFundBackSubmitData {
     amount: number;
     comments?: string;
 }
 
-interface FundBackFormProps extends FormComponentProps {
-    onSubmit: (data: FundBackSubmitData) => void;
+interface PersonalFundBackFormProps extends FormComponentProps {
+    onSubmit: (data: PersonalFundBackSubmitData) => void;
 }
 
-function FundBackForm (props: FundBackFormProps) {
+function PersonalFundBackForm (props: PersonalFundBackFormProps) {
     const { getFieldDecorator, validateFields } = props.form;
 
     function onSubmit () {
-        validateFields(async (errors, formData: FundBackSubmitData) => {
+        validateFields(async (errors, formData: PersonalFundBackSubmitData) => {
             if (errors) {
                 console.warn('Warning: Fields validation failed:', errors);
                 return;
@@ -75,4 +73,4 @@ function FundBackForm (props: FundBackFormProps) {
     );
 }
 
-export default Form.create()(FundBackForm);
+export default Form.create()(PersonalFundBackForm);

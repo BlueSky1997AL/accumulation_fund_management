@@ -4,14 +4,14 @@ import React from 'react';
 import './index.less';
 
 import WorkflowFrame from '~components/workflowFrame';
-import FundBackForm from './fundBackForm';
+import EnterpriseFundBackForm from './enterpriseFundBackForm';
 
 function FundBackWorkflow () {
     return (
         <div className="fund-back-workflow-container">
             <Card title="新建补缴工单" bodyStyle={{ height: '100%', width: '100%' }}>
                 <WorkflowFrame>
-                    <FundBackForm
+                    <EnterpriseFundBackForm
                         onSubmit={data => {
                             console.log(data);
                         }}
