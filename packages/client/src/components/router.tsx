@@ -3,6 +3,7 @@ import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
 import Frame from '~components/frame';
+import FundBackWorkflow from '~components/fundBackWorkflow';
 
 function Page404 () {
     return (
@@ -23,7 +24,7 @@ export default function () {
                     <Route exact={true} path="/work_order/mine" component={Page404} />
 
                     <Route exact={true} path="/fund/remit" component={Page404} />
-                    <Route exact={true} path="/fund/back" component={Page404} />
+                    <Route exact={true} path="/fund/back" component={FundBackWorkflow} />
                     <Route exact={true} path="/fund/draw" component={Page404} />
                     <Route exact={true} path="/fund/in_out" component={Page404} />
 

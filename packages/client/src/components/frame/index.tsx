@@ -38,6 +38,10 @@ function Frame ({ children }: FrameProps) {
         return collapsed ? '公积金' : '公积金管理系统';
     }
 
+    function getSelectedKey () {
+        return location.pathname.replace('/web', '');
+    }
+
     return (
         <Layout style={{ minHeight: '100vh' }}>
             <Sider theme="dark" collapsible={true} collapsed={sideBarCollapsed} onCollapse={setCollapseState}>
@@ -46,7 +50,7 @@ function Frame ({ children }: FrameProps) {
                 </div>
                 <Menu
                     theme="dark"
-                    defaultSelectedKeys={[ '/account/info' ]}
+                    defaultSelectedKeys={[ getSelectedKey() ]}
                     defaultOpenKeys={[ '/account', '/work_order', '/fund', '/record' ]}
                     mode="inline"
                 >
@@ -131,7 +135,7 @@ function Frame ({ children }: FrameProps) {
                         注销
                     </div>
                 </Header>
-                <Content style={{ margin: '0 16px' }}>{children}</Content>
+                <Content style={{ margin: '16px' }}>{children}</Content>
                 <Footer style={{ textAlign: 'center' }}>公积金管理系统 ©2019 微机1501 刘秉楠</Footer>
             </Layout>
         </Layout>

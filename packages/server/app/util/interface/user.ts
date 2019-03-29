@@ -1,10 +1,12 @@
+type objectID = string;
+
 export interface User {
     username: string;
     password: string;
     type: UserType;
     status: UserStatus;
     balance: number;
-    subUser?: User;
+    subUser?: objectID[];
 }
 
 export enum UserType {
