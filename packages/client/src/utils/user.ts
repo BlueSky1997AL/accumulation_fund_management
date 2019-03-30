@@ -27,3 +27,7 @@ export function userStatusToString (userStatus?: UserStatus) {
             return '未知账户状态';
     }
 }
+
+export function balanceToHumanReadable (amount?: number) {
+    return amount ? (amount / 100).toFixed(2) : '0.00';
+}

@@ -140,7 +140,7 @@ function WorkOrderAudit ({ workOrderID, history }: WorkOrderAuditProps) {
                         <Col span={labelSpan} className="info-text info-label">
                             创建人：
                         </Col>
-                        <Col span={16} className="info-text">
+                        <Col span={contentSpan} className="info-text">
                             {workOrderInfo && workOrderInfo.owner.username}
                         </Col>
                     </Row>

@@ -108,7 +108,7 @@ function Frame ({ children }: FrameProps) {
                             <Link to="/fund/in_out">转入/转出</Link>
                         </Menu.Item>
                     </SubMenu>
-                    <SubMenu
+                    {/* <SubMenu
                         key="/record"
                         title={
                             <span>
@@ -120,7 +120,7 @@ function Frame ({ children }: FrameProps) {
                         <Menu.Item key="/record/trace">
                             <Link to="/record/trace">日志记录</Link>
                         </Menu.Item>
-                    </SubMenu>
+                    </SubMenu> */}
                 </Menu>
             </Sider>
             <Layout>

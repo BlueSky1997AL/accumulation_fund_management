@@ -1,7 +1,17 @@
+// tslint:disable: no-string-literal
+
 import { Controller } from 'egg';
 
 import { MsgType, ResponseData } from '../util/interface/common';
-import { User } from '../util/interface/user';
+import { User, UserStatus, UserType } from '../util/interface/user';
+
+export interface UserInfoRespData {
+    id: string;
+    username: string;
+    type: UserType;
+    status: UserStatus;
+    balance: number;
+}
 
 export default class UserController extends Controller {
     public async login() {
@@ -39,6 +49,28 @@ export default class UserController extends Controller {
         ctx.session.username = '';
         ctx.session.password = '';
         ctx.session.userType = '';
+
+        ctx.body = response;
+    }
+
+    public async getUserInfo() {
+        const { ctx } = this;
+        const { username } = ctx.session;
+
+        const response: ResponseData<UserInfoRespData | null> = {
+            message: MsgType.UNKNOWN_ERR,
+            data: null
+        };
+
+        const userInfo = (await ctx.model.User.findOne({ username })) as User;
+        response.message = MsgType.OPT_SUCCESS;
+        response.data = {
+            id: (userInfo as any)['_id'],
+            username: userInfo.username,
+            type: userInfo.type,
+            status: userInfo.status,
+            balance: userInfo.balance
+        };
 
         ctx.body = response;
     }

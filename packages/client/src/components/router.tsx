@@ -2,11 +2,13 @@ import { Exception } from 'ant-design-pro';
 import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
-import Frame from '~components/frame';
-import FundBackWorkflow from '~components/fundBackWorkflow';
-import WorkOrderAudit from '~components/workOrderAudit';
-import WorkOrderList from '~components/workOrderList';
+import { Card } from 'antd';
+import Frame from './frame';
+import FundBackWorkflow from './fundBackWorkflow';
+import UserInfo from './userInfo';
 import WorkflowFrame from './workflowFrame';
+import WorkOrderAudit from './workOrderAudit';
+import WorkOrderList from './workOrderList';
 
 function Page404 () {
     return <Exception type="404" backText="返回首页" redirect="/web" />;
@@ -25,8 +27,8 @@ export default function () {
         <BrowserRouter basename="/web">
             <Frame>
                 <Switch>
-                    <Route exact={true} path="/" component={Page404} />
-                    <Route exact={true} path="/account/info" component={Page404} />
+                    <Route exact={true} path="/" component={UserInfo} />
+                    <Route exact={true} path="/account/info" component={UserInfo} />
                     <Route exact={true} path="/account/list" component={Page404} />
 
                     <Route exact={true} path="/work_order/audit" component={WorkOrderAuditList} />
@@ -40,7 +42,11 @@ export default function () {
                     <Route
                         path="/work_order/:workOrderID/detail"
                         render={({ match }) => {
-                            return <WorkflowFrame workOrderID={match.params.workOrderID} />;
+                            return (
+                                <Card title="工单详情">
+                                    <WorkflowFrame workOrderID={match.params.workOrderID} />
+                                </Card>
+                            );
                         }}
                     />
 
@@ -49,7 +55,7 @@ export default function () {
                     <Route exact={true} path="/fund/draw" component={Page404} />
                     <Route exact={true} path="/fund/in_out" component={Page404} />
 
-                    <Route exact={true} path="/record/trace" component={Page404} />
+                    {/* <Route exact={true} path="/record/trace" component={Page404} /> */}
 
                     <Route component={Page404} />
                 </Switch>

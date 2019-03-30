@@ -10,6 +10,8 @@ export default (app: Application) => {
     router.post('/api/login', app.controller.user.login);
     router.post('/api/logout', authCheckMiddleware, controller.user.logout);
 
+    router.get('/api/user/info', authCheckMiddleware, controller.user.getUserInfo);
+
     router.post(
         '/api/work_order/fund/back/enterprise/create',
         authCheckMiddleware,
