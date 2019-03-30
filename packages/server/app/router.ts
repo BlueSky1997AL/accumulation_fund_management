@@ -15,6 +15,11 @@ export default (app: Application) => {
         authCheckMiddleware,
         controller.workOrder.creactEnterpriseFundBackWorkOrder
     );
+    router.post(
+        '/api/fund/back/personal/create',
+        authCheckMiddleware,
+        controller.workOrder.creactPersonalFundBackWorkOrder
+    );
 
     // 测试专用接口，上线前应清除
     router.get('/api/test', app.controller.home.test);

@@ -38,7 +38,7 @@ function workOrderStatusToWorkflowStatus (status: WorkOrderStatus) {
 
 interface WorkflowFrameProps {
     data?: WorkOrder;
-    children?: JSX.Element;
+    children?: JSX.Element | string;
 }
 
 function WorkflowFrame ({ data, children }: WorkflowFrameProps) {

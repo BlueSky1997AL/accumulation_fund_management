@@ -24,7 +24,7 @@ function LoginView (props: FormComponentProps) {
                     throw new Error(resp.message);
                 }
                 setTimeout(() => {
-                    location.href = '/web';
+                    location.href = '/web/account/info';
                 }, 300);
             } catch (error) {
                 notification.error({
