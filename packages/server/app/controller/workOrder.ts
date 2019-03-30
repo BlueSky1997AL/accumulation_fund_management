@@ -143,6 +143,33 @@ export default class WorkOrderController extends Controller {
         ctx.body = response;
     }
 
+    public async getPersonalWorkOrder() {
+        const { ctx } = this;
+        const { username } = ctx.session;
+
+        const response: ResponseData<WorkOrder[] | null> = {
+            message: MsgType.UNKNOWN_ERR,
+            data: null
+        };
+
+        const userInfo = (await ctx.model.User.findOne({ username })) as User;
+        if (userInfo.workOrders && userInfo.workOrders.length !== 0) {
+            const workOrderData = await Promise.all(
+                userInfo.workOrders.map(async id => {
+                    return (await ctx.model.WorkOrder.findOne({ _id: id })) as WorkOrder;
+                })
+            );
+
+            response.message = MsgType.OPT_SUCCESS;
+            response.data = workOrderData;
+        } else {
+            response.message = MsgType.OPT_SUCCESS;
+            response.data = [];
+        }
+
+        ctx.body = response;
+    }
+
     public async getWorkOrder() {
         const { ctx } = this;
         const { username } = ctx.session;
@@ -173,7 +200,7 @@ export default class WorkOrderController extends Controller {
             __v: workOrderInfo['__v']
         };
 
-        if (userInfo['_id'] === workOrderInfo.owner) {
+        if (`${userInfo['_id']}` === `${workOrderInfo.owner}`) {
             response.message = MsgType.OPT_SUCCESS;
             response.data = retDoc;
         } else {

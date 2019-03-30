@@ -6,6 +6,7 @@ import Frame from '~components/frame';
 import FundBackWorkflow from '~components/fundBackWorkflow';
 import WorkOrderAudit from '~components/workOrderAudit';
 import WorkOrderList from '~components/workOrderList';
+import WorkflowFrame from './workflowFrame';
 
 function Page404 () {
     return <Exception type="404" backText="返回首页" redirect="/web" />;
@@ -31,10 +32,15 @@ export default function () {
                     <Route exact={true} path="/work_order/audit" component={WorkOrderAuditList} />
                     <Route exact={true} path="/work_order/mine" component={MineWorkOrderList} />
                     <Route
-                        exact={true}
                         path="/work_order/:workOrderID/audit"
                         render={({ match }) => {
                             return <WorkOrderAudit workOrderID={match.params.workOrderID} />;
+                        }}
+                    />
+                    <Route
+                        path="/work_order/:workOrderID/detail"
+                        render={({ match }) => {
+                            return <WorkflowFrame workOrderID={match.params.workOrderID} />;
                         }}
                     />
 

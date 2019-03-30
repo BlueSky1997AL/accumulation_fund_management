@@ -22,6 +22,7 @@ export default (app: Application) => {
     );
     router.get('/api/work_order/all', authCheckMiddleware, controller.workOrder.getAllWorkOrder);
     router.get('/api/work_order/detail', authCheckMiddleware, controller.workOrder.getWorkOrder);
+    router.get('/api/work_order/mine', authCheckMiddleware, controller.workOrder.getPersonalWorkOrder);
     router.post('/api/work_order/audit', authCheckMiddleware, controller.workOrder.handleWorkOrder);
 
     // 测试专用接口，上线前应清除
