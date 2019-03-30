@@ -9,7 +9,7 @@ import { PersonalFundBackSubmitData } from './personalFundBackForm';
 export async function createEnterpriseFundBackWorkOrder (payload: EnterpriseFundBackSubmitData) {
     const csrfToken = Cookies.get('csrfToken');
     const resp = await axios.post<ResponseData<WorkOrder>>(
-        '/api/fund/back/enterprise/create',
+        '/api/work_order/fund/back/enterprise/create',
         payload,
         {
             headers: {
@@ -23,7 +23,7 @@ export async function createEnterpriseFundBackWorkOrder (payload: EnterpriseFund
 export async function createPersonalFundBackWorkOrder (payload: PersonalFundBackSubmitData) {
     const csrfToken = Cookies.get('csrfToken');
     const resp = await axios.post<ResponseData<WorkOrder>>(
-        '/api/fund/back/personal/create',
+        '/api/work_order/fund/back/personal/create',
         payload,
         {
             headers: {

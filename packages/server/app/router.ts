@@ -11,15 +11,16 @@ export default (app: Application) => {
     router.post('/api/logout', authCheckMiddleware, controller.user.logout);
 
     router.post(
-        '/api/fund/back/enterprise/create',
+        '/api/work_order/fund/back/enterprise/create',
         authCheckMiddleware,
         controller.workOrder.creactEnterpriseFundBackWorkOrder
     );
     router.post(
-        '/api/fund/back/personal/create',
+        '/api/work_order/fund/back/personal/create',
         authCheckMiddleware,
         controller.workOrder.creactPersonalFundBackWorkOrder
     );
+    router.get('/api/work_order/all', authCheckMiddleware, controller.workOrder.getAllWorkOrder);
 
     // 测试专用接口，上线前应清除
     router.get('/api/test', app.controller.home.test);

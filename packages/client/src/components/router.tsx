@@ -4,11 +4,18 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
 import Frame from '~components/frame';
 import FundBackWorkflow from '~components/fundBackWorkflow';
+import WorkOrderList from '~components/workOrderList';
 
 function Page404 () {
-    return (
-        <Exception type="404" backText="返回首页" redirect="/web" />
-    );
+    return <Exception type="404" backText="返回首页" redirect="/web" />;
+}
+
+function WorkOrderAuditList () {
+    return <WorkOrderList type="audit" />;
+}
+
+function MineWorkOrderList () {
+    return <WorkOrderList type="mine" />;
 }
 
 export default function () {
@@ -20,8 +27,8 @@ export default function () {
                     <Route exact={true} path="/account/info" component={Page404} />
                     <Route exact={true} path="/account/list" component={Page404} />
 
-                    <Route exact={true} path="/work_order/audit" component={Page404} />
-                    <Route exact={true} path="/work_order/mine" component={Page404} />
+                    <Route exact={true} path="/work_order/audit" component={WorkOrderAuditList} />
+                    <Route exact={true} path="/work_order/mine" component={MineWorkOrderList} />
 
                     <Route exact={true} path="/fund/remit" component={Page404} />
                     <Route exact={true} path="/fund/back" component={FundBackWorkflow} />
