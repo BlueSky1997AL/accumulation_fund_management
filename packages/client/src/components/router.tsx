@@ -6,6 +6,7 @@ import { Card } from 'antd';
 import Frame from './frame';
 import FundBackWorkflow from './fundBackWorkflow';
 import UserInfo from './userInfo';
+import UserList from './userList';
 import WorkflowFrame from './workflowFrame';
 import WorkOrderAudit from './workOrderAudit';
 import WorkOrderList from './workOrderList';
@@ -29,7 +30,7 @@ export default function () {
                 <Switch>
                     <Route exact={true} path="/" component={UserInfo} />
                     <Route exact={true} path="/account/info" component={UserInfo} />
-                    <Route exact={true} path="/account/list" component={Page404} />
+                    <Route exact={true} path="/account/list" component={UserList} />
 
                     <Route exact={true} path="/work_order/audit" component={WorkOrderAuditList} />
                     <Route exact={true} path="/work_order/mine" component={MineWorkOrderList} />

@@ -74,4 +74,49 @@ export default class UserController extends Controller {
 
         ctx.body = response;
     }
+
+    public async getAllUserInfo() {
+        const { ctx } = this;
+        const { username } = ctx.session;
+
+        const response: ResponseData<User[] | null> = {
+            message: MsgType.UNKNOWN_ERR,
+            data: null
+        };
+
+        const userInfo = (await ctx.model.User.findOne({ username })) as User;
+        if (userInfo.type !== UserType.Admin) {
+            response.message = MsgType.NO_PERMISSION;
+        } else {
+            const allUsers = (await ctx.model.User.find()) as User[];
+            response.message = MsgType.OPT_SUCCESS;
+            response.data = allUsers;
+        }
+
+        ctx.body = response;
+    }
+
+    public async updateUserStatus() {
+        const { ctx } = this;
+        const { username } = ctx.session;
+        const { id, status } = ctx.request.body as { id: string; status: UserStatus };
+
+        const response: ResponseData<null> = {
+            message: MsgType.UNKNOWN_ERR,
+            data: null
+        };
+
+        const userInfo = (await ctx.model.User.findOne({ username })) as User;
+        if (status === UserStatus.Frozen && userInfo['_id'] === id) {
+            await ctx.model.User.updateOne({ _id: id }, { status: UserStatus.Frozen });
+            response.message = MsgType.OPT_SUCCESS;
+        } else if (userInfo.type === UserType.Admin) {
+            await ctx.model.User.updateOne({ _id: id }, { status });
+            response.message = MsgType.OPT_SUCCESS;
+        } else {
+            response.message = MsgType.NO_PERMISSION;
+        }
+
+        ctx.body = response;
+    }
 }
