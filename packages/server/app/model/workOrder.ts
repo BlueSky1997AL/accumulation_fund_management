@@ -13,9 +13,9 @@ export default (app: Application) => {
             status: { type: Number, required: true },
             type: { type: Number, required: true },
             owner: { type: Schema.Types.ObjectId, required: true },
-            desc: { type: String, required: true },
             comments: String,
-            auditer: Schema.Types.ObjectId
+            auditer: Schema.Types.ObjectId,
+            payload: String
         },
         {
             timestamps: true

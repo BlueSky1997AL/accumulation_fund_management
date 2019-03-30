@@ -4,7 +4,6 @@ export interface WorkOrder {
     status: WorkOrderStatus;
     type: WorkOrderType;
     owner: objectID;
-    desc: string;
     comments?: string;
     auditer?: objectID;
     payload?: string;
@@ -18,7 +17,8 @@ export enum WorkOrderStatus {
 }
 
 export enum WorkOrderType {
-    Back,
+    EnterpriseBack,
+    PersonalBack,
     Remit,
     Draw,
     InOrOut

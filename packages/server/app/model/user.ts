@@ -24,7 +24,8 @@ export default (app: Application) => {
                     }
                     return false;
                 }
-            }
+            },
+            workOrders: [ Schema.Types.ObjectId ]
         },
         {
             timestamps: true

@@ -4,7 +4,7 @@ import React from 'react';
 
 import AmountMapInput, { AmountMap } from './amountMapInput';
 
-interface EnterpriseFundBackSubmitData {
+export interface EnterpriseFundBackSubmitData {
     amountMap: AmountMap[];
     comments?: string;
 }

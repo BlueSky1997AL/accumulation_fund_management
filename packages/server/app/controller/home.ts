@@ -20,9 +20,9 @@ export default class HomeController extends Controller {
     public async test() {
         const { ctx } = this;
         ctx.model.User.create({
-            username: '2',
-            password: '2',
-            type: UserType.Common,
+            username: 'ent',
+            password: 'ent',
+            type: UserType.Enterprise,
             status: UserStatus.Normal,
             balance: 20000
         });

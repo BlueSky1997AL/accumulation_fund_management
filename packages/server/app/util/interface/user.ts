@@ -7,6 +7,7 @@ export interface User {
     status: UserStatus;
     balance: number;
     subUser?: objectID[];
+    workOrders?: objectID[];
 }
 
 export enum UserType {

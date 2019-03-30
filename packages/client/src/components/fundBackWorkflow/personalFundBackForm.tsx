@@ -2,7 +2,7 @@ import { Button, Form, Icon, Input, InputNumber, Upload } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
 import React from 'react';
 
-interface PersonalFundBackSubmitData {
+export interface PersonalFundBackSubmitData {
     amount: number;
     comments?: string;
 }
