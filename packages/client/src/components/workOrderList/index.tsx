@@ -69,7 +69,7 @@ function WorkOrderList ({ type }: WorkOrderListProps) {
                     renderItem={(item: WorkOrderWithUserInfo) => (
                         <List.Item
                             actions={[
-                                <Link key="detail" to={''}>
+                                <Link key="detail" to={`/work_order/${(item as any)._id}/audit`}>
                                     详情
                                 </Link>
                             ]}

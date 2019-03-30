@@ -8,6 +8,17 @@ import { MsgType, ResponseData } from '../util/interface/common';
 import { User, UserType } from '../util/interface/user';
 import { WorkOrder, WorkOrderStatus, WorkOrderType, WorkOrderWithUserInfo } from '../util/interface/workOrder';
 
+interface WorkOrderAuditSubmitData {
+    workOrderID: string;
+    comments: string;
+    opType: OperationType;
+}
+
+enum OperationType {
+    Granted,
+    Rejected
+}
+
 export default class WorkOrderController extends Controller {
     public async creactEnterpriseFundBackWorkOrder() {
         const { ctx } = this;
@@ -104,7 +115,7 @@ export default class WorkOrderController extends Controller {
         if (userInfo.type !== UserType.Admin) {
             response.message = MsgType.NO_PERMISSION;
         } else {
-            const docs = (await ctx.model.WorkOrder.find()) as WorkOrder[];
+            const docs = (await ctx.model.WorkOrder.find().sort({ createdAt: -1 })) as WorkOrder[];
             const docsWithUserInfo = await Promise.all(
                 docs.map(async doc => {
                     const docUserInfo = (await ctx.model.User.findOne({ _id: doc.owner })) as User;
@@ -129,6 +140,85 @@ export default class WorkOrderController extends Controller {
             response.message = MsgType.OPT_SUCCESS;
             response.data = docsWithUserInfo;
         }
+        ctx.body = response;
+    }
+
+    public async getWorkOrder() {
+        const { ctx } = this;
+        const { username } = ctx.session;
+        const { workOrderID } = ctx.queries;
+
+        const response: ResponseData<WorkOrderWithUserInfo | null> = {
+            message: MsgType.UNKNOWN_ERR,
+            data: null
+        };
+
+        const userInfo = (await ctx.model.User.findOne({ username })) as User;
+        const workOrderInfo = (await ctx.model.WorkOrder.findOne({ _id: workOrderID })) as WorkOrder;
+        const workOrderOwnerInfo = (await ctx.model.User.findOne({ _id: workOrderInfo.owner })) as User;
+        const retDoc = {
+            _id: workOrderInfo['_id'],
+            status: workOrderInfo['status'],
+            type: workOrderInfo['type'],
+            owner: {
+                username: workOrderOwnerInfo.username,
+                type: workOrderOwnerInfo.type,
+                status: workOrderOwnerInfo.status
+            },
+            comments: workOrderInfo['comments'],
+            auditer: workOrderInfo['auditer'],
+            payload: workOrderInfo['payload'],
+            createdAt: workOrderInfo['createdAt'],
+            updatedAt: workOrderInfo['updatedAt'],
+            __v: workOrderInfo['__v']
+        };
+
+        if (userInfo['_id'] === workOrderInfo.owner) {
+            response.message = MsgType.OPT_SUCCESS;
+            response.data = retDoc;
+        } else {
+            if (userInfo.type === UserType.Admin) {
+                response.message = MsgType.OPT_SUCCESS;
+                response.data = retDoc;
+            } else {
+                response.message = MsgType.NO_PERMISSION;
+            }
+        }
+        ctx.body = response;
+    }
+
+    public async handleWorkOrder() {
+        const { ctx } = this;
+        const { username } = ctx.session;
+        const { workOrderID, opType, comments } = ctx.request.body as WorkOrderAuditSubmitData;
+
+        const response: ResponseData<null> = {
+            message: MsgType.UNKNOWN_ERR,
+            data: null
+        };
+
+        const userInfo = (await ctx.model.User.findOne({ username })) as User;
+
+        if (userInfo.type !== UserType.Admin) {
+            response.message = MsgType.NO_PERMISSION;
+        } else {
+            const workOrderInfo = (await ctx.model.WorkOrder.findOne({ _id: workOrderID })) as WorkOrder;
+
+            if (opType === OperationType.Granted) {
+                workOrderInfo.status = WorkOrderStatus.Granted;
+            } else if (opType === OperationType.Rejected) {
+                workOrderInfo.status = WorkOrderStatus.Rejected;
+            } else {
+                ctx.body = response;
+                return;
+            }
+            workOrderInfo.auditer = userInfo['_id'];
+            workOrderInfo.comments = comments;
+
+            await ctx.model.WorkOrder.update({ _id: workOrderID }, workOrderInfo);
+            response.message = MsgType.OPT_SUCCESS;
+        }
+
         ctx.body = response;
     }
 }

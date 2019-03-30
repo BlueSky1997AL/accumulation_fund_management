@@ -1,6 +1,6 @@
 import { WorkOrderStatus, WorkOrderType } from '~server/app/util/interface/workOrder';
 
-export function workOrderStatusToString (workOrderStatus: WorkOrderStatus) {
+export function workOrderStatusToString (workOrderStatus?: WorkOrderStatus) {
     switch (workOrderStatus) {
         case WorkOrderStatus.Closed:
             return '用户已关闭';
@@ -15,7 +15,7 @@ export function workOrderStatusToString (workOrderStatus: WorkOrderStatus) {
     }
 }
 
-export function workOrderTypeToString (workOrderType: WorkOrderType) {
+export function workOrderTypeToString (workOrderType?: WorkOrderType) {
     switch (workOrderType) {
         case WorkOrderType.PersonalBack:
             return '个人补缴';

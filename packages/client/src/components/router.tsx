@@ -4,6 +4,7 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
 import Frame from '~components/frame';
 import FundBackWorkflow from '~components/fundBackWorkflow';
+import WorkOrderAudit from '~components/workOrderAudit';
 import WorkOrderList from '~components/workOrderList';
 
 function Page404 () {
@@ -29,6 +30,13 @@ export default function () {
 
                     <Route exact={true} path="/work_order/audit" component={WorkOrderAuditList} />
                     <Route exact={true} path="/work_order/mine" component={MineWorkOrderList} />
+                    <Route
+                        exact={true}
+                        path="/work_order/:workOrderID/audit"
+                        render={({ match }) => {
+                            return <WorkOrderAudit workOrderID={match.params.workOrderID} />;
+                        }}
+                    />
 
                     <Route exact={true} path="/fund/remit" component={Page404} />
                     <Route exact={true} path="/fund/back" component={FundBackWorkflow} />
