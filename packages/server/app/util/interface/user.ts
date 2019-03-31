@@ -9,6 +9,11 @@ export interface User {
     subUser?: objectID[];
     workOrders?: objectID[];
 }
+export interface UserInDB extends User {
+    _id: string;
+    createdAt: string;
+    updatedAt: string;
+}
 
 export enum UserType {
     Admin,

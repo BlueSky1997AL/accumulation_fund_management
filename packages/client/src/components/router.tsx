@@ -3,6 +3,8 @@ import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
 import { Card } from 'antd';
+import AccountCreateForm from './accountCreateForm';
+import AccountModificationForm from './accountModificationForm';
 import Frame from './frame';
 import FundBackWorkflow from './fundBackWorkflow';
 import UserInfo from './userInfo';
@@ -31,6 +33,13 @@ export default function () {
                     <Route exact={true} path="/" component={UserInfo} />
                     <Route exact={true} path="/account/info" component={UserInfo} />
                     <Route exact={true} path="/account/list" component={UserList} />
+                    <Route exact={true} path="/account/create" component={AccountCreateForm} />
+                    <Route
+                        path="/work_order/:userID/audit"
+                        render={({ match }) => {
+                            return <AccountModificationForm userID={match.params.userID} />;
+                        }}
+                    />
 
                     <Route exact={true} path="/work_order/audit" component={WorkOrderAuditList} />
                     <Route exact={true} path="/work_order/mine" component={MineWorkOrderList} />

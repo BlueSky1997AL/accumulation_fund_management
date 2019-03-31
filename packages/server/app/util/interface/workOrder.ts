@@ -11,6 +11,12 @@ export interface WorkOrder {
     payload?: string;
 }
 
+export interface WorkOrderInDB extends WorkOrder {
+    _id: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
 export interface WorkOrderWithUserInfo {
     status: WorkOrderStatus;
     type: WorkOrderType;
