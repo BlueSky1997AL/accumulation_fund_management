@@ -6,18 +6,19 @@ import { EnterpriseFundBackSubmitData } from '../../../client/src/components/fun
 import { PersonalFundBackSubmitData } from '../../../client/src/components/fundBackWorkflow/personalFundBackForm';
 import { EnterpriseFundRemitSubmitData } from '../../../client/src/components/fundRemitWorkflow/enterpriseFundRemitForm';
 import { MsgType, ResponseData } from '../util/interface/common';
-import { User, UserType } from '../util/interface/user';
-import { WorkOrder, WorkOrderStatus, WorkOrderType, WorkOrderWithUserInfo } from '../util/interface/workOrder';
+import { User, UserInDB, UserType } from '../util/interface/user';
+import {
+    AuditOperationType,
+    WorkOrder,
+    WorkOrderStatus,
+    WorkOrderType,
+    WorkOrderWithUserInfo
+} from '../util/interface/workOrder';
 
 interface WorkOrderAuditSubmitData {
     workOrderID: string;
     comments: string;
-    opType: OperationType;
-}
-
-enum OperationType {
-    Granted,
-    Rejected
+    opType: AuditOperationType;
 }
 
 export default class WorkOrderController extends Controller {
@@ -150,16 +151,21 @@ export default class WorkOrderController extends Controller {
         } else {
             const workOrderInfo = (await ctx.model.WorkOrder.findOne({ _id: workOrderID })) as WorkOrder;
 
-            if (opType === OperationType.Granted) {
+            if (opType === AuditOperationType.Granted) {
                 workOrderInfo.status = WorkOrderStatus.Granted;
-            } else if (opType === OperationType.Rejected) {
+            } else if (opType === AuditOperationType.Rejected) {
                 workOrderInfo.status = WorkOrderStatus.Rejected;
             } else {
+                response.message = MsgType.ILLEGAL_ARGS;
                 ctx.body = response;
                 return;
             }
             workOrderInfo.auditer = userInfo['_id'];
             workOrderInfo.comments = comments;
+
+            if (opType === AuditOperationType.Granted) {
+                await ctx.service.workOrder.workOrderExecuter(workOrderInfo);
+            }
 
             await ctx.model.WorkOrder.update({ _id: workOrderID }, workOrderInfo);
             response.message = MsgType.OPT_SUCCESS;
@@ -182,6 +188,47 @@ export default class WorkOrderController extends Controller {
         if (userInfo.type !== UserType.Enterprise) {
             response.message = MsgType.NO_PERMISSION;
         } else {
+            if (amountMap && Array.isArray(amountMap)) {
+                const targetUserInfos: UserInDB[] = [];
+                try {
+                    await Promise.all(
+                        amountMap.map(async amountItem => {
+                            await Promise.all(
+                                amountItem.usernames.map(async targetUsername => {
+                                    const targetUserInfo = await ctx.model.User.findOne({ username: targetUsername });
+                                    if (targetUserInfo) {
+                                        targetUserInfos.push(targetUserInfo);
+                                    } else {
+                                        response.message = MsgType.USER_NOT_DOUND;
+                                        ctx.body = response;
+                                        throw new Error(MsgType.USER_NOT_DOUND);
+                                    }
+                                })
+                            );
+                        })
+                    );
+                } catch (error) {
+                    if (error.message === MsgType.USER_NOT_DOUND) {
+                        response.message = MsgType.USER_NOT_DOUND;
+                        ctx.body = response;
+                        return;
+                    }
+                    throw new Error(error);
+                }
+
+                const isTargetUserLegal = targetUserInfos.every(targetUserInfo => {
+                    return (userInfo.subUser as string[]).indexOf(targetUserInfo._id) !== -1;
+                });
+
+                if (!isTargetUserLegal) {
+                    response.message = MsgType.OPT_ILLEGAL;
+                    ctx.body = response;
+                    return;
+                }
+            } else {
+                response.message = MsgType.ILLEGAL_ARGS;
+            }
+
             const payload = JSON.stringify({ amountMap, comments, accessory });
             const workOrder: WorkOrder = {
                 status: WorkOrderStatus.Open,
@@ -264,6 +311,47 @@ export default class WorkOrderController extends Controller {
         if (userInfo.type !== UserType.Enterprise) {
             response.message = MsgType.NO_PERMISSION;
         } else {
+            if (amountMap && Array.isArray(amountMap)) {
+                const targetUserInfos: UserInDB[] = [];
+                try {
+                    await Promise.all(
+                        amountMap.map(async amountItem => {
+                            await Promise.all(
+                                amountItem.usernames.map(async targetUsername => {
+                                    const targetUserInfo = await ctx.model.User.findOne({ username: targetUsername });
+                                    if (targetUserInfo) {
+                                        targetUserInfos.push(targetUserInfo);
+                                    } else {
+                                        response.message = MsgType.USER_NOT_DOUND;
+                                        ctx.body = response;
+                                        throw new Error(MsgType.USER_NOT_DOUND);
+                                    }
+                                })
+                            );
+                        })
+                    );
+                } catch (error) {
+                    if (error.message === MsgType.USER_NOT_DOUND) {
+                        response.message = MsgType.USER_NOT_DOUND;
+                        ctx.body = response;
+                        return;
+                    }
+                    throw new Error(error);
+                }
+
+                const isTargetUserLegal = targetUserInfos.every(targetUserInfo => {
+                    return (userInfo.subUser as string[]).indexOf(targetUserInfo._id) !== -1;
+                });
+
+                if (!isTargetUserLegal) {
+                    response.message = MsgType.OPT_ILLEGAL;
+                    ctx.body = response;
+                    return;
+                }
+            } else {
+                response.message = MsgType.ILLEGAL_ARGS;
+            }
+
             const payload = JSON.stringify({ amountMap, comments, accessory });
             const workOrder: WorkOrder = {
                 status: WorkOrderStatus.Open,

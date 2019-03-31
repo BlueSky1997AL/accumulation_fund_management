@@ -12,7 +12,9 @@ export enum MsgType {
     OPT_FAILED = '操作失败',
     UNAUTHORIZED = '未授权',
     NO_PERMISSION = '无此操作的权限',
+    ILLEGAL_ARGS = '参数不合法',
     UNKNOWN_ERR = '未知错误',
-
-    FILE_NOT_FOUND = '文件未找到'
+    FILE_NOT_FOUND = '文件不存在',
+    USER_NOT_DOUND = '用户不存在',
+    OPT_ILLEGAL = '操作非法'
 }

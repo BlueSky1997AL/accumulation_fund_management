@@ -45,3 +45,8 @@ export enum WorkOrderType {
     EnterpriseInOrOut,
     PersonalInOrOut
 }
+
+export enum AuditOperationType {
+    Granted,
+    Rejected
+}
