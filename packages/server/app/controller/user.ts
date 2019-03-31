@@ -24,13 +24,15 @@ export default class UserController extends Controller {
         };
 
         const userInfo = (await ctx.model.User.findOne({ username })) as UserInDB;
-        if (userInfo && userInfo.password === password) {
+        if (userInfo && userInfo.status !== UserStatus.Disabled && userInfo.password === password) {
             ctx.session.username = username;
             ctx.session.password = password;
             ctx.session.userType = userInfo.type;
             response.message = MsgType.LOGIN_SUCCESS;
         } else if (!userInfo) {
             response.message = MsgType.INCORRECT_USERNAME;
+        } else if (userInfo.status === UserStatus.Disabled) {
+            response.message = MsgType.USER_DISABLED;
         } else {
             response.message = MsgType.INCORRECT_PASSWORD;
         }
