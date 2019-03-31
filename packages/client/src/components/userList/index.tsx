@@ -6,7 +6,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { User, UserInDB, UserStatus, UserType } from '~server/app/util/interface/user';
-import { balanceToHumanReadable, userStatusToString, userTypeToString } from '~utils/user';
+import { moneyToHumanReadable, userStatusToString, userTypeToString } from '~utils/user';
 import './index.less';
 
 import { MsgType } from '~server/app/util/interface/common';
@@ -109,7 +109,7 @@ function UserInfo () {
             align: 'center',
             dataIndex: 'balance',
             render(value: number) {
-                return balanceToHumanReadable(value);
+                return moneyToHumanReadable(value);
             }
         },
         {

@@ -29,8 +29,12 @@ export default (appInfo: EggAppInfo) => {
     config.mongoose = {
         client: {
             url: 'mongodb://127.0.0.1:27017/afm',
-            options: {},
+            options: {}
         }
+    };
+
+    config.multipart = {
+        mode: 'file'
     };
 
     // add your special config in here

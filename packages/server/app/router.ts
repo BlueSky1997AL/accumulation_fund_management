@@ -37,6 +37,9 @@ export default (app: Application) => {
     router.get('/api/work_order/mine', authCheckMiddleware, controller.workOrder.getPersonalWorkOrder);
     router.post('/api/work_order/audit', authCheckMiddleware, controller.workOrder.handleWorkOrder);
 
+    router.post('/api/file/upload', authCheckMiddleware, controller.file.upload);
+    router.get('/api/file/content/:fileID', authCheckMiddleware, controller.file.getFileContent);
+
     // 测试专用接口，上线前应清除
     router.get('/api/test', app.controller.home.test);
 };

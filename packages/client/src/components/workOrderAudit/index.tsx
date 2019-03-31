@@ -6,10 +6,12 @@ import './index.less';
 
 import { MsgType } from '~server/app/util/interface/common';
 import { WorkOrderStatus, WorkOrderWithUserInfo } from '~server/app/util/interface/workOrder';
+
 import { getWorkOrderInfo } from '~utils/commonRequest';
 import { userStatusToString, userTypeToString } from '~utils/user';
 import { workOrderStatusToString, workOrderTypeToString } from '~utils/workOrder';
 import { auditWorkOrder } from './request';
+import getWorkOrderDetailComponent from './workOrderDistinguisher';
 
 export interface WorkOrderAuditSubmitData {
     workOrderID: string;
@@ -120,7 +122,7 @@ function WorkOrderAudit ({ workOrderID, history }: WorkOrderAuditProps) {
         );
     }
 
-    const labelSpan = 7;
+    const labelSpan = 9;
     const contentSpan = 24 - labelSpan;
 
     return (
@@ -176,12 +178,12 @@ function WorkOrderAudit ({ workOrderID, history }: WorkOrderAuditProps) {
                             {workOrderTypeToString(workOrderInfo && workOrderInfo.type)}
                         </Col>
                     </Row>
-                    <Row className="info-row">
-                        <Col span={labelSpan} className="info-text info-label">
-                            相关材料：
-                        </Col>
-                        <Col span={contentSpan} className="info-text" />
-                    </Row>
+                    {getWorkOrderDetailComponent(
+                        contentSpan,
+                        labelSpan,
+                        workOrderInfo && workOrderInfo.payload,
+                        workOrderInfo && workOrderInfo.type
+                    )}
                     {getCommentBox(workOrderInfo)}
                     {getOperationButtons(workOrderInfo && workOrderInfo.status)}
                 </div>

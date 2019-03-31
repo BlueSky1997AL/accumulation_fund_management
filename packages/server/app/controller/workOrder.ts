@@ -170,7 +170,7 @@ export default class WorkOrderController extends Controller {
 
     public async creactEnterpriseFundBackWorkOrder() {
         const { ctx } = this;
-        const { amountMap, comments } = ctx.request.body as EnterpriseFundBackSubmitData;
+        const { amountMap, comments, accessory } = ctx.request.body as EnterpriseFundBackSubmitData;
         const { username } = ctx.session;
 
         const response: ResponseData<WorkOrder | null> = {
@@ -182,7 +182,7 @@ export default class WorkOrderController extends Controller {
         if (userInfo.type !== UserType.Enterprise) {
             response.message = MsgType.NO_PERMISSION;
         } else {
-            const payload = JSON.stringify({ amountMap, comments });
+            const payload = JSON.stringify({ amountMap, comments, accessory });
             const workOrder: WorkOrder = {
                 status: WorkOrderStatus.Open,
                 type: WorkOrderType.EnterpriseBack,
@@ -211,7 +211,7 @@ export default class WorkOrderController extends Controller {
 
     public async creactPersonalFundBackWorkOrder() {
         const { ctx } = this;
-        const { amount, comments } = ctx.request.body as PersonalFundBackSubmitData;
+        const { amount, comments, accessory } = ctx.request.body as PersonalFundBackSubmitData;
         const { username } = ctx.session;
 
         const response: ResponseData<WorkOrder | null> = {
@@ -223,7 +223,7 @@ export default class WorkOrderController extends Controller {
         if (userInfo.type !== UserType.Common) {
             response.message = MsgType.NO_PERMISSION;
         } else {
-            const payload = JSON.stringify({ amount, comments });
+            const payload = JSON.stringify({ amount, comments, accessory });
             const workOrder: WorkOrder = {
                 status: WorkOrderStatus.Open,
                 type: WorkOrderType.PersonalBack,
@@ -252,7 +252,7 @@ export default class WorkOrderController extends Controller {
 
     public async createEnterpriseFundRemitWorkOrder() {
         const { ctx } = this;
-        const { amountMap, comments } = ctx.request.body as EnterpriseFundRemitSubmitData;
+        const { amountMap, comments, accessory } = ctx.request.body as EnterpriseFundRemitSubmitData;
         const { username } = ctx.session;
 
         const response: ResponseData<WorkOrder | null> = {
@@ -264,7 +264,7 @@ export default class WorkOrderController extends Controller {
         if (userInfo.type !== UserType.Enterprise) {
             response.message = MsgType.NO_PERMISSION;
         } else {
-            const payload = JSON.stringify({ amountMap, comments });
+            const payload = JSON.stringify({ amountMap, comments, accessory });
             const workOrder: WorkOrder = {
                 status: WorkOrderStatus.Open,
                 type: WorkOrderType.Remit,

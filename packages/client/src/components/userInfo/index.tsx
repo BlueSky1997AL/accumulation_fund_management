@@ -7,7 +7,7 @@ import { UserInfoRespData } from '~server/app/controller/user';
 import { MsgType } from '~server/app/util/interface/common';
 
 import { UserType } from '~server/app/util/interface/user';
-import { balanceToHumanReadable, userStatusToString, userTypeToString } from '~utils/user';
+import { moneyToHumanReadable, userStatusToString, userTypeToString } from '~utils/user';
 import { getUserInfo } from './request';
 
 function UserInfo () {
@@ -85,7 +85,7 @@ function UserInfo () {
                         账户余额：
                     </Col>
                     <Col span={contentSpan} className="info-text">
-                        {balanceToHumanReadable(userInfo && userInfo.balance)}（元/人民币）
+                        {moneyToHumanReadable(userInfo && userInfo.balance)}（元/人民币）
                     </Col>
                 </Row>
             );

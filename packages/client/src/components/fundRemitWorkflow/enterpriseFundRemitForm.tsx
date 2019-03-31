@@ -1,12 +1,20 @@
 import { Button, Form, Icon, Input, Upload } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
+import Cookies from 'js-cookie';
 import React from 'react';
 
 import AmountMapInput, { AmountMap } from './amountMapInput';
 
+import { uploadFilesToFileInfos } from '~utils/file';
+
+import { UploadChangeParam } from 'antd/lib/upload';
+import { UploadFile } from 'antd/lib/upload/interface';
+import { FileInfo } from '~server/app/util/interface/file';
+
 export interface EnterpriseFundRemitSubmitData {
     amountMap: AmountMap[];
     comments?: string;
+    accessory?: FileInfo[];
 }
 
 interface EnterpriseFundRemitFormProps extends FormComponentProps {
@@ -15,22 +23,34 @@ interface EnterpriseFundRemitFormProps extends FormComponentProps {
 
 let id = 1;
 
+const csrfToken = Cookies.get('csrfToken');
+
 function FundRemitForm (props: EnterpriseFundRemitFormProps) {
     const { getFieldDecorator, validateFields, getFieldValue, setFieldsValue } = props.form;
 
     function onSubmit () {
-        validateFields(async (errors, formData: EnterpriseFundRemitSubmitData) => {
+        validateFields(async (errors, formData) => {
             if (errors) {
                 console.warn('Warning: Fields validation failed:', errors);
                 return;
             }
 
-            props.onSubmit(formData);
+            const submitData: EnterpriseFundRemitSubmitData = {
+                amountMap: formData.amountMap.map((item: AmountMap) => {
+                    return {
+                        usernames: item.usernames,
+                        amount: item.amount * 100
+                    };
+                }),
+                comments: formData.comments,
+                accessory: uploadFilesToFileInfos(formData.accessory)
+            };
+
+            props.onSubmit(submitData);
         });
     }
 
-    function normFile (e: any) {
-        console.log('Upload event:', e);
+    function normFile (e: UploadChangeParam | UploadFile[]) {
         if (Array.isArray(e)) {
             return e;
         }
@@ -126,11 +146,11 @@ function FundRemitForm (props: EnterpriseFundRemitFormProps) {
                 })(<Input.TextArea autosize={true} />)}
             </Form.Item>
             <Form.Item {...formItemLayout} label="相关材料">
-                {getFieldDecorator('data', {
+                {getFieldDecorator('accessory', {
                     valuePropName: 'fileList',
                     getValueFromEvent: normFile
                 })(
-                    <Upload action="">
+                    <Upload action={`/api/file/upload?_csrf=${csrfToken}`}>
                         <Button>
                             <Icon type="upload" /> 上传
                         </Button>

@@ -1,32 +1,46 @@
 import { Button, Form, Icon, Input, InputNumber, Upload } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
+import { UploadChangeParam } from 'antd/lib/upload';
+import { UploadFile } from 'antd/lib/upload/interface';
+import Cookies from 'js-cookie';
 import React from 'react';
+
+import { FileInfo } from '~server/app/util/interface/file';
+import { uploadFilesToFileInfos } from '~utils/file';
 
 export interface PersonalFundBackSubmitData {
     amount: number;
     comments?: string;
+    accessory?: FileInfo[];
 }
 
 interface PersonalFundBackFormProps extends FormComponentProps {
     onSubmit: (data: PersonalFundBackSubmitData) => void;
 }
 
+const csrfToken = Cookies.get('csrfToken');
+
 function PersonalFundBackForm (props: PersonalFundBackFormProps) {
     const { getFieldDecorator, validateFields } = props.form;
 
     function onSubmit () {
-        validateFields(async (errors, formData: PersonalFundBackSubmitData) => {
+        validateFields(async (errors, formData) => {
             if (errors) {
                 console.warn('Warning: Fields validation failed:', errors);
                 return;
             }
 
-            props.onSubmit(formData);
+            const submitData: PersonalFundBackSubmitData = {
+                amount: formData.amount * 100,
+                comments: formData.comments,
+                accessory: uploadFilesToFileInfos(formData.accessory)
+            };
+
+            props.onSubmit(submitData);
         });
     }
 
-    function normFile (e: any) {
-        console.log('Upload event:', e);
+    function normFile (e: UploadChangeParam | UploadFile[]) {
         if (Array.isArray(e)) {
             return e;
         }
@@ -42,7 +56,7 @@ function PersonalFundBackForm (props: PersonalFundBackFormProps) {
             }}
             className="login-form"
         >
-            <Form.Item label="补缴金额">
+            <Form.Item label="补缴金额（元/人民币）">
                 {getFieldDecorator('amount', {
                     rules: [ { required: true, message: '请输入补缴金额' }, { type: 'number', message: '补缴金额应为数值' } ]
                 })(<InputNumber style={{ width: '100%' }} />)}
@@ -53,11 +67,11 @@ function PersonalFundBackForm (props: PersonalFundBackFormProps) {
                 })(<Input.TextArea autosize={true} />)}
             </Form.Item>
             <Form.Item label="相关材料">
-                {getFieldDecorator('data', {
+                {getFieldDecorator('accessory', {
                     valuePropName: 'fileList',
                     getValueFromEvent: normFile
                 })(
-                    <Upload action="">
+                    <Upload action={`/api/file/upload?_csrf=${csrfToken}`}>
                         <Button>
                             <Icon type="upload" /> 上传
                         </Button>

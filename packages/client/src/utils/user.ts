@@ -28,6 +28,6 @@ export function userStatusToString (userStatus?: UserStatus) {
     }
 }
 
-export function balanceToHumanReadable (amount?: number) {
+export function moneyToHumanReadable (amount?: number) {
     return amount ? (amount / 100).toFixed(2) : '0.00';
 }
