@@ -5,7 +5,7 @@ import { ColumnProps } from 'antd/lib/table';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
-import { User, UserStatus, UserType } from '~server/app/util/interface/user';
+import { User, UserInDB, UserStatus, UserType } from '~server/app/util/interface/user';
 import { balanceToHumanReadable, userStatusToString, userTypeToString } from '~utils/user';
 import './index.less';
 
@@ -127,29 +127,29 @@ function UserInfo () {
             title: '操作',
             key: 'operation',
             align: 'center',
-            render(record) {
+            render(record: UserInDB) {
                 return [
-                    <Link style={linkStyle} key="op-0" to={`/work_order/${record['_id']}/audit`}>
+                    <Link style={linkStyle} key="op-0" to={`/account/${record._id}/edit`}>
                         修改
                     </Link>,
                     <Popconfirm
                         key="op-1"
                         title="确认要注销该账户？"
-                        onConfirm={() => updateUserStatusAndRefresh(record['_id'], UserStatus.Disabled)}
+                        onConfirm={() => updateUserStatusAndRefresh(record._id, UserStatus.Disabled)}
                     >
                         <a style={linkStyle}>注销</a>
                     </Popconfirm>,
                     <Popconfirm
                         key="op-2"
                         title="确认要冻结该账户？"
-                        onConfirm={() => updateUserStatusAndRefresh(record['_id'], UserStatus.Frozen)}
+                        onConfirm={() => updateUserStatusAndRefresh(record._id, UserStatus.Frozen)}
                     >
                         <a style={linkStyle}>冻结</a>
                     </Popconfirm>,
                     <Popconfirm
                         key="op-3"
                         title="确认要挂失该账户？"
-                        onConfirm={() => updateUserStatusAndRefresh(record['_id'], UserStatus.Lost)}
+                        onConfirm={() => updateUserStatusAndRefresh(record._id, UserStatus.Lost)}
                     >
                         <a style={linkStyle}>挂失</a>
                     </Popconfirm>

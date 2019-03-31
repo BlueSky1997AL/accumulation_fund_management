@@ -7,6 +7,7 @@ import AccountCreateForm from './accountCreateForm';
 import AccountModificationForm from './accountModificationForm';
 import Frame from './frame';
 import FundBackWorkflow from './fundBackWorkflow';
+import FundRemitWorkflow from './fundRemitWorkflow';
 import UserInfo from './userInfo';
 import UserList from './userList';
 import WorkflowFrame from './workflowFrame';
@@ -35,7 +36,7 @@ export default function () {
                     <Route exact={true} path="/account/list" component={UserList} />
                     <Route exact={true} path="/account/create" component={AccountCreateForm} />
                     <Route
-                        path="/work_order/:userID/audit"
+                        path="/account/:userID/edit"
                         render={({ match }) => {
                             return <AccountModificationForm userID={match.params.userID} />;
                         }}
@@ -60,7 +61,7 @@ export default function () {
                         }}
                     />
 
-                    <Route exact={true} path="/fund/remit" component={Page404} />
+                    <Route exact={true} path="/fund/remit" component={FundRemitWorkflow} />
                     <Route exact={true} path="/fund/back" component={FundBackWorkflow} />
                     <Route exact={true} path="/fund/draw" component={Page404} />
                     <Route exact={true} path="/fund/in_out" component={Page404} />

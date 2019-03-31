@@ -27,6 +27,11 @@ export default (app: Application) => {
         authCheckMiddleware,
         controller.workOrder.creactPersonalFundBackWorkOrder
     );
+    router.post(
+        '/api/work_order/fund/remit/enterprise/create',
+        authCheckMiddleware,
+        controller.workOrder.createEnterpriseFundRemitWorkOrder
+    );
     router.get('/api/work_order/all', authCheckMiddleware, controller.workOrder.getAllWorkOrder);
     router.get('/api/work_order/detail', authCheckMiddleware, controller.workOrder.getWorkOrder);
     router.get('/api/work_order/mine', authCheckMiddleware, controller.workOrder.getPersonalWorkOrder);
