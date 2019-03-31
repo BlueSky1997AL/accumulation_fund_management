@@ -42,8 +42,7 @@ export enum WorkOrderType {
     PersonalBack,
     Remit,
     Draw,
-    EnterpriseInOrOut,
-    PersonalInOrOut
+    InOrOut
 }
 
 export enum AuditOperationType {

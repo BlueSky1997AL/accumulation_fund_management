@@ -25,10 +25,8 @@ export function workOrderTypeToString (workOrderType?: WorkOrderType) {
             return '汇缴';
         case WorkOrderType.Draw:
             return '支取';
-        case WorkOrderType.EnterpriseInOrOut:
-            return '企业转入/转出';
-        case WorkOrderType.PersonalInOrOut:
-            return '个人转入/转出';
+        case WorkOrderType.InOrOut:
+            return '转入/转出';
         default:
             return '未知工单类型';
     }
