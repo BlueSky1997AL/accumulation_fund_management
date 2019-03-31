@@ -6,6 +6,7 @@ import './index.less';
 import { UserInfoRespData } from '~server/app/controller/user';
 import { MsgType } from '~server/app/util/interface/common';
 
+import { UserType } from '~server/app/util/interface/user';
 import { balanceToHumanReadable, userStatusToString, userTypeToString } from '~utils/user';
 import { getUserInfo } from './request';
 
@@ -29,6 +30,68 @@ function UserInfo () {
     useEffect(() => {
         fetchUserInfo();
     }, []);
+
+    function getAccountOperations () {
+        if (userInfo && userInfo.type !== UserType.Admin) {
+            return [
+                <Divider key="diviver" style={{ marginTop: 35 }} orientation="left">
+                    账号操作
+                </Divider>,
+                <Card key="operation-cards">
+                    <Card.Grid style={cardGridStyle}>
+                        <div
+                            className="card-grid-button"
+                            onClick={() => {
+                                console.log('hello');
+                            }}
+                        >
+                            <Icon style={opIconStyle} type="disconnect" />
+                            <span>挂失</span>
+                        </div>
+                    </Card.Grid>
+                    <Card.Grid style={cardGridStyle}>
+                        <div
+                            className="card-grid-button"
+                            onClick={() => {
+                                console.log('hello');
+                            }}
+                        >
+                            <Icon style={opIconStyle} type="lock" />
+                            <span>冻结</span>
+                        </div>
+                    </Card.Grid>
+                    <Card.Grid style={cardGridStyle}>
+                        <div
+                            className="card-grid-button"
+                            onClick={() => {
+                                console.log('hello');
+                            }}
+                        >
+                            <Icon style={opIconStyle} type="delete" />
+                            <span>销户</span>
+                        </div>
+                    </Card.Grid>
+                </Card>
+            ];
+        }
+        return null;
+    }
+
+    function getBalanceRow () {
+        if (userInfo && userInfo.type !== UserType.Admin) {
+            return (
+                <Row className="info-row">
+                    <Col span={labelSpan} className="info-text info-label">
+                        账户余额：
+                    </Col>
+                    <Col span={contentSpan} className="info-text">
+                        {balanceToHumanReadable(userInfo && userInfo.balance)}（元/人民币）
+                    </Col>
+                </Row>
+            );
+        }
+        return null;
+    }
 
     const labelSpan = 3;
     const contentSpan = 24 - labelSpan;
@@ -69,52 +132,8 @@ function UserInfo () {
                         {userStatusToString(userInfo && userInfo.status)}
                     </Col>
                 </Row>
-                <Row className="info-row">
-                    <Col span={labelSpan} className="info-text info-label">
-                        账户余额：
-                    </Col>
-                    <Col span={contentSpan} className="info-text">
-                        {balanceToHumanReadable(userInfo && userInfo.balance)}（元/人民币）
-                    </Col>
-                </Row>
-                <Divider style={{ marginTop: 35 }} orientation="left">
-                    账号操作
-                </Divider>
-                <Card>
-                    <Card.Grid style={cardGridStyle}>
-                        <div
-                            className="card-grid-button"
-                            onClick={() => {
-                                console.log('hello');
-                            }}
-                        >
-                            <Icon style={opIconStyle} type="disconnect" />
-                            <span>挂失</span>
-                        </div>
-                    </Card.Grid>
-                    <Card.Grid style={cardGridStyle}>
-                        <div
-                            className="card-grid-button"
-                            onClick={() => {
-                                console.log('hello');
-                            }}
-                        >
-                            <Icon style={opIconStyle} type="lock" />
-                            <span>冻结</span>
-                        </div>
-                    </Card.Grid>
-                    <Card.Grid style={cardGridStyle}>
-                        <div
-                            className="card-grid-button"
-                            onClick={() => {
-                                console.log('hello');
-                            }}
-                        >
-                            <Icon style={opIconStyle} type="delete" />
-                            <span>销户</span>
-                        </div>
-                    </Card.Grid>
-                </Card>
+                {getBalanceRow()}
+                {getAccountOperations()}
             </Card>
         </div>
     );
