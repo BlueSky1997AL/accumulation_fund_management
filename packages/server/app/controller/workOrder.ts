@@ -4,6 +4,7 @@ import { Controller } from 'egg';
 
 import { EnterpriseFundBackSubmitData } from '../../../client/src/components/fundBackWorkflow/enterpriseFundBackForm';
 import { PersonalFundBackSubmitData } from '../../../client/src/components/fundBackWorkflow/personalFundBackForm';
+import { PersonalFundDrawSubmitData } from '../../../client/src/components/fundDrawWorkflow/personalFundDrawForm';
 import { EnterpriseFundRemitSubmitData } from '../../../client/src/components/fundRemitWorkflow/enterpriseFundRemitForm';
 import { MsgType, ResponseData } from '../util/interface/common';
 import { User, UserInDB, UserType } from '../util/interface/user';
@@ -164,7 +165,12 @@ export default class WorkOrderController extends Controller {
             workOrderInfo.comments = comments;
 
             if (opType === AuditOperationType.Granted) {
-                await ctx.service.workOrder.workOrderExecuter(workOrderInfo);
+                const err = await ctx.service.workOrder.workOrderExecuter(workOrderInfo);
+                if (err !== null) {
+                    response.message = err;
+                    ctx.body = response;
+                    return;
+                }
             }
 
             await ctx.model.WorkOrder.update({ _id: workOrderID }, workOrderInfo);
@@ -368,6 +374,47 @@ export default class WorkOrderController extends Controller {
                     userInfo.workOrders = [ createdDoc['_id'] ];
                 }
                 await ctx.model.User.update({ _id: userInfo['_id'] }, userInfo);
+
+                response.message = MsgType.OPT_SUCCESS;
+                response.data = createdDoc;
+            } catch (error) {
+                console.error(error);
+                response.message = MsgType.OPT_FAILED;
+            }
+        }
+        ctx.body = response;
+    }
+
+    public async createPersonalFundDrawWorkOrder() {
+        const { ctx } = this;
+        const { amount, comments, accessory } = ctx.request.body as PersonalFundDrawSubmitData;
+        const { username } = ctx.session;
+
+        const response: ResponseData<WorkOrder | null> = {
+            message: MsgType.UNKNOWN_ERR,
+            data: null
+        };
+
+        const userInfo = (await ctx.model.User.findOne({ username })) as UserInDB;
+        if (userInfo.type !== UserType.Common) {
+            response.message = MsgType.NO_PERMISSION;
+        } else {
+            const payload = JSON.stringify({ amount, comments, accessory });
+            const workOrder: WorkOrder = {
+                status: WorkOrderStatus.Open,
+                type: WorkOrderType.Draw,
+                owner: userInfo._id,
+                payload
+            };
+
+            try {
+                const createdDoc = await ctx.model.WorkOrder.create(workOrder);
+                if (userInfo.workOrders) {
+                    userInfo.workOrders.push(createdDoc._id);
+                } else {
+                    userInfo.workOrders = [ createdDoc._id ];
+                }
+                await ctx.model.User.update({ _id: userInfo._id }, userInfo);
 
                 response.message = MsgType.OPT_SUCCESS;
                 response.data = createdDoc;

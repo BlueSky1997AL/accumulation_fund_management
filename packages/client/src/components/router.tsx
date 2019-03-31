@@ -7,6 +7,7 @@ import AccountCreateForm from './accountCreateForm';
 import AccountModificationForm from './accountModificationForm';
 import Frame from './frame';
 import FundBackWorkflow from './fundBackWorkflow';
+import FundDrawWorkFlow from './fundDrawWorkflow';
 import FundRemitWorkflow from './fundRemitWorkflow';
 import UserInfo from './userInfo';
 import UserList from './userList';
@@ -63,7 +64,7 @@ export default function () {
 
                     <Route exact={true} path="/fund/remit" component={FundRemitWorkflow} />
                     <Route exact={true} path="/fund/back" component={FundBackWorkflow} />
-                    <Route exact={true} path="/fund/draw" component={Page404} />
+                    <Route exact={true} path="/fund/draw" component={FundDrawWorkFlow} />
                     <Route exact={true} path="/fund/in_out" component={Page404} />
 
                     {/* <Route exact={true} path="/record/trace" component={Page404} /> */}

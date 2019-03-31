@@ -2,25 +2,29 @@ import { Service } from 'egg';
 
 import { EnterpriseFundBackSubmitData } from '../../../client/src/components/fundBackWorkflow/enterpriseFundBackForm';
 import { PersonalFundBackSubmitData } from '../../../client/src/components/fundBackWorkflow/personalFundBackForm';
+import { PersonalFundDrawSubmitData } from '../../../client/src/components/fundDrawWorkflow/personalFundDrawForm';
 import { EnterpriseFundRemitSubmitData } from '../../../client/src/components/fundRemitWorkflow/enterpriseFundRemitForm';
+import { MsgType } from '../util/interface/common';
 import { UserInDB } from '../util/interface/user';
 import { WorkOrder, WorkOrderType } from '../util/interface/workOrder';
 
 export default class WorkOrderService extends Service {
-    public async workOrderExecuter(workOrder: WorkOrder) {
+    public async workOrderExecuter(workOrder: WorkOrder): Promise<MsgType | null> {
         switch (workOrder.type) {
             case WorkOrderType.PersonalBack: {
-                await this.execPersonalBack(workOrder);
-                break;
+                return await this.execPersonalBack(workOrder);
             }
             case WorkOrderType.EnterpriseBack: {
-                await this.execEnterpriseBack(workOrder);
-                break;
+                return await this.execEnterpriseBack(workOrder);
             }
             case WorkOrderType.Remit: {
-                await this.execEnterpriseRemit(workOrder);
+                return await this.execEnterpriseRemit(workOrder);
+            }
+            case WorkOrderType.Draw: {
+                return await this.execPersonalDraw(workOrder);
             }
         }
+        return null;
     }
 
     public async execPersonalBack(workOrder: WorkOrder) {
@@ -31,9 +35,8 @@ export default class WorkOrderService extends Service {
             const execData = JSON.parse(payload) as PersonalFundBackSubmitData;
 
             await ctx.model.User.update({ _id: owner }, { balance: ownerInfo.balance + execData.amount });
-
-            return;
         }
+        return null;
     }
 
     public async execEnterpriseBack(workOrder: WorkOrder) {
@@ -53,9 +56,8 @@ export default class WorkOrderService extends Service {
                     );
                 })
             );
-
-            return;
         }
+        return null;
     }
 
     public async execEnterpriseRemit(workOrder: WorkOrder) {
@@ -75,8 +77,23 @@ export default class WorkOrderService extends Service {
                     );
                 })
             );
-
-            return;
         }
+        return null;
+    }
+
+    public async execPersonalDraw(workOrder: WorkOrder) {
+        const { ctx } = this;
+        const { payload, owner } = workOrder;
+        if (payload) {
+            const ownerInfo = (await ctx.model.User.findOne({ _id: owner })) as UserInDB;
+            const execData = JSON.parse(payload) as PersonalFundDrawSubmitData;
+
+            if (ownerInfo.balance < execData.amount) {
+                return MsgType.INSUFFICIENT_BALANCE;
+            }
+
+            await ctx.model.User.update({ _id: owner }, { balance: ownerInfo.balance - execData.amount });
+        }
+        return null;
     }
 }

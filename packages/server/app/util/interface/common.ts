@@ -16,5 +16,6 @@ export enum MsgType {
     UNKNOWN_ERR = '未知错误',
     FILE_NOT_FOUND = '文件不存在',
     USER_NOT_DOUND = '用户不存在',
-    OPT_ILLEGAL = '操作非法'
+    OPT_ILLEGAL = '操作非法',
+    INSUFFICIENT_BALANCE = '余额不足'
 }
