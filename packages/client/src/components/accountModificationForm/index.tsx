@@ -12,7 +12,7 @@ import './index.less';
 import { MsgType } from '~server/app/util/interface/common';
 import { UserInDB, UserStatus, UserType } from '~server/app/util/interface/user';
 
-import { userStatusToString, userTypeToString } from '~utils/user';
+import { moneyToHumanReadable, userStatusToString, userTypeToString } from '~utils/user';
 import { getFullUserInfo, updateUserInfo } from './request';
 
 interface AccountModificationFormProps extends FormComponentProps, RouteComponentProps {
@@ -41,6 +41,7 @@ function AccountModificationForm ({ userID, form, history }: AccountModification
     async function handleUpdateUserInfo () {
         try {
             const fieldsValue = getFieldsValue() as UserInDB;
+            fieldsValue.balance = fieldsValue.balance * 100;
 
             const resp = await updateUserInfo(fieldsValue);
             if (resp.message !== MsgType.OPT_SUCCESS) {
@@ -87,9 +88,9 @@ function AccountModificationForm ({ userID, form, history }: AccountModification
             return null;
         }
         return (
-            <Form.Item label="账户余额（分/人名币）">
+            <Form.Item label="账户余额（元/人名币）">
                 {getFieldDecorator('balance', {
-                    initialValue: fullUserInfo && fullUserInfo.balance,
+                    initialValue: moneyToHumanReadable(fullUserInfo && fullUserInfo.balance),
                     rules: [ { required: true, message: '账户余额不能为空' }, { type: 'number', message: '账户余额必须为数字' } ]
                 })(<InputNumber style={{ width: '100%' }} />)}
             </Form.Item>
