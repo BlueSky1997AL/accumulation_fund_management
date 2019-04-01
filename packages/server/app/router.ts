@@ -4,6 +4,7 @@ export default (app: Application) => {
     const { controller, router, middleware } = app;
     const authCheckMiddleware = middleware.authCheck();
     const userProtectionMiddleware = middleware.userProtection();
+    const fileAPIProtectionMiddleware = middleware.fileAPIProtection();
 
     router.get(/\/web|\/web\/*/, authCheckMiddleware, controller.home.index);
     router.get('/login', controller.home.login);
@@ -47,6 +48,7 @@ export default (app: Application) => {
         userProtectionMiddleware,
         controller.workOrder.createPersonalFundDrawWorkOrder
     );
+    router.post('/api/work_order/common/create', authCheckMiddleware, controller.workOrder.createCommonWorkOrder);
     router.get(
         '/api/work_order/all',
         authCheckMiddleware,
@@ -72,11 +74,11 @@ export default (app: Application) => {
         controller.workOrder.handleWorkOrder
     );
 
-    router.post('/api/file/upload', authCheckMiddleware, userProtectionMiddleware, controller.file.upload);
+    router.post('/api/file/upload', authCheckMiddleware, fileAPIProtectionMiddleware, controller.file.upload);
     router.get(
         '/api/file/content/:fileID',
         authCheckMiddleware,
-        userProtectionMiddleware,
+        fileAPIProtectionMiddleware,
         controller.file.getFileContent
     );
 

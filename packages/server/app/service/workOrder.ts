@@ -5,7 +5,7 @@ import { PersonalFundBackSubmitData } from '../../../client/src/components/fundB
 import { PersonalFundDrawSubmitData } from '../../../client/src/components/fundDrawWorkflow/personalFundDrawForm';
 import { EnterpriseFundRemitSubmitData } from '../../../client/src/components/fundRemitWorkflow/enterpriseFundRemitForm';
 import { MsgType } from '../util/interface/common';
-import { UserInDB } from '../util/interface/user';
+import { UserInDB, UserStatus } from '../util/interface/user';
 import { WorkOrder, WorkOrderType } from '../util/interface/workOrder';
 
 export default class WorkOrderService extends Service {
@@ -22,6 +22,15 @@ export default class WorkOrderService extends Service {
             }
             case WorkOrderType.Draw: {
                 return await this.execPersonalDraw(workOrder);
+            }
+            case WorkOrderType.DisableOrExport: {
+                return await this.execChangeUserStatus(workOrder);
+            }
+            case WorkOrderType.Freeze: {
+                return await this.execChangeUserStatus(workOrder);
+            }
+            case WorkOrderType.Unfreeze: {
+                return await this.execChangeUserStatus(workOrder);
             }
         }
         return null;
@@ -93,6 +102,37 @@ export default class WorkOrderService extends Service {
             }
 
             await ctx.model.User.update({ _id: owner }, { balance: ownerInfo.balance - execData.amount });
+        }
+        return null;
+    }
+
+    public async execChangeUserStatus(workOrder: WorkOrder) {
+        const { ctx } = this;
+        const { payload, owner } = workOrder;
+        if (payload) {
+            const ownerInfo = (await ctx.model.User.findOne({ _id: owner })) as UserInDB;
+
+            let targetUserStatus = ownerInfo.status;
+            switch (workOrder.type) {
+                case WorkOrderType.DisableOrExport: {
+                    targetUserStatus = UserStatus.Disabled;
+                    break;
+                }
+                case WorkOrderType.Freeze: {
+                    targetUserStatus = UserStatus.Frozen;
+                    break;
+                }
+                case WorkOrderType.Unfreeze: {
+                    targetUserStatus = UserStatus.Normal;
+                    break;
+                }
+                default: {
+                    ctx.logger.error(MsgType.ILLEGAL_ARGS, workOrder);
+                    return MsgType.ILLEGAL_ARGS;
+                }
+            }
+
+            await ctx.model.User.update({ _id: owner }, { status: targetUserStatus });
         }
         return null;
     }

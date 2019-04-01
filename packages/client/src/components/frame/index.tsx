@@ -104,9 +104,9 @@ function Frame ({ children }: FrameProps) {
                         <Menu.Item key="/fund/draw">
                             <Link to="/fund/draw">支取</Link>
                         </Menu.Item>
-                        <Menu.Item key="/fund/in_out">
+                        {/* <Menu.Item key="/fund/in_out">
                             <Link to="/fund/in_out">转入/转出</Link>
-                        </Menu.Item>
+                        </Menu.Item> */}
                     </SubMenu>
                     {/* <SubMenu
                         key="/record"

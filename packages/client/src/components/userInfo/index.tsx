@@ -68,7 +68,7 @@ function UserInfo () {
                             }}
                         >
                             <Icon style={opIconStyle} type="delete" />
-                            <span>销户</span>
+                            <span>销户/转出</span>
                         </div>
                     </Card.Grid>
                 </Card>

@@ -42,7 +42,9 @@ export enum WorkOrderType {
     PersonalBack,
     Remit,
     Draw,
-    InOrOut
+    DisableOrExport,
+    Freeze,
+    Unfreeze
 }
 
 export enum AuditOperationType {

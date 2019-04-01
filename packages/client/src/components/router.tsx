@@ -2,9 +2,12 @@ import { Exception } from 'ant-design-pro';
 import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
+import { WorkOrderType } from '~server/app/util/interface/workOrder';
+
 import { Card } from 'antd';
 import AccountCreateForm from './accountCreateForm';
 import AccountModificationForm from './accountModificationForm';
+import CommonWorkflow from './commonWorkflow';
 import Frame from './frame';
 import FundBackWorkflow from './fundBackWorkflow';
 import FundDrawWorkFlow from './fundDrawWorkflow';
@@ -27,6 +30,18 @@ function MineWorkOrderList () {
     return <WorkOrderList type="mine" />;
 }
 
+function FreezeWorkflow () {
+    return <CommonWorkflow workOrderType={WorkOrderType.Freeze} />;
+}
+
+function UnfreezeWorkflow () {
+    return <CommonWorkflow workOrderType={WorkOrderType.Unfreeze} />;
+}
+
+function DisableWorkflow () {
+    return <CommonWorkflow workOrderType={WorkOrderType.DisableOrExport} />;
+}
+
 export default function () {
     return (
         <BrowserRouter basename="/web">
@@ -36,6 +51,9 @@ export default function () {
                     <Route exact={true} path="/account/info" component={UserInfo} />
                     <Route exact={true} path="/account/list" component={UserList} />
                     <Route exact={true} path="/account/create" component={AccountCreateForm} />
+                    <Route exact={true} path="/account/freeze" component={FreezeWorkflow} />
+                    <Route exact={true} path="/account/unfreeze" component={UnfreezeWorkflow} />
+                    <Route exact={true} path="/account/disable" component={DisableWorkflow} />
                     <Route
                         path="/account/:userID/edit"
                         render={({ match }) => {
@@ -65,7 +83,7 @@ export default function () {
                     <Route exact={true} path="/fund/remit" component={FundRemitWorkflow} />
                     <Route exact={true} path="/fund/back" component={FundBackWorkflow} />
                     <Route exact={true} path="/fund/draw" component={FundDrawWorkFlow} />
-                    <Route exact={true} path="/fund/in_out" component={Page404} />
+                    {/* <Route exact={true} path="/fund/in_out" component={Page404} /> */}
 
                     {/* <Route exact={true} path="/record/trace" component={Page404} /> */}
 

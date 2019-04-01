@@ -1,6 +1,7 @@
 import React from 'react';
 import { WorkOrderType } from '~server/app/util/interface/workOrder';
 
+import CommonWorkOrder from './workOrderTypes/commonWorkOrder';
 import EnterpriseFundBack from './workOrderTypes/enterpriseFundBack';
 import EnterpriseFundRemit from './workOrderTypes/enterpriseFundRemit';
 import PersonalFundBack from './workOrderTypes/personalFundBack';
@@ -16,6 +17,12 @@ export default function (contentSpan: number, labelSpan: number, jsonStr?: strin
             return <EnterpriseFundRemit contentSpan={contentSpan} labelSpan={labelSpan} jsonStr={jsonStr} />;
         case WorkOrderType.Draw:
             return <PersonalFundDraw contentSpan={contentSpan} labelSpan={labelSpan} jsonStr={jsonStr} />;
+        case WorkOrderType.DisableOrExport:
+            return <CommonWorkOrder contentSpan={contentSpan} labelSpan={labelSpan} jsonStr={jsonStr} />;
+        case WorkOrderType.Freeze:
+            return <CommonWorkOrder contentSpan={contentSpan} labelSpan={labelSpan} jsonStr={jsonStr} />;
+        case WorkOrderType.Unfreeze:
+            return <CommonWorkOrder contentSpan={contentSpan} labelSpan={labelSpan} jsonStr={jsonStr} />;
         default:
             return null;
     }
