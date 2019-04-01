@@ -94,7 +94,7 @@ function EnterpriseUserList () {
                         <Link to="/account/enterprise/create">添加用户</Link>
                     </Button>
                 </Row>
-                <Table rowKey="_id" columns={columns} dataSource={subUsers} />
+                <Table rowKey="id" columns={columns} dataSource={subUsers} />
             </Card>
         </div>
     );
