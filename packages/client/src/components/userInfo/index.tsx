@@ -8,8 +8,10 @@ import { UserInfoRespData } from '~server/app/controller/user';
 import { MsgType } from '~server/app/util/interface/common';
 
 import { UserStatus, UserType } from '~server/app/util/interface/user';
+import { getUserInfo } from '~utils/commonRequest';
 import { moneyToHumanReadable, userStatusToString, userTypeToString } from '~utils/user';
-import { getUserInfo, userLost } from './request';
+import {userLost} from './request';
+;
 
 function UserInfo () {
     const [ userInfo, setUserInfo ] = useState<UserInfoRespData>();
@@ -153,6 +155,14 @@ function UserInfo () {
     return (
         <div className="user-info-container">
             <Card title={'账户信息'} bodyStyle={{ height: '100%', width: '100%' }}>
+                <Row className="info-row">
+                    <Col span={labelSpan} className="info-text info-label">
+                        账户ID：
+                    </Col>
+                    <Col span={contentSpan} className="info-text">
+                        {userInfo && userInfo.id}
+                    </Col>
+                </Row>
                 <Row className="info-row">
                     <Col span={labelSpan} className="info-text info-label">
                         账户名称：

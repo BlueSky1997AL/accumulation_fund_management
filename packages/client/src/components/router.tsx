@@ -9,12 +9,14 @@ import { Card } from 'antd';
 import AccountCreateForm from './accountCreateForm';
 import AccountModificationForm from './accountModificationForm';
 import CommonWorkflow from './commonWorkflow';
+import EnterpriseSubUserRemoveWorkflow from './enterpriseSubUserRemoveWorkflow';
+import EnterpriseUserList from './enterpriseUserList';
 import Frame from './frame';
 import FundBackWorkflow from './fundBackWorkflow';
 import FundDrawWorkFlow from './fundDrawWorkflow';
 import FundRemitWorkflow from './fundRemitWorkflow';
+import UserAdminList from './userAdminList';
 import UserInfo from './userInfo';
-import UserList from './userList';
 import WorkflowFrame from './workflowFrame';
 import WorkOrderAudit from './workOrderAudit';
 import WorkOrderList from './workOrderList';
@@ -50,7 +52,7 @@ export default function () {
         switch (type) {
             case UserType.Admin: {
                 return [
-                    <Route key="/account/list" exact={true} path="/account/list" component={UserList} />,
+                    <Route key="/account/list" exact={true} path="/account/list" component={UserAdminList} />,
                     <Route key="/account/create" exact={true} path="/account/create" component={AccountCreateForm} />,
                     <Route
                         key="/account/:userID/edit"
@@ -102,6 +104,7 @@ export default function () {
             }
             case UserType.Enterprise: {
                 return [
+                    <Route key="/account/list" exact={true} path="/account/list" component={EnterpriseUserList} />,
                     <Route key="/account/freeze" exact={true} path="/account/freeze" component={FreezeWorkflow} />,
                     <Route
                         key="/account/unfreeze"
@@ -110,6 +113,13 @@ export default function () {
                         component={UnfreezeWorkflow}
                     />,
                     <Route key="/account/disable" exact={true} path="/account/disable" component={DisableWorkflow} />,
+                    <Route
+                        key="/account/enterprise/:userID/remove"
+                        path="/account/enterprise/:userID/remove"
+                        render={({ match }) => {
+                            return <EnterpriseSubUserRemoveWorkflow userID={match.params.userID} />;
+                        }}
+                    />,
                     <Route key="/work_order/mine" exact={true} path="/work_order/mine" component={MineWorkOrderList} />,
                     <Route
                         key="/work_order/:workOrderID/detail"

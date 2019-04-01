@@ -12,6 +12,14 @@ module.exports = {
                 camel2DashComponentName: false
             },
             'antd-pro'
+        ],
+        [
+            'import',
+            {
+                libraryName: 'lodash',
+                camel2DashComponentName: false
+            },
+            'lodash'
         ]
     ]
 };

@@ -7,14 +7,12 @@ import { Link } from 'react-router-dom';
 
 import { User, UserInDB, UserStatus, UserType } from '~server/app/util/interface/user';
 import { moneyToHumanReadable, userStatusToString, userTypeToString } from '~utils/user';
-import './index.less';
 
 import { MsgType } from '~server/app/util/interface/common';
 import { getAllUsers, updateUserStatus } from './request';
 
-function UserInfo () {
+function UserAdminList () {
     const [ allUsers, setAllUsers ] = useState<User[]>([]);
-    const [ subUsers ] = useState<User[]>([]);
 
     async function fetchAndSetAllUsers () {
         try {
@@ -47,30 +45,8 @@ function UserInfo () {
         }
     }
 
-    function getUserType () {
-        return window.userType as UserType;
-    }
-
-    function getDataSource () {
-        const userType = getUserType();
-        switch (userType) {
-            case UserType.Admin:
-                return allUsers;
-            case UserType.Enterprise:
-                return subUsers;
-            default:
-                return [];
-        }
-    }
-
     useEffect(() => {
-        const userType = getUserType();
-        switch (userType) {
-            case UserType.Admin: {
-                fetchAndSetAllUsers();
-                break;
-            }
-        }
+        fetchAndSetAllUsers();
     }, []);
 
     const linkStyle: React.CSSProperties = {
@@ -159,17 +135,17 @@ function UserInfo () {
     ] as ColumnProps<User>[];
 
     return (
-        <div className="user-info-container">
+        <div className="user-admin-list-container">
             <Card title={'账户列表'} bodyStyle={{ height: '100%', width: '100%' }}>
                 <Row type="flex" justify="end" align="middle" style={{ marginBottom: 20 }}>
                     <Button type="primary">
                         <Link to="/account/create">添加用户</Link>
                     </Button>
                 </Row>
-                <Table rowKey="_id" columns={columns} dataSource={getDataSource()} />
+                <Table rowKey="_id" columns={columns} dataSource={allUsers} />
             </Card>
         </div>
     );
 }
 
-export default UserInfo;
+export default UserAdminList;

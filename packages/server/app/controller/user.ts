@@ -67,7 +67,7 @@ export default class UserController extends Controller {
         const userInfo = (await ctx.model.User.findOne({ username })) as UserInDB;
         response.message = MsgType.OPT_SUCCESS;
         response.data = {
-            id: (userInfo as any)['_id'],
+            id: userInfo._id,
             username: userInfo.username,
             type: userInfo.type,
             status: userInfo.status,
@@ -77,10 +77,38 @@ export default class UserController extends Controller {
         ctx.body = response;
     }
 
+    public async getTargetUserInfo() {
+        const { ctx } = this;
+        const { username } = ctx.session;
+        const { userID } = ctx.query;
+
+        const response: ResponseData<UserInfoRespData | null> = {
+            message: MsgType.UNKNOWN_ERR,
+            data: null
+        };
+
+        const userInfo = (await ctx.model.User.findOne({ username })) as UserInDB;
+        if (userInfo.type !== UserType.Enterprise || (userInfo.subUser as string[]).indexOf(userID) === -1) {
+            response.message = MsgType.NO_PERMISSION;
+        } else {
+            const targetUserInfo = (await ctx.model.User.findOne({ _id: userID })) as UserInDB;
+            response.data = {
+                id: targetUserInfo._id,
+                username: targetUserInfo.username,
+                type: targetUserInfo.type,
+                status: targetUserInfo.status,
+                balance: targetUserInfo.balance
+            };
+            response.message = MsgType.OPT_SUCCESS;
+        }
+
+        ctx.body = response;
+    }
+
     public async getFullUserInfo() {
         const { ctx } = this;
         const { username } = ctx.session;
-        const { id } = ctx.queries;
+        const { id } = ctx.query;
 
         const response: ResponseData<UserInDB | null> = {
             message: MsgType.UNKNOWN_ERR,
@@ -115,6 +143,40 @@ export default class UserController extends Controller {
             const allUsers = (await ctx.model.User.find()) as UserInDB[];
             response.message = MsgType.OPT_SUCCESS;
             response.data = allUsers;
+        }
+
+        ctx.body = response;
+    }
+
+    public async getSubUserInfo() {
+        const { ctx } = this;
+        const { username } = ctx.session;
+
+        const response: ResponseData<UserInfoRespData[] | null> = {
+            message: MsgType.UNKNOWN_ERR,
+            data: null
+        };
+
+        const userInfo = (await ctx.model.User.findOne({ username })) as UserInDB;
+        if (userInfo.type !== UserType.Enterprise) {
+            response.message = MsgType.NO_PERMISSION;
+        } else {
+            const subsUserIDs = ((await ctx.model.User.findOne({ username })) as UserInDB).subUser as string[];
+            const retData = await Promise.all(
+                subsUserIDs.map(async userID => {
+                    const targetUserInfo = (await ctx.model.User.findOne({ _id: userID })) as UserInDB;
+                    return {
+                        id: targetUserInfo._id,
+                        username: targetUserInfo.username,
+                        type: targetUserInfo.type,
+                        status: targetUserInfo.status,
+                        balance: targetUserInfo.balance
+                    } as UserInfoRespData;
+                })
+            );
+
+            response.message = MsgType.OPT_SUCCESS;
+            response.data = retData;
         }
 
         ctx.body = response;

@@ -1,4 +1,4 @@
-import { Button, Card, Form, Icon, Input, InputNumber, notification, Upload } from 'antd';
+import { Button, Card, Form, Icon, Input, notification, Upload } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
 import Cookies from 'js-cookie';
 import React, { useState } from 'react';
@@ -79,6 +79,8 @@ function CommonWorkflow ({ workOrderType, form }: CommonWorkflowProps) {
                 return '新建冻结申请工单';
             case WorkOrderType.Unfreeze:
                 return '新建解除冻结申请工单';
+            case WorkOrderType.RemoveSubUser:
+                return '新建移除/转出子账户工单'
         }
     }
 
@@ -92,7 +94,6 @@ function CommonWorkflow ({ workOrderType, form }: CommonWorkflowProps) {
                             height: '100%',
                             padding: '16px 0'
                         }}
-                        className="login-form"
                     >
                         <Form.Item label="备注信息">
                             {getFieldDecorator('comments', {

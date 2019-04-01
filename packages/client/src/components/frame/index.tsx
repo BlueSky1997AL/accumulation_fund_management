@@ -162,7 +162,7 @@ function Frame ({ children }: FrameProps) {
                                 <Link to="/account/info">账户信息</Link>
                             </Menu.Item>
                             <Menu.Item key="/account/list">
-                                <Link to="/account/list">账户列表</Link>
+                                <Link to="/account/list">子账户列表</Link>
                             </Menu.Item>
                         </SubMenu>
                         <SubMenu

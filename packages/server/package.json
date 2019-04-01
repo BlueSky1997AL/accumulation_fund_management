@@ -26,10 +26,12 @@
         "egg-mongoose": "^3.1.1",
         "egg-scripts": "^2.6.0",
         "egg-view-nunjucks": "^2.2.0",
-        "fs-extra": "^7.0.1"
+        "fs-extra": "^7.0.1",
+        "lodash": "^4.17.11"
     },
     "devDependencies": {
         "@types/fs-extra": "^5.0.5",
+        "@types/lodash": "^4.14.123",
         "@types/mocha": "^2.2.40",
         "@types/node": "^7.0.12",
         "@types/supertest": "^2.0.0",

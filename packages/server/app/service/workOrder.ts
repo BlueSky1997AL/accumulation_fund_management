@@ -1,5 +1,6 @@
 import { Service } from 'egg';
 
+import { EnterpriseSubUserRemoveSubmitData } from '../../../client/src/components/enterpriseSubUserRemoveWorkflow';
 import { EnterpriseFundBackSubmitData } from '../../../client/src/components/fundBackWorkflow/enterpriseFundBackForm';
 import { PersonalFundBackSubmitData } from '../../../client/src/components/fundBackWorkflow/personalFundBackForm';
 import { PersonalFundDrawSubmitData } from '../../../client/src/components/fundDrawWorkflow/personalFundDrawForm';
@@ -31,6 +32,9 @@ export default class WorkOrderService extends Service {
             }
             case WorkOrderType.Unfreeze: {
                 return await this.execChangeUserStatus(workOrder);
+            }
+            case WorkOrderType.RemoveSubUser: {
+                return await this.execRemoveEnterpriseSubUser(workOrder);
             }
         }
         return null;
@@ -133,6 +137,26 @@ export default class WorkOrderService extends Service {
             }
 
             await ctx.model.User.update({ _id: owner }, { status: targetUserStatus });
+        }
+        return null;
+    }
+
+    public async execRemoveEnterpriseSubUser(workOrder: WorkOrder) {
+        const { ctx } = this;
+        const { payload, owner } = workOrder;
+        if (payload) {
+            const ownerInfo = (await ctx.model.User.findOne({ _id: owner })) as UserInDB;
+            const execData = JSON.parse(payload) as EnterpriseSubUserRemoveSubmitData;
+
+            const newSubUsers = (ownerInfo.subUser as string[])
+                .map(subUserID => {
+                    if (String(subUserID) !== execData.userID) {
+                        return subUserID;
+                    }
+                })
+                .filter(item => !!item) as string[];
+
+            await ctx.model.User.updateOne({ _id: owner }, { subUser: newSubUsers });
         }
         return null;
     }

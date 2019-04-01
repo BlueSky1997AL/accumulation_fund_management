@@ -15,6 +15,13 @@ export default (app: Application) => {
     router.get('/api/user/info', authCheckMiddleware, controller.user.getUserInfo);
     router.get('/api/user/full_info', authCheckMiddleware, userProtectionMiddleware, controller.user.getFullUserInfo);
     router.get('/api/user/all', authCheckMiddleware, userProtectionMiddleware, controller.user.getAllUserInfo);
+    router.get('/api/user/sub_users', authCheckMiddleware, userProtectionMiddleware, controller.user.getSubUserInfo);
+    router.get(
+        '/api/user/sub_user/info',
+        authCheckMiddleware,
+        userProtectionMiddleware,
+        controller.user.getTargetUserInfo
+    );
     router.post(
         '/api/user/update_status',
         authCheckMiddleware,
@@ -24,6 +31,12 @@ export default (app: Application) => {
     router.post('/api/user/update', authCheckMiddleware, userProtectionMiddleware, controller.user.updateUserInfo);
     router.post('/api/user/create', authCheckMiddleware, userProtectionMiddleware, controller.user.createUser);
     router.post('/api/user/lost', authCheckMiddleware, controller.user.handleUserLost);
+    router.post(
+        '/api/user/enterprise/remove',
+        authCheckMiddleware,
+        userProtectionMiddleware,
+        controller.workOrder.createEnterpriseSubUserRemoveWorkOrder
+    );
 
     router.post(
         '/api/work_order/fund/back/enterprise/create',

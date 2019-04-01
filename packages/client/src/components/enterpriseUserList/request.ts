@@ -4,9 +4,9 @@ import Cookies from 'js-cookie';
 import { UserInfoRespData } from '~server/app/controller/user';
 import { ResponseData } from '~server/app/util/interface/common';
 
-export async function userLost () {
+export async function getSubUsers () {
     const csrfToken = Cookies.get('csrfToken');
-    const resp = await axios.post<ResponseData<UserInfoRespData>>('/api/user/lost', null, {
+    const resp = await axios.get<ResponseData<UserInfoRespData[]>>('/api/user/sub_users', {
         headers: {
             'x-csrf-token': csrfToken
         }
