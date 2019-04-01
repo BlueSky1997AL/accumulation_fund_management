@@ -2,6 +2,7 @@ import { Exception } from 'ant-design-pro';
 import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
+import { UserType } from '~server/app/util/interface/user';
 import { WorkOrderType } from '~server/app/util/interface/workOrder';
 
 import { Card } from 'antd';
@@ -43,33 +44,49 @@ function DisableWorkflow () {
 }
 
 export default function () {
-    return (
-        <BrowserRouter basename="/web">
-            <Frame>
-                <Switch>
-                    <Route exact={true} path="/" component={UserInfo} />
-                    <Route exact={true} path="/account/info" component={UserInfo} />
-                    <Route exact={true} path="/account/list" component={UserList} />
-                    <Route exact={true} path="/account/create" component={AccountCreateForm} />
-                    <Route exact={true} path="/account/freeze" component={FreezeWorkflow} />
-                    <Route exact={true} path="/account/unfreeze" component={UnfreezeWorkflow} />
-                    <Route exact={true} path="/account/disable" component={DisableWorkflow} />
+    const userType = window.userType as UserType;
+
+    function getRoutesByUserType (type: UserType) {
+        switch (type) {
+            case UserType.Admin: {
+                return [
+                    <Route key="/account/list" exact={true} path="/account/list" component={UserList} />,
+                    <Route key="/account/create" exact={true} path="/account/create" component={AccountCreateForm} />,
                     <Route
+                        key="/account/:userID/edit"
                         path="/account/:userID/edit"
                         render={({ match }) => {
                             return <AccountModificationForm userID={match.params.userID} />;
                         }}
-                    />
-
-                    <Route exact={true} path="/work_order/audit" component={WorkOrderAuditList} />
-                    <Route exact={true} path="/work_order/mine" component={MineWorkOrderList} />
+                    />,
                     <Route
+                        key="/work_order/audit"
+                        exact={true}
+                        path="/work_order/audit"
+                        component={WorkOrderAuditList}
+                    />,
+                    <Route
+                        key="/work_order/:workOrderID/audit"
                         path="/work_order/:workOrderID/audit"
                         render={({ match }) => {
                             return <WorkOrderAudit workOrderID={match.params.workOrderID} />;
                         }}
                     />
+                ];
+            }
+            case UserType.Common: {
+                return [
+                    <Route key="/account/freeze" exact={true} path="/account/freeze" component={FreezeWorkflow} />,
                     <Route
+                        key="/account/unfreeze"
+                        exact={true}
+                        path="/account/unfreeze"
+                        component={UnfreezeWorkflow}
+                    />,
+                    <Route key="/account/disable" exact={true} path="/account/disable" component={DisableWorkflow} />,
+                    <Route key="/work_order/mine" exact={true} path="/work_order/mine" component={MineWorkOrderList} />,
+                    <Route
+                        key="/work_order/:workOrderID/detail"
                         path="/work_order/:workOrderID/detail"
                         render={({ match }) => {
                             return (
@@ -78,14 +95,49 @@ export default function () {
                                 </Card>
                             );
                         }}
-                    />
+                    />,
+                    <Route key="/fund/back" exact={true} path="/fund/back" component={FundBackWorkflow} />,
+                    <Route key="/fund/draw" exact={true} path="/fund/draw" component={FundDrawWorkFlow} />
+                ];
+            }
+            case UserType.Enterprise: {
+                return [
+                    <Route key="/account/freeze" exact={true} path="/account/freeze" component={FreezeWorkflow} />,
+                    <Route
+                        key="/account/unfreeze"
+                        exact={true}
+                        path="/account/unfreeze"
+                        component={UnfreezeWorkflow}
+                    />,
+                    <Route key="/account/disable" exact={true} path="/account/disable" component={DisableWorkflow} />,
+                    <Route key="/work_order/mine" exact={true} path="/work_order/mine" component={MineWorkOrderList} />,
+                    <Route
+                        key="/work_order/:workOrderID/detail"
+                        path="/work_order/:workOrderID/detail"
+                        render={({ match }) => {
+                            return (
+                                <Card title="工单详情">
+                                    <WorkflowFrame workOrderID={match.params.workOrderID} />
+                                </Card>
+                            );
+                        }}
+                    />,
+                    <Route key="/fund/remit" exact={true} path="/fund/remit" component={FundRemitWorkflow} />,
+                    <Route key="/fund/back" exact={true} path="/fund/back" component={FundBackWorkflow} />
+                ];
+            }
+        }
+        return null;
+    }
 
-                    <Route exact={true} path="/fund/remit" component={FundRemitWorkflow} />
-                    <Route exact={true} path="/fund/back" component={FundBackWorkflow} />
-                    <Route exact={true} path="/fund/draw" component={FundDrawWorkFlow} />
-                    {/* <Route exact={true} path="/fund/in_out" component={Page404} /> */}
+    return (
+        <BrowserRouter basename="/web">
+            <Frame>
+                <Switch>
+                    <Route exact={true} path="/" component={UserInfo} />
+                    <Route exact={true} path="/account/info" component={UserInfo} />
 
-                    {/* <Route exact={true} path="/record/trace" component={Page404} /> */}
+                    {getRoutesByUserType(userType)}
 
                     <Route component={Page404} />
                 </Switch>
