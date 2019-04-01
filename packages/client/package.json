@@ -8,7 +8,7 @@
         "analyzer": "webpack --mode production --env.analyzer",
         "dev": "webpack --mode development --watch",
         "dev_server": "http-server dist",
-        "lint": "tslint --fix '**/*.ts*'"
+        "lint": "tslint -c '../../tslint.json' --fix '**/*.ts*'"
     },
     "author": "liubingnan",
     "license": "ISC",
