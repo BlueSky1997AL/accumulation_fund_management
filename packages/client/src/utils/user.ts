@@ -8,6 +8,8 @@ export function userTypeToString (userType?: UserType) {
             return '企业账户';
         case UserType.Common:
             return '个人账户';
+        case UserType.Guest:
+            return '访客账户';
         default:
             return '未知账户类型';
     }

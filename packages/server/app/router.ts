@@ -4,13 +4,14 @@ export default (app: Application) => {
     const { controller, router, middleware } = app;
     const authCheckMiddleware = middleware.authCheck();
     const userProtectionMiddleware = middleware.userProtection();
-    const fileAPIProtectionMiddleware = middleware.fileAPIProtection();
 
     router.get(/\/web|\/web\/*/, authCheckMiddleware, controller.home.index);
     router.get('/login', controller.home.login);
+    router.get('/signup', controller.home.signup);
 
     router.post('/api/login', controller.user.login);
     router.post('/api/logout', authCheckMiddleware, controller.user.logout);
+    router.post('/api/signup', controller.workOrder.createSignUpWorkOrder);
 
     router.get('/api/user/info', authCheckMiddleware, controller.user.getUserInfo);
     router.get('/api/user/full_info', authCheckMiddleware, userProtectionMiddleware, controller.user.getFullUserInfo);
@@ -94,13 +95,8 @@ export default (app: Application) => {
         controller.workOrder.createEnterpriseSubUserAddWorkOrder
     );
 
-    router.post('/api/file/upload', authCheckMiddleware, fileAPIProtectionMiddleware, controller.file.upload);
-    router.get(
-        '/api/file/content/:fileID',
-        authCheckMiddleware,
-        fileAPIProtectionMiddleware,
-        controller.file.getFileContent
-    );
+    router.post('/api/file/upload', controller.file.upload);
+    router.get('/api/file/content/:fileID', controller.file.getFileContent);
 
     // 测试专用接口，上线前应清除
     router.get('/api/test', app.controller.home.test);

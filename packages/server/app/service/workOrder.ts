@@ -6,6 +6,7 @@ import { EnterpriseFundBackSubmitData } from '../../../client/src/components/fun
 import { PersonalFundBackSubmitData } from '../../../client/src/components/fundBackWorkflow/personalFundBackForm';
 import { PersonalFundDrawSubmitData } from '../../../client/src/components/fundDrawWorkflow/personalFundDrawForm';
 import { EnterpriseFundRemitSubmitData } from '../../../client/src/components/fundRemitWorkflow/enterpriseFundRemitForm';
+import { SignUpSubmitData } from '../../../client/src/components/signup';
 import { MsgType } from '../util/interface/common';
 import { UserInDB, UserStatus } from '../util/interface/user';
 import { WorkOrder, WorkOrderType } from '../util/interface/workOrder';
@@ -39,6 +40,9 @@ export default class WorkOrderService extends Service {
             }
             case WorkOrderType.AddSubUser: {
                 return await this.execAddEnterpriseSubUser(workOrder);
+            }
+            case WorkOrderType.SignUp: {
+                return await this.execSignUp(workOrder);
             }
         }
         return null;
@@ -182,6 +186,28 @@ export default class WorkOrderService extends Service {
             const newSubUsers = [ ...(ownerInfo.subUser as string[]), ...newSubUserIDs ];
 
             await ctx.model.User.updateOne({ _id: owner }, { subUser: newSubUsers });
+        }
+        return null;
+    }
+
+    public async execSignUp(workOrder: WorkOrder) {
+        const { ctx } = this;
+        const { payload } = workOrder;
+        if (payload) {
+            const execData = JSON.parse(payload) as SignUpSubmitData;
+
+            try {
+                await ctx.model.User.create({
+                    username: execData.username,
+                    password: execData.password,
+                    type: execData.type,
+                    status: UserStatus.Normal,
+                    balance: execData.balance
+                });
+            } catch (error) {
+                ctx.logger.error(error);
+                return MsgType.OPT_FAILED;
+            }
         }
         return null;
     }

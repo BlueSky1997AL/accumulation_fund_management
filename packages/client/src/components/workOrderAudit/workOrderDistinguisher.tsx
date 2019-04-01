@@ -8,6 +8,7 @@ import EnterpriseSubUserAdd from './workOrderTypes/enterpriseSubUserAdd';
 import EnterpriseSubUserRemove from './workOrderTypes/enterpriseSubUserRemove';
 import PersonalFundBack from './workOrderTypes/personalFundBack';
 import PersonalFundDraw from './workOrderTypes/personalFundDraw';
+import SignUp from './workOrderTypes/signup';
 
 export default function (contentSpan: number, labelSpan: number, jsonStr?: string, workOrderType?: WorkOrderType) {
     switch (workOrderType) {
@@ -29,6 +30,8 @@ export default function (contentSpan: number, labelSpan: number, jsonStr?: strin
             return <EnterpriseSubUserRemove contentSpan={contentSpan} labelSpan={labelSpan} jsonStr={jsonStr} />;
         case WorkOrderType.AddSubUser:
             return <EnterpriseSubUserAdd contentSpan={contentSpan} labelSpan={labelSpan} jsonStr={jsonStr} />;
+        case WorkOrderType.SignUp:
+            return <SignUp contentSpan={contentSpan} labelSpan={labelSpan} jsonStr={jsonStr} />;
         default:
             return null;
     }

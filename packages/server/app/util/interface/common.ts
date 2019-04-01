@@ -8,6 +8,7 @@ export enum MsgType {
     INCORRECT_USERNAME = '用户名不存在',
     INCORRECT_PASSWORD = '密码错误',
 
+    USERNAME_EXISTS = '用户名已存在',
     OPT_SUCCESS = '操作成功',
     OPT_FAILED = '操作失败',
     UNAUTHORIZED = '未授权',

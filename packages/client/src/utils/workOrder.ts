@@ -35,6 +35,8 @@ export function workOrderTypeToString (workOrderType?: WorkOrderType) {
             return '移除子账户';
         case WorkOrderType.AddSubUser:
             return '添加子账户';
+        case WorkOrderType.SignUp:
+            return '账户创建';
         default:
             return '未知工单类型';
     }

@@ -131,7 +131,7 @@ function AccountModificationForm ({ userID, form, history }: AccountModification
                         {getFieldDecorator('password', {
                             initialValue: fullUserInfo && fullUserInfo.password,
                             rules: [ { required: true, message: '密码不能为空' } ]
-                        })(<Input />)}
+                        })(<Input type="password" />)}
                     </Form.Item>
                     <Form.Item label="账户类型">
                         {getFieldDecorator('type', {

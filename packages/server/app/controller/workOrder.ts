@@ -9,6 +9,7 @@ import { EnterpriseFundBackSubmitData } from '../../../client/src/components/fun
 import { PersonalFundBackSubmitData } from '../../../client/src/components/fundBackWorkflow/personalFundBackForm';
 import { PersonalFundDrawSubmitData } from '../../../client/src/components/fundDrawWorkflow/personalFundDrawForm';
 import { EnterpriseFundRemitSubmitData } from '../../../client/src/components/fundRemitWorkflow/enterpriseFundRemitForm';
+import { SignUpSubmitData } from '../../../client/src/components/signup';
 import { MsgType, ResponseData } from '../util/interface/common';
 import { User, UserInDB, UserType } from '../util/interface/user';
 import {
@@ -590,6 +591,53 @@ export default class WorkOrderController extends Controller {
                 ctx.logger.error(error);
                 response.message = MsgType.OPT_FAILED;
             }
+        }
+        ctx.body = response;
+    }
+
+    public async createSignUpWorkOrder() {
+        const { ctx } = this;
+        const { username, password, type, balance, comments, accessory } = ctx.request.body as SignUpSubmitData;
+
+        const response: ResponseData<WorkOrder | null> = {
+            message: MsgType.UNKNOWN_ERR,
+            data: null
+        };
+
+        if (type === UserType.Common || type === UserType.Enterprise) {
+            const isUserExists = (await ctx.model.User.findOne({ username })) as UserInDB;
+            if (isUserExists) {
+                response.message = MsgType.USERNAME_EXISTS;
+                ctx.body = response;
+                return;
+            }
+
+            const payload = JSON.stringify({ username, password, type, balance, comments, accessory });
+            const guestAccount = await ctx.service.user.getGuestAccount();
+            const workOrder: WorkOrder = {
+                status: WorkOrderStatus.Open,
+                type: WorkOrderType.SignUp,
+                owner: guestAccount._id,
+                payload
+            };
+
+            try {
+                const createdDoc = await ctx.model.WorkOrder.create(workOrder);
+                if (guestAccount.workOrders) {
+                    guestAccount.workOrders.push(createdDoc._id);
+                } else {
+                    guestAccount.workOrders = [ createdDoc._id ];
+                }
+                await ctx.model.User.update({ _id: guestAccount._id }, guestAccount);
+
+                response.message = MsgType.OPT_SUCCESS;
+                response.data = createdDoc;
+            } catch (error) {
+                ctx.logger.error(error);
+                response.message = MsgType.OPT_FAILED;
+            }
+        } else {
+            response.message = MsgType.ILLEGAL_ARGS;
         }
         ctx.body = response;
     }

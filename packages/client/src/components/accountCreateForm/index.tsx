@@ -115,7 +115,7 @@ function AccountCreateForm ({ form, history }: AccountModificationProps) {
                     <Form.Item label="密码">
                         {getFieldDecorator('password', {
                             rules: [ { required: true, message: '密码不能为空' } ]
-                        })(<Input />)}
+                        })(<Input type="password" />)}
                     </Form.Item>
                     <Form.Item label="账户类型">
                         {getFieldDecorator('type', {

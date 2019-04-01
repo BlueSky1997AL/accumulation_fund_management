@@ -18,7 +18,8 @@ export interface UserInDB extends User {
 export enum UserType {
     Admin,
     Common,
-    Enterprise
+    Enterprise,
+    Guest
 }
 
 export enum UserStatus {

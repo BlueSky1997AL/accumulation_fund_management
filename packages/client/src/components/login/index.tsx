@@ -1,4 +1,4 @@
-import { Button, Card, Form, Icon, Input, notification } from 'antd';
+import { Button, Card, Form, Icon, Input, notification, Row } from 'antd';
 import React from 'react';
 
 import './index.less';
@@ -36,7 +36,7 @@ function LoginView (props: FormComponentProps) {
 
     return (
         <div className="login-container">
-            <Card title="登陆" style={{ width: 350, height: 290 }} bodyStyle={{ height: '100%', width: '100%' }}>
+            <Card title="登陆" style={{ width: 350 }} bodyStyle={{ height: '100%', width: '100%' }}>
                 <Form
                     style={{
                         width: '100%',
@@ -71,6 +71,9 @@ function LoginView (props: FormComponentProps) {
                             登陆
                         </Button>
                     </Form.Item>
+                    <Row type="flex" justify="end" align="middle">
+                        <a href="/signup">创建账户</a>
+                    </Row>
                 </Form>
             </Card>
         </div>
