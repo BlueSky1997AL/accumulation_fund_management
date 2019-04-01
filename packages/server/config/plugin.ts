@@ -1,4 +1,5 @@
 import { EggPlugin } from 'egg';
+import 'tsconfig-paths/register';
 
 const plugin: EggPlugin = {
     // static: true,

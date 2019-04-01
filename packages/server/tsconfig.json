@@ -12,8 +12,6 @@
         "allowJs": false,
         "pretty": true,
         "noEmitOnError": false,
-        "noUnusedLocals": true,
-        "noUnusedParameters": true,
         "allowUnreachableCode": false,
         "allowUnusedLabels": false,
         "allowSyntheticDefaultImports": true,
@@ -23,7 +21,29 @@
         "skipLibCheck": true,
         "skipDefaultLibCheck": true,
         "inlineSourceMap": true,
-        "importHelpers": true
+        "importHelpers": true,
+        "baseUrl": "../client",
+        "paths": {
+            "~containers/*": [
+                "./src/containers/*"
+            ],
+            "~components/*": [
+                "./src/components/*"
+            ],
+            "~static/*": [
+                "./src/static/*"
+            ],
+            "~utils/*": [
+                "./src/utils/*"
+            ],
+            "~server/*": [
+                "../server/*"
+            ]
+        }
     },
-    "exclude": ["app/public", "app/views", "node_modules*"]
+    "exclude": [
+        "app/public",
+        "app/views",
+        "node_modules*"
+    ]
 }
