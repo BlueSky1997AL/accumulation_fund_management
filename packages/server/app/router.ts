@@ -87,6 +87,12 @@ export default (app: Application) => {
         userProtectionMiddleware,
         controller.workOrder.handleWorkOrder
     );
+    router.post(
+        '/api/work_order/account/enterprise/subuser/add',
+        authCheckMiddleware,
+        userProtectionMiddleware,
+        controller.workOrder.createEnterpriseSubUserAddWorkOrder
+    );
 
     router.post('/api/file/upload', authCheckMiddleware, fileAPIProtectionMiddleware, controller.file.upload);
     router.get(

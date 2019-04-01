@@ -1,5 +1,6 @@
 import { Service } from 'egg';
 
+import { EnterpriseSubUserAddSubmitData } from '../../../client/src/components/enterpriseSubUserAddWorkflow/enterpriseSubUserAddForm';
 import { EnterpriseSubUserRemoveSubmitData } from '../../../client/src/components/enterpriseSubUserRemoveWorkflow';
 import { EnterpriseFundBackSubmitData } from '../../../client/src/components/fundBackWorkflow/enterpriseFundBackForm';
 import { PersonalFundBackSubmitData } from '../../../client/src/components/fundBackWorkflow/personalFundBackForm';
@@ -35,6 +36,9 @@ export default class WorkOrderService extends Service {
             }
             case WorkOrderType.RemoveSubUser: {
                 return await this.execRemoveEnterpriseSubUser(workOrder);
+            }
+            case WorkOrderType.AddSubUser: {
+                return await this.execAddEnterpriseSubUser(workOrder);
             }
         }
         return null;
@@ -155,6 +159,27 @@ export default class WorkOrderService extends Service {
                     }
                 })
                 .filter(item => !!item) as string[];
+
+            await ctx.model.User.updateOne({ _id: owner }, { subUser: newSubUsers });
+        }
+        return null;
+    }
+
+    public async execAddEnterpriseSubUser(workOrder: WorkOrder) {
+        const { ctx } = this;
+        const { payload, owner } = workOrder;
+        if (payload) {
+            const ownerInfo = (await ctx.model.User.findOne({ _id: owner })) as UserInDB;
+            const execData = JSON.parse(payload) as EnterpriseSubUserAddSubmitData;
+
+            const newSubUserIDs = await Promise.all(
+                execData.usernames.map(async username => {
+                    const targetUserInfo = (await ctx.model.User.findOne({ username })) as UserInDB;
+                    return targetUserInfo._id;
+                })
+            );
+
+            const newSubUsers = [ ...(ownerInfo.subUser as string[]), ...newSubUserIDs ];
 
             await ctx.model.User.updateOne({ _id: owner }, { subUser: newSubUsers });
         }

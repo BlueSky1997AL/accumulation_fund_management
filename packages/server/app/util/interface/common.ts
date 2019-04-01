@@ -19,5 +19,6 @@ export enum MsgType {
     OPT_ILLEGAL = '操作非法',
     INSUFFICIENT_BALANCE = '余额不足',
     OPT_NOT_ALLOWED = '当前用户状态不允许该操作',
-    USER_DISABLED = '该账号已被注销'
+    USER_DISABLED = '该账号已被注销',
+    ALREADY_IN_SUB_USERS = '目标账号已存在于当前账号的子账号中'
 }

@@ -45,7 +45,8 @@ export enum WorkOrderType {
     DisableOrExport,
     Freeze,
     Unfreeze,
-    RemoveSubUser
+    RemoveSubUser,
+    AddSubUser
 }
 
 export enum AuditOperationType {

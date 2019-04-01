@@ -3,6 +3,7 @@
 import { Controller } from 'egg';
 
 import { CommonWorkOrderSubmitData } from '../../../client/src/components/commonWorkflow';
+import { EnterpriseSubUserAddSubmitData } from '../../../client/src/components/enterpriseSubUserAddWorkflow/enterpriseSubUserAddForm';
 import { EnterpriseSubUserRemoveSubmitData } from '../../../client/src/components/enterpriseSubUserRemoveWorkflow';
 import { EnterpriseFundBackSubmitData } from '../../../client/src/components/fundBackWorkflow/enterpriseFundBackForm';
 import { PersonalFundBackSubmitData } from '../../../client/src/components/fundBackWorkflow/personalFundBackForm';
@@ -13,6 +14,7 @@ import { User, UserInDB, UserType } from '../util/interface/user';
 import {
     AuditOperationType,
     WorkOrder,
+    WorkOrderInDB,
     WorkOrderStatus,
     WorkOrderType,
     WorkOrderWithUserInfo
@@ -235,6 +237,8 @@ export default class WorkOrderController extends Controller {
                 }
             } else {
                 response.message = MsgType.ILLEGAL_ARGS;
+                ctx.body = response;
+                return;
             }
 
             const payload = JSON.stringify({ amountMap, comments, accessory });
@@ -358,6 +362,8 @@ export default class WorkOrderController extends Controller {
                 }
             } else {
                 response.message = MsgType.ILLEGAL_ARGS;
+                ctx.body = response;
+                return;
             }
 
             const payload = JSON.stringify({ amountMap, comments, accessory });
@@ -504,6 +510,84 @@ export default class WorkOrderController extends Controller {
                 response.data = createdDoc;
             } catch (error) {
                 console.error(error);
+                response.message = MsgType.OPT_FAILED;
+            }
+        }
+        ctx.body = response;
+    }
+
+    public async createEnterpriseSubUserAddWorkOrder() {
+        const { ctx } = this;
+        const { usernames, comments, accessory } = ctx.request.body as EnterpriseSubUserAddSubmitData;
+        const { username } = ctx.session;
+
+        const response: ResponseData<WorkOrder | null> = {
+            message: MsgType.UNKNOWN_ERR,
+            data: null
+        };
+
+        const userInfo = (await ctx.model.User.findOne({ username })) as UserInDB;
+        if (userInfo.type !== UserType.Enterprise) {
+            response.message = MsgType.NO_PERMISSION;
+        } else {
+            if (usernames && Array.isArray(usernames)) {
+                try {
+                    await Promise.all(
+                        usernames.map(async targetUsername => {
+                            const targetUserInfo = (await ctx.model.User.findOne({
+                                username: targetUsername
+                            })) as UserInDB;
+                            if (!targetUserInfo) {
+                                throw new Error(MsgType.USER_NOT_DOUND);
+                            }
+                            (userInfo.subUser as string[]).some(subUserID => {
+                                if (String(targetUserInfo._id) === String(subUserID)) {
+                                    throw new Error(MsgType.ALREADY_IN_SUB_USERS);
+                                }
+                                return true;
+                            });
+                        })
+                    );
+                } catch (error) {
+                    if (error.message === MsgType.USER_NOT_DOUND) {
+                        response.message = MsgType.USER_NOT_DOUND;
+                        ctx.body = response;
+                        return;
+                    }
+                    if (error.message === MsgType.ALREADY_IN_SUB_USERS) {
+                        response.message = MsgType.ALREADY_IN_SUB_USERS;
+                        ctx.body = response;
+                        return;
+                    }
+                    throw new Error(error);
+                }
+            } else {
+                response.message = MsgType.ILLEGAL_ARGS;
+                ctx.body = response;
+                return;
+            }
+
+            const payload = JSON.stringify({ usernames, comments, accessory });
+            const workOrder: WorkOrder = {
+                status: WorkOrderStatus.Open,
+                type: WorkOrderType.AddSubUser,
+                owner: userInfo._id,
+                payload
+            };
+
+            try {
+                const createdDoc = (await ctx.model.WorkOrder.create(workOrder)) as WorkOrderInDB;
+                if (userInfo.workOrders) {
+                    userInfo.workOrders.push(createdDoc._id);
+                } else {
+                    userInfo.workOrders = [ createdDoc._id ];
+                }
+                await ctx.model.User.update({ _id: userInfo._id }, userInfo);
+
+                response.message = MsgType.OPT_SUCCESS;
+                response.data = createdDoc;
+            } catch (error) {
+                ctx.logger.error(error);
                 response.message = MsgType.OPT_FAILED;
             }
         }

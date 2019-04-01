@@ -91,7 +91,7 @@ function EnterpriseUserList () {
             <Card title={'账户列表'} bodyStyle={{ height: '100%', width: '100%' }}>
                 <Row type="flex" justify="end" align="middle" style={{ marginBottom: 20 }}>
                     <Button type="primary">
-                        <Link to="/account/create">添加用户</Link>
+                        <Link to="/account/enterprise/create">添加用户</Link>
                     </Button>
                 </Row>
                 <Table rowKey="_id" columns={columns} dataSource={subUsers} />

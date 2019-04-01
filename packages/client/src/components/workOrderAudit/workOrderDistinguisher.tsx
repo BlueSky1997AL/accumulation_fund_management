@@ -4,6 +4,7 @@ import { WorkOrderType } from '~server/app/util/interface/workOrder';
 import CommonWorkOrder from './workOrderTypes/commonWorkOrder';
 import EnterpriseFundBack from './workOrderTypes/enterpriseFundBack';
 import EnterpriseFundRemit from './workOrderTypes/enterpriseFundRemit';
+import EnterpriseSubUserAdd from './workOrderTypes/enterpriseSubUserAdd';
 import EnterpriseSubUserRemove from './workOrderTypes/enterpriseSubUserRemove';
 import PersonalFundBack from './workOrderTypes/personalFundBack';
 import PersonalFundDraw from './workOrderTypes/personalFundDraw';
@@ -26,6 +27,8 @@ export default function (contentSpan: number, labelSpan: number, jsonStr?: strin
             return <CommonWorkOrder contentSpan={contentSpan} labelSpan={labelSpan} jsonStr={jsonStr} />;
         case WorkOrderType.RemoveSubUser:
             return <EnterpriseSubUserRemove contentSpan={contentSpan} labelSpan={labelSpan} jsonStr={jsonStr} />;
+        case WorkOrderType.AddSubUser:
+            return <EnterpriseSubUserAdd contentSpan={contentSpan} labelSpan={labelSpan} jsonStr={jsonStr} />;
         default:
             return null;
     }

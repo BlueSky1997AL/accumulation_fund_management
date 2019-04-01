@@ -9,6 +9,7 @@ import { Card } from 'antd';
 import AccountCreateForm from './accountCreateForm';
 import AccountModificationForm from './accountModificationForm';
 import CommonWorkflow from './commonWorkflow';
+import EnterpriseSubUserAddWorkflow from './enterpriseSubUserAddWorkflow';
 import EnterpriseSubUserRemoveWorkflow from './enterpriseSubUserRemoveWorkflow';
 import EnterpriseUserList from './enterpriseUserList';
 import Frame from './frame';
@@ -119,6 +120,12 @@ export default function () {
                         render={({ match }) => {
                             return <EnterpriseSubUserRemoveWorkflow userID={match.params.userID} />;
                         }}
+                    />,
+                    <Route
+                        key="/account/enterprise/create"
+                        exact={true}
+                        path="/account/enterprise/create"
+                        component={EnterpriseSubUserAddWorkflow}
                     />,
                     <Route key="/work_order/mine" exact={true} path="/work_order/mine" component={MineWorkOrderList} />,
                     <Route
