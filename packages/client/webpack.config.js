@@ -19,7 +19,7 @@ module.exports = (env, argv) => {
         entry: {},
         output: {
             filename: isProdMode ? '[name].[chunkhash].js' : '[name].js',
-            publicPath: '/static/',
+            publicPath: isProdMode ? '//alsu-storage.b0.upaiyun.com/public/' : '/static/',
             path: path.resolve(__dirname, `../server/app/public`)
         },
         plugins: [
