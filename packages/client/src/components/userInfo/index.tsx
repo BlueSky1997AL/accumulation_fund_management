@@ -1,14 +1,15 @@
-import { Card, Col, Divider, Icon, notification, Row } from 'antd';
+import { Card, Col, Divider, Icon, notification, Popconfirm, Row } from 'antd';
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 import './index.less';
 
 import { UserInfoRespData } from '~server/app/controller/user';
 import { MsgType } from '~server/app/util/interface/common';
 
-import { UserType } from '~server/app/util/interface/user';
+import { UserStatus, UserType } from '~server/app/util/interface/user';
 import { moneyToHumanReadable, userStatusToString, userTypeToString } from '~utils/user';
-import { getUserInfo } from './request';
+import { getUserInfo, userLost } from './request';
 
 function UserInfo () {
     const [ userInfo, setUserInfo ] = useState<UserInfoRespData>();
@@ -27,58 +28,102 @@ function UserInfo () {
         }
     }
 
+    async function handleUserLost () {
+        try {
+            const resp = await userLost();
+            if (resp.message !== MsgType.OPT_SUCCESS) {
+                throw new Error(resp.message);
+            }
+            fetchUserInfo();
+        } catch (error) {
+            notification.error({
+                message: (error as Error).message
+            });
+        }
+    }
+
     useEffect(() => {
         fetchUserInfo();
     }, []);
 
     function getAccountOperations () {
         if (userInfo && userInfo.type !== UserType.Admin) {
-            return [
-                <Divider key="diviver" style={{ marginTop: 35 }} orientation="left">
-                    账号操作
-                </Divider>,
-                <Card key="operation-cards">
-                    <Card.Grid style={cardGridStyle}>
-                        <div
-                            className="card-grid-button"
-                            onClick={() => {
-                                console.log('hello');
-                            }}
-                        >
-                            <Icon style={opIconStyle} type="disconnect" />
-                            <span>挂失</span>
-                        </div>
-                    </Card.Grid>
-                    <Card.Grid style={cardGridStyle}>
-                        <div
-                            className="card-grid-button"
-                            onClick={() => {
-                                console.log('hello');
-                            }}
-                        >
-                            <Icon style={opIconStyle} type="lock" />
-                            <span>冻结</span>
-                        </div>
-                    </Card.Grid>
-                    <Card.Grid style={cardGridStyle}>
-                        <div
-                            className="card-grid-button"
-                            onClick={() => {
-                                console.log('hello');
-                            }}
-                        >
-                            <Icon style={opIconStyle} type="delete" />
-                            <span>销户/转出</span>
-                        </div>
-                    </Card.Grid>
-                </Card>
-            ];
+            switch (userInfo.status) {
+                case UserStatus.Normal: {
+                    return [
+                        <Divider key="diviver" style={{ marginTop: 35 }} orientation="left">
+                            账号操作
+                        </Divider>,
+                        <Card key="operation-cards">
+                            <Card.Grid style={cardGridStyle}>
+                                <Popconfirm title="确认要挂失该账户？" onConfirm={() => handleUserLost()}>
+                                    <div
+                                        className="card-grid-button"
+                                        onClick={() => {
+                                            console.log('hello');
+                                        }}
+                                    >
+                                        <Icon style={opIconStyle} type="disconnect" />
+                                        <span>挂失</span>
+                                    </div>
+                                </Popconfirm>
+                            </Card.Grid>
+                            <Card.Grid style={cardGridStyle}>
+                                <Link className="card-grid-button" to="/account/freeze">
+                                    <Icon style={opIconStyle} type="lock" />
+                                    <span>冻结</span>
+                                </Link>
+                            </Card.Grid>
+                            <Card.Grid style={cardGridStyle}>
+                                <Link className="card-grid-button" to="/account/disable">
+                                    <Icon style={opIconStyle} type="delete" />
+                                    <span>销户/转出</span>
+                                </Link>
+                            </Card.Grid>
+                        </Card>
+                    ];
+                }
+                case UserStatus.Frozen: {
+                    return [
+                        <Divider key="diviver" style={{ marginTop: 35 }} orientation="left">
+                            账号操作
+                        </Divider>,
+                        <Card key="operation-cards">
+                            <Card.Grid style={cardGridStyle}>
+                                <Popconfirm title="确认要挂失该账户？" onConfirm={() => handleUserLost()}>
+                                    <div
+                                        className="card-grid-button"
+                                        onClick={() => {
+                                            console.log('hello');
+                                        }}
+                                    >
+                                        <Icon style={opIconStyle} type="disconnect" />
+                                        <span>挂失</span>
+                                    </div>
+                                </Popconfirm>
+                            </Card.Grid>
+                            <Card.Grid style={cardGridStyle}>
+                                <Link className="card-grid-button" to="/account/unfreeze">
+                                    <Icon style={opIconStyle} type="lock" />
+                                    <span>解除冻结</span>
+                                </Link>
+                            </Card.Grid>
+                            <Card.Grid style={cardGridStyle}>
+                                <Link className="card-grid-button" to="/account/disable">
+                                    <Icon style={opIconStyle} type="delete" />
+                                    <span>销户/转出</span>
+                                </Link>
+                            </Card.Grid>
+                        </Card>
+                    ];
+                }
+            }
         }
         return null;
     }
 
     function getBalanceRow () {
-        if (userInfo && userInfo.type !== UserType.Admin) {
+        if (userInfo && userInfo.type !== UserType.Admin && userInfo.status !== UserStatus.Lost) {
             return (
                 <Row className="info-row">
                     <Col span={labelSpan} className="info-text info-label">

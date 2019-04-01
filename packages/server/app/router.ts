@@ -23,6 +23,7 @@ export default (app: Application) => {
     );
     router.post('/api/user/update', authCheckMiddleware, userProtectionMiddleware, controller.user.updateUserInfo);
     router.post('/api/user/create', authCheckMiddleware, userProtectionMiddleware, controller.user.createUser);
+    router.post('/api/user/lost', authCheckMiddleware, controller.user.handleUserLost);
 
     router.post(
         '/api/work_order/fund/back/enterprise/create',

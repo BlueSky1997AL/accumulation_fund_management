@@ -211,4 +211,23 @@ export default class UserController extends Controller {
 
         ctx.body = response;
     }
+
+    public async handleUserLost() {
+        const { ctx } = this;
+        const { username } = ctx.session;
+
+        const response: ResponseData<null> = {
+            message: MsgType.UNKNOWN_ERR,
+            data: null
+        };
+
+        try {
+            await ctx.model.User.updateOne({ username }, { status: UserStatus.Lost });
+            response.message = MsgType.OPT_SUCCESS;
+        } catch (error) {
+            ctx.logger.error(error);
+        }
+
+        ctx.body = response;
+    }
 }

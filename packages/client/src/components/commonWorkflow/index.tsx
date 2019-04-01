@@ -74,7 +74,7 @@ function CommonWorkflow ({ workOrderType, form }: CommonWorkflowProps) {
     function getWorkOrderTitle () {
         switch (workOrderType) {
             case WorkOrderType.DisableOrExport:
-                return '新建注销/转出申请工单';
+                return '新建销户/转出申请工单';
             case WorkOrderType.Freeze:
                 return '新建冻结申请工单';
             case WorkOrderType.Unfreeze:
