@@ -43,7 +43,7 @@ export default class FileController extends Controller {
 
         if (fileInfo) {
             ctx.response.type = fileInfo.mime;
-            ctx.set('Content-Disposition', `attachment;filename="${fileInfo.filename}"`);
+            ctx.attachment(fileInfo.filename);
             ctx.body = fileInfo.content;
         } else {
             response.message = MsgType.FILE_NOT_FOUND;

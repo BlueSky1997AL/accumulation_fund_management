@@ -20,12 +20,6 @@ export default (appInfo: EggAppInfo) => {
         }
     };
 
-    // config.security = {
-    //     csrf: {
-    //         enable: false
-    //     }
-    // }
-
     config.mongoose = {
         client: {
             url: 'mongodb://127.0.0.1:27017/afm',
@@ -34,7 +28,8 @@ export default (appInfo: EggAppInfo) => {
     };
 
     config.multipart = {
-        mode: 'file'
+        mode: 'file',
+        fileExtensions: [ '.rar', '.iso', '.doc', '.docx', '.ppt', '.pptx', '.xls', '.xlsx', '.wps', '.txt', '.pdf' ]
     };
 
     // add your special config in here
