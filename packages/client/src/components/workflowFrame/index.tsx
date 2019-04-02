@@ -1,4 +1,5 @@
-import { notification, Steps } from 'antd';
+import { Result } from 'ant-design-pro';
+import { Col, notification, Row, Steps } from 'antd';
 import React, { useEffect, useState } from 'react';
 const { Step } = Steps;
 
@@ -6,8 +7,10 @@ import './index.less';
 
 import { MsgType } from '~server/app/util/interface/common';
 import { WorkOrder, WorkOrderStatus, WorkOrderWithUserInfo } from '~server/app/util/interface/workOrder';
+import getWorkOrderDetailComponent from '../workOrderAudit/workOrderDistinguisher';
 
 import { getWorkOrderInfo } from '~utils/commonRequest';
+import { workOrderStatusToString, workOrderTypeToString } from '~utils/workOrder';
 
 function workOrderStatusToStepCount (status: WorkOrderStatus) {
     switch (status) {
@@ -49,6 +52,7 @@ function WorkflowFrame ({ data, children, workOrderID }: WorkflowFrameProps) {
     const [ workOrderData, setWorkOrderData ] = useState<WorkOrder | WorkOrderWithUserInfo>();
     const [ currentStep, setCurrentStep ] = useState(0);
     const [ currentStatus, setCurrentStatus ] = useState<'wait' | 'process' | 'finish' | 'error'>('wait');
+    const [ currentDisplayStep, setCurrentDisplayStep ] = useState(0);
 
     async function fetchAndSetWorkOrderData (id: string) {
         try {
@@ -83,24 +87,122 @@ function WorkflowFrame ({ data, children, workOrderID }: WorkflowFrameProps) {
         [ data, workOrderID ]
     );
 
-    const steps: { title: string; content: JSX.Element | string }[] = [
+    useEffect(
+        () => {
+            setCurrentDisplayStep(currentStep);
+        },
+        [ currentStep ]
+    );
+
+    const labelSpan = 12;
+    const contentSpan = 24 - labelSpan;
+
+    function getOrderAuditStatusIconType () {
+        switch (workOrderData && workOrderData.status) {
+            case WorkOrderStatus.Open:
+                return 'success';
+            case WorkOrderStatus.Granted:
+                return 'success';
+            case WorkOrderStatus.Rejected:
+                return 'error';
+            case WorkOrderStatus.Closed:
+                return 'error';
+            default:
+                return 'error';
+        }
+    }
+
+    function getOrderAuditStatusTipMsg () {
+        switch (workOrderData && workOrderData.status) {
+            case WorkOrderStatus.Open:
+                return '工单已提交成功，请耐心等候审核结果';
+            case WorkOrderStatus.Granted:
+                return '审核已通过';
+            case WorkOrderStatus.Rejected:
+                return '审核未通过';
+            case WorkOrderStatus.Closed:
+                return '工单已关闭';
+            default:
+                return '未知工单状态';
+        }
+    }
+
+    function getAuditComments () {
+        if (workOrderData && workOrderData.comments) {
+            return <div className="audit-comment">审核附加信息：{workOrderData && workOrderData.comments}</div>;
+        }
+        return null;
+    }
+
+    const steps: { title: string; onClick?: () => void; content: JSX.Element | string }[] = [
         {
             title: '提交工单',
             content: children || '请提交工单'
         },
         {
             title: '工单审核',
-            content: <div className="step-message">工单已提交，请耐心等候管理员审核</div>
+            onClick: () => {
+                if (workOrderData) {
+                    setCurrentDisplayStep(1);
+                }
+            },
+            content: (
+                <Result
+                    type="success"
+                    title="提交成功"
+                    description={
+                        <div>
+                            <div>工单已提交成功，请耐心等候审核结果</div>
+                        </div>
+                    }
+                    extra={
+                        <div className="info-container">
+                            <Row className="info-row">
+                                <Col span={labelSpan} className="info-text info-label">
+                                    状态：
+                                </Col>
+                                <Col span={contentSpan} className="info-text">
+                                    {workOrderStatusToString(workOrderData && workOrderData.status)}
+                                </Col>
+                            </Row>
+                            <Row className="info-row">
+                                <Col span={labelSpan} className="info-text info-label">
+                                    类型：
+                                </Col>
+                                <Col span={contentSpan} className="info-text">
+                                    {workOrderTypeToString(workOrderData && workOrderData.type)}
+                                </Col>
+                            </Row>
+                            {getWorkOrderDetailComponent(
+                                contentSpan,
+                                labelSpan,
+                                workOrderData && workOrderData.payload,
+                                workOrderData && workOrderData.type
+                            )}
+                        </div>
+                    }
+                    style={{
+                        marginTop: 24
+                    }}
+                />
+            )
         },
         {
             title: '工单结果',
+            onClick: () => {
+                if (workOrderData) {
+                    setCurrentDisplayStep(2);
+                }
+            },
             content: (
-                <div className="step-message">
-                    <div className="audit-result">
-                        审核结果：{workOrderData && workOrderData.status === WorkOrderStatus.Granted ? '审核已通过' : '审核未通过'}
-                    </div>
-                    <div className="audit-comment">附加信息：{workOrderData && workOrderData.comments}</div>
-                </div>
+                <Result
+                    type={getOrderAuditStatusIconType()}
+                    title={getOrderAuditStatusTipMsg()}
+                    extra={getAuditComments()}
+                    style={{
+                        marginTop: 24
+                    }}
+                />
             )
         }
     ];
@@ -108,9 +210,11 @@ function WorkflowFrame ({ data, children, workOrderID }: WorkflowFrameProps) {
     return (
         <div className="workflow-frame-container">
             <Steps status={currentStatus} current={currentStep}>
-                {steps.map(item => <Step key={item.title} title={item.title} />)}
+                {steps.map(item => (
+                    <Step key={item.title} title={item.title} onClick={item.onClick} style={{ cursor: 'pointer' }} />
+                ))}
             </Steps>
-            <div className="steps-content">{steps[currentStep].content}</div>
+            <div className="steps-content">{steps[currentDisplayStep].content}</div>
         </div>
     );
 }
