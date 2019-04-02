@@ -12,6 +12,7 @@ export default (app: Application) => {
     router.post('/api/login', controller.user.login);
     router.post('/api/logout', authCheckMiddleware, controller.user.logout);
     router.post('/api/signup', controller.workOrder.createSignUpWorkOrder);
+    router.post('/api/password', authCheckMiddleware, userProtectionMiddleware, controller.user.updatePassword);
 
     router.get('/api/user/info', authCheckMiddleware, controller.user.getUserInfo);
     router.get('/api/user/full_info', authCheckMiddleware, userProtectionMiddleware, controller.user.getFullUserInfo);

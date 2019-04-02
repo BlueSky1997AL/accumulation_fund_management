@@ -105,7 +105,6 @@ function AccountCreateForm ({ form, history }: AccountModificationProps) {
                     }}
                     labelCol={{ span: 8 }}
                     wrapperCol={{ span: 16 }}
-                    className="login-form"
                 >
                     <Form.Item label="用户名">
                         {getFieldDecorator('username', {

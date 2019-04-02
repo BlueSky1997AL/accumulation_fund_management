@@ -16,6 +16,7 @@ import Frame from './frame';
 import FundBackWorkflow from './fundBackWorkflow';
 import FundDrawWorkFlow from './fundDrawWorkflow';
 import FundRemitWorkflow from './fundRemitWorkflow';
+import PasswordModification from './passwordModification';
 import UserAdminList from './userAdminList';
 import UserInfo from './userInfo';
 import WorkflowFrame from './workflowFrame';
@@ -55,6 +56,7 @@ export default function () {
                 return [
                     <Route key="/account/list" exact={true} path="/account/list" component={UserAdminList} />,
                     <Route key="/account/create" exact={true} path="/account/create" component={AccountCreateForm} />,
+                    <Route key="/account/password" exact={true} path="/account/password" component={PasswordModification} />,
                     <Route
                         key="/account/:userID/edit"
                         path="/account/:userID/edit"
@@ -80,6 +82,7 @@ export default function () {
             case UserType.Common: {
                 return [
                     <Route key="/account/freeze" exact={true} path="/account/freeze" component={FreezeWorkflow} />,
+                    <Route key="/account/password" exact={true} path="/account/password" component={PasswordModification} />,
                     <Route
                         key="/account/unfreeze"
                         exact={true}
@@ -106,6 +109,7 @@ export default function () {
             case UserType.Enterprise: {
                 return [
                     <Route key="/account/list" exact={true} path="/account/list" component={EnterpriseUserList} />,
+                    <Route key="/account/password" exact={true} path="/account/password" component={PasswordModification} />,
                     <Route key="/account/freeze" exact={true} path="/account/freeze" component={FreezeWorkflow} />,
                     <Route
                         key="/account/unfreeze"

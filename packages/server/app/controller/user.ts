@@ -5,6 +5,8 @@ import { Controller } from 'egg';
 import { MsgType, ResponseData } from '../util/interface/common';
 import { UserInDB, UserStatus, UserType } from '../util/interface/user';
 
+import { PasswordModificationSubmitData } from '../../../client/src/components/passwordModification';
+
 export interface UserInfoRespData {
     id: string;
     username: string;
@@ -288,6 +290,32 @@ export default class UserController extends Controller {
             response.message = MsgType.OPT_SUCCESS;
         } catch (error) {
             ctx.logger.error(error);
+        }
+
+        ctx.body = response;
+    }
+
+    public async updatePassword() {
+        const { ctx } = this;
+        const { username } = ctx.session;
+        const { oldPassword, newPassword } = ctx.request.body as PasswordModificationSubmitData;
+
+        const response: ResponseData<null> = {
+            message: MsgType.UNKNOWN_ERR,
+            data: null
+        };
+
+        const userInfo = (await ctx.model.User.findOne({ username })) as UserInDB;
+        if (oldPassword === userInfo.password) {
+            try {
+                await ctx.model.User.update({ username }, { password: newPassword });
+                response.message = MsgType.OPT_SUCCESS;
+            } catch (error) {
+                ctx.logger.error(error);
+                response.message = MsgType.OPT_FAILED;
+            }
+        } else {
+            response.message = MsgType.INCORRECT_PASSWORD;
         }
 
         ctx.body = response;

@@ -10,9 +10,7 @@ import { MsgType } from '~server/app/util/interface/common';
 import { UserStatus, UserType } from '~server/app/util/interface/user';
 import { getUserInfo } from '~utils/commonRequest';
 import { moneyToHumanReadable, userStatusToString, userTypeToString } from '~utils/user';
-import {userLost} from './request';
-;
-
+import { userLost } from './request';
 function UserInfo () {
     const [ userInfo, setUserInfo ] = useState<UserInfoRespData>();
 
@@ -56,7 +54,13 @@ function UserInfo () {
                         <Divider key="diviver" style={{ marginTop: 35 }} orientation="left">
                             账号操作
                         </Divider>,
-                        <Card key="operation-cards">
+                        <Card key="operation-cards" bordered={false}>
+                            <Card.Grid style={cardGridStyle}>
+                                <Link className="card-grid-button" to="/account/password">
+                                    <Icon style={opIconStyle} type="barcode" />
+                                    <span>修改密码</span>
+                                </Link>
+                            </Card.Grid>
                             <Card.Grid style={cardGridStyle}>
                                 <Popconfirm title="确认要挂失该账户？" onConfirm={() => handleUserLost()}>
                                     <div
@@ -90,7 +94,7 @@ function UserInfo () {
                         <Divider key="diviver" style={{ marginTop: 35 }} orientation="left">
                             账号操作
                         </Divider>,
-                        <Card key="operation-cards">
+                        <Card key="operation-cards" bordered={false}>
                             <Card.Grid style={cardGridStyle}>
                                 <Popconfirm title="确认要挂失该账户？" onConfirm={() => handleUserLost()}>
                                     <div
@@ -120,8 +124,23 @@ function UserInfo () {
                     ];
                 }
             }
+        } else if (userInfo && userInfo.type === UserType.Admin) {
+            return [
+                <Divider key="diviver" style={{ marginTop: 35 }} orientation="left">
+                    账号操作
+                </Divider>,
+                <Card key="operation-cards" bordered={false}>
+                    <Card.Grid style={cardGridStyle}>
+                        <Link className="card-grid-button" to="/account/password">
+                            <Icon style={opIconStyle} type="barcode" />
+                            <span>修改密码</span>
+                        </Link>
+                    </Card.Grid>
+                </Card>
+            ];
+        } else {
+            return null;
         }
-        return null;
     }
 
     function getBalanceRow () {
@@ -148,7 +167,7 @@ function UserInfo () {
     };
 
     const cardGridStyle: React.CSSProperties = {
-        width: '33.33%',
+        width: '25%',
         padding: 0
     };
 
