@@ -27,6 +27,14 @@ export default (appInfo: EggAppInfo) => {
         }
     };
 
+    config.schedule = {
+        interest: {
+            cron: '0 0 0 * * *',
+            type: 'worker',
+            rate: 0.015
+        }
+    };
+
     config.multipart = {
         mode: 'file',
         fileExtensions: [ '.rar', '.iso', '.doc', '.docx', '.ppt', '.pptx', '.xls', '.xlsx', '.wps', '.txt', '.pdf' ]
