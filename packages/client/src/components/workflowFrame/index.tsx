@@ -7,10 +7,10 @@ import './index.less';
 
 import { MsgType } from '~server/app/util/interface/common';
 import { WorkOrder, WorkOrderStatus, WorkOrderWithUserInfo } from '~server/app/util/interface/workOrder';
-import getWorkOrderDetailComponent from '../workOrderAudit/workOrderDistinguisher';
 
 import { getWorkOrderInfo } from '~utils/commonRequest';
 import { workOrderStatusToString, workOrderTypeToString } from '~utils/workOrder';
+import getWorkOrderDetailComponent from '../workOrderAudit/workOrderDistinguisher';
 
 function workOrderStatusToStepCount (status: WorkOrderStatus) {
     switch (status) {
