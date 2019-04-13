@@ -38,8 +38,20 @@ function Frame ({ children }: FrameProps) {
         }
     }
 
-    function getLogoText (collapsed: boolean) {
-        return collapsed ? '公积金' : '公积金管理系统';
+    function getLogo (collapsed: boolean) {
+        if (collapsed) {
+            return (
+                <div className="logo-container">
+                    <Icon type="home" theme="filled" />
+                </div>
+            );
+        }
+        return (
+            <div className="logo-container">
+                <Icon type="home" theme="filled" style={{ marginRight: 8 }} />
+                <span>公积金管理系统</span>
+            </div>
+        );
     }
 
     function getSelectedKey () {
@@ -203,9 +215,7 @@ function Frame ({ children }: FrameProps) {
     return (
         <Layout style={{ minHeight: '100vh' }}>
             <Sider theme="dark" collapsible={true} collapsed={sideBarCollapsed} onCollapse={setCollapseState}>
-                <div className="frame-logo">
-                    <div className="logo-text">{getLogoText(sideBarCollapsed)}</div>
-                </div>
+                <div className="frame-logo">{getLogo(sideBarCollapsed)}</div>
                 {getSiderMenuByUserType(userType)}
             </Sider>
             <Layout>

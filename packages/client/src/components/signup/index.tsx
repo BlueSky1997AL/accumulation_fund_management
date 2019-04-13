@@ -178,7 +178,12 @@ function SignUpView (props: FormComponentProps) {
 
     return (
         <div className="signup-container">
-            <Card title="账户创建申请" style={{ width: 768 }} bodyStyle={{ height: '100%', width: '100%' }}>
+            <Card
+                className="signup-card"
+                title="账户创建申请"
+                style={{ width: 768 }}
+                bodyStyle={{ height: '100%', width: '100%' }}
+            >
                 {getCardContent()}
             </Card>
         </div>

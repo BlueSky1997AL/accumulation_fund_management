@@ -36,7 +36,17 @@ function LoginView (props: FormComponentProps) {
 
     return (
         <div className="login-container">
-            <Card title="登陆" style={{ width: 350 }} bodyStyle={{ height: '100%', width: '100%' }}>
+            <Card
+                className="login-card"
+                title={
+                    <div>
+                        <Icon type="home" style={{ marginRight: 8 }} />
+                        <span>住房公积金管理系统 - 登陆</span>
+                    </div>
+                }
+                style={{ width: 350 }}
+                bodyStyle={{ height: '100%', width: '100%' }}
+            >
                 <Form
                     style={{
                         width: '100%',
@@ -72,7 +82,7 @@ function LoginView (props: FormComponentProps) {
                         </Button>
                     </Form.Item>
                     <Row type="flex" justify="end" align="middle">
-                        <a href="/signup">创建账户</a>
+                        <a href="/signup">账户申请</a>
                     </Row>
                 </Form>
             </Card>
