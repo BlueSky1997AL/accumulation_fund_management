@@ -1,11 +1,11 @@
 import { Application } from 'egg';
 
 export default (app: Application) => {
-    const { controller, router, middleware } = app;
+    const { controller, router, middleware, config } = app;
     const authCheckMiddleware = middleware.authCheck();
     const userProtectionMiddleware = middleware.userProtection();
 
-    router.get(/\/web|\/web\/*/, authCheckMiddleware, controller.home.index);
+    router.get(config.webPathRegExp, authCheckMiddleware, controller.home.index);
     router.get('/login', controller.home.login);
     router.get('/signup', controller.home.signup);
 

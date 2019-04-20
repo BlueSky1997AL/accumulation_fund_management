@@ -16,7 +16,7 @@ export default function AuthCheckMiddleware (): any {
         ) {
             await next();
         } else {
-            if (ctx.request.method === 'GET') {
+            if (ctx.app.config.webPathRegExp.test(ctx.path)) {
                 ctx.redirect('/login');
             } else {
                 ctx.status = 401;

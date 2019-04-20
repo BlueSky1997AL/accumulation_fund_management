@@ -40,6 +40,8 @@ export default (appInfo: EggAppInfo) => {
         fileExtensions: [ '.rar', '.iso', '.doc', '.docx', '.ppt', '.pptx', '.xls', '.xlsx', '.wps', '.txt', '.pdf' ]
     };
 
+    config.webPathRegExp = /\/web|\/web\/*/;
+
     // add your special config in here
     const bizConfig = {
         sourceUrl: `https://github.com/eggjs/examples/tree/master/${appInfo.name}`
