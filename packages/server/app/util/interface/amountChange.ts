@@ -3,8 +3,8 @@ type objectID = string;
 export interface AmountChange {
     owner: objectID;
     amount: number;
-    type: ChangeType;
-    source: ChangeSource;
+    type: AmountChangeType;
+    source: AmountChangeSource;
 }
 
 export interface AmountChangeInDB extends AmountChange {
@@ -13,9 +13,11 @@ export interface AmountChangeInDB extends AmountChange {
     updatedAt: Date;
 }
 
-export enum ChangeType {
+export enum AmountChangeType {
     Negative,
     Positive
 }
 
-export enum ChangeSource {}
+export enum AmountChangeSource {
+    AccountCreation
+}

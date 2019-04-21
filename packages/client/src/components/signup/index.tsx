@@ -13,11 +13,11 @@ import { UploadChangeParam } from 'antd/lib/upload';
 import { UploadFile } from 'antd/lib/upload/interface';
 import { MsgType } from '~server/app/util/interface/common';
 import { FileInfo } from '~server/app/util/interface/file';
-import { PersonType, UserType, EnterpriseType } from '~server/app/util/interface/user';
+import { EnterpriseType, PersonType, UserType } from '~server/app/util/interface/user';
 
 import idNoChecker from '~server/app/util/idNoChecker';
 import { uploadFilesToFileInfos } from '~utils/file';
-import { userTypeToString, enterpriseTypeToString } from '~utils/user';
+import { enterpriseTypeToString, userTypeToString } from '~utils/user';
 import { signup } from './request';
 
 const csrfToken = Cookies.get('csrfToken');
@@ -25,7 +25,12 @@ const csrfToken = Cookies.get('csrfToken');
 export interface SignUpSubmitData {
     username: string;
     password: string;
+    name: string;
+    employeeID?: string;
     type: UserType;
+    entType?: EnterpriseType;
+    personType?: PersonType;
+    entID?: string;
     balance: number;
     comments: string;
     accessory: FileInfo[];
@@ -55,7 +60,12 @@ function SignUpView (props: FormComponentProps) {
             const submitData: SignUpSubmitData = {
                 username: formData.username,
                 password: formData.password,
+                name: formData.name,
+                employeeID: formData.employeeID,
                 type: formData.type,
+                entType: formData.entType,
+                personType: formData.personType,
+                entID: formData.entID,
                 balance: formData.balance * 100,
                 comments: formData.comments,
                 accessory: uploadFilesToFileInfos(formData.accessory)
@@ -95,7 +105,7 @@ function SignUpView (props: FormComponentProps) {
                             rules: [
                                 { required: true, message: '请输入身份证号码' },
                                 {
-                                    validator (rule, value, callback) {
+                                    validator(rule, value, callback) {
                                         if (!value || idNoChecker(value)) {
                                             callback();
                                         }
@@ -130,7 +140,7 @@ function SignUpView (props: FormComponentProps) {
                             rules: [
                                 { required: true, message: '请输入姓名' },
                                 {
-                                    validator (rule, value, callback) {
+                                    validator(rule, value, callback) {
                                         if (!value || /^[\u4E00-\u9FA5\uf900-\ufa2d·s]{2,20}$/.test(value)) {
                                             callback();
                                         }
@@ -205,7 +215,7 @@ function SignUpView (props: FormComponentProps) {
         if (currentUserType === UserType.Common && currentPersonType === PersonType.Employees) {
             return (
                 <Form.Item label="企业统一社会信用代码">
-                    {getFieldDecorator('enterpriseID', {
+                    {getFieldDecorator('entID', {
                         rules: [ { required: true, message: '请输入统一社会信用代码' } ]
                     })(<Input placeholder="所在企业统一社会信用代码" />)}
                 </Form.Item>
@@ -289,7 +299,7 @@ function SignUpView (props: FormComponentProps) {
                             rules: [
                                 { required: true, message: '请确认您的密码' },
                                 {
-                                    validator (rule, value, callback) {
+                                    validator(rule, value, callback) {
                                         if (!value) {
                                             callback();
                                         }

@@ -7,8 +7,9 @@ import { PersonalFundBackSubmitData } from '../../../client/src/components/fundB
 import { PersonalFundDrawSubmitData } from '../../../client/src/components/fundDrawWorkflow/personalFundDrawForm';
 import { EnterpriseFundRemitSubmitData } from '../../../client/src/components/fundRemitWorkflow/enterpriseFundRemitForm';
 import { SignUpSubmitData } from '../../../client/src/components/signup';
+import { AmountChangeInDB, AmountChangeSource, AmountChangeType } from '../util/interface/amountChange';
 import { MsgType } from '../util/interface/common';
-import { UserInDB, UserStatus } from '../util/interface/user';
+import { PersonType, UserInDB, UserStatus, UserType } from '../util/interface/user';
 import { WorkOrder, WorkOrderType } from '../util/interface/workOrder';
 
 export default class WorkOrderService extends Service {
@@ -197,13 +198,39 @@ export default class WorkOrderService extends Service {
             const execData = JSON.parse(payload) as SignUpSubmitData;
 
             try {
-                await ctx.model.User.create({
+                const createdUser = (await ctx.model.User.create({
                     username: execData.username,
                     password: execData.password,
+                    name: execData.name,
+                    employeeID: execData.employeeID,
                     type: execData.type,
+                    entType: execData.entType,
+                    personType: execData.personType,
                     status: UserStatus.Normal,
                     balance: execData.balance
-                });
+                })) as UserInDB;
+
+                if (execData.type === UserType.Common && execData.personType === PersonType.Employees) {
+                    const entUser = (await ctx.model.User.findOne({ username: execData.entID })) as UserInDB;
+                    await ctx.model.User.updateOne(
+                        { username: execData.entID },
+                        { subUser: [ ...entUser.subUser!, createdUser._id ] }
+                    );
+                }
+
+                if (execData.balance) {
+                    const amountChange = (await ctx.model.AmountChange.create({
+                        owner: createdUser._id,
+                        amount: execData.balance,
+                        type: AmountChangeType.Positive,
+                        source: AmountChangeSource.AccountCreation
+                    })) as AmountChangeInDB;
+
+                    await ctx.model.User.updateOne(
+                        { username: createdUser.username },
+                        { amountChanges: [ ...createdUser.amountChanges!, amountChange._id ] }
+                    );
+                }
             } catch (error) {
                 ctx.logger.error(error);
                 return MsgType.OPT_FAILED;

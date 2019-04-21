@@ -11,7 +11,7 @@ import { PersonalFundDrawSubmitData } from '../../../client/src/components/fundD
 import { EnterpriseFundRemitSubmitData } from '../../../client/src/components/fundRemitWorkflow/enterpriseFundRemitForm';
 import { SignUpSubmitData } from '../../../client/src/components/signup';
 import { MsgType, ResponseData } from '../util/interface/common';
-import { User, UserInDB, UserType } from '../util/interface/user';
+import { User, UserInDB, UserType, PersonType } from '../util/interface/user';
 import {
     AuditOperationType,
     WorkOrder,
@@ -597,7 +597,19 @@ export default class WorkOrderController extends Controller {
 
     public async createSignUpWorkOrder() {
         const { ctx } = this;
-        const { username, password, type, balance, comments, accessory } = ctx.request.body as SignUpSubmitData;
+        const {
+            username,
+            password,
+            name,
+            employeeID,
+            type,
+            entType,
+            personType,
+            entID,
+            balance,
+            comments,
+            accessory
+        } = ctx.request.body as SignUpSubmitData;
 
         const response: ResponseData<WorkOrder | null> = {
             message: MsgType.UNKNOWN_ERR,
@@ -612,7 +624,39 @@ export default class WorkOrderController extends Controller {
                 return;
             }
 
-            const payload = JSON.stringify({ username, password, type, balance, comments, accessory });
+            if (type === UserType.Common && personType === PersonType.Employees) {
+                if (!entID) {
+                    response.message = MsgType.ILLEGAL_ARGS;
+                    ctx.body = response;
+                    return;
+                }
+                const isEntExists = (await ctx.model.User.findOne({ username: entID })) as UserInDB;
+                if (!isEntExists) {
+                    response.message = MsgType.ENTERPRISE_NOT_FOUND;
+                    ctx.body = response;
+                    return;
+                }
+            }
+
+            if (type !== UserType.Common && balance) {
+                response.message = MsgType.ILLEGAL_ARGS;
+                ctx.body = response;
+                return;
+            }
+
+            const payload = JSON.stringify({
+                username,
+                password,
+                name,
+                employeeID,
+                type,
+                entType,
+                entID,
+                personType,
+                balance,
+                comments,
+                accessory
+            });
             const guestAccount = await ctx.service.user.getGuestAccount();
             const workOrder: WorkOrder = {
                 status: WorkOrderStatus.Open,

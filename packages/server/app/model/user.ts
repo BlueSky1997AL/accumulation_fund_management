@@ -17,20 +17,25 @@ export default (app: Application) => {
                 type: String,
                 required: true,
                 unique: true,
-                validate: {
-                    validator: idNoChecker,
-                    message: MsgType.INVALID_USERNAME
+                validate(val: string) {
+                    const that = this as User;
+                    if (that.type === UserType.Common) {
+                        return idNoChecker(val);
+                    } else {
+                        return true;
+                    }
                 }
             },
             password: { type: String, required: true, minlength: 6, maxlength: 16 },
             name: {
                 type: String,
                 required: true,
-                validate: {
-                    validator(val: string) {
+                validate(val: string) {
+                    const that = this as User;
+                    if (that.type === UserType.Common) {
                         return /^[\u4E00-\u9FA5\uf900-\ufa2d·s]{2,20}$/.test(val);
-                    },
-                    message: MsgType.INVALID_NAME
+                    }
+                    return true;
                 }
             },
             employeeID: String,

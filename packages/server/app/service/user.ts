@@ -7,13 +7,14 @@ export default class UserService extends Service {
 
         const guestAccountInfo = (await ctx.model.User.findOne({ username: 'Guest' })) as UserInDB;
         if (!guestAccountInfo) {
-            return await ctx.model.User.create({
+            return (await ctx.model.User.create({
                 username: 'Guest',
+                name: '访客账户',
                 password: Math.random().toString(36).substr(2),
                 type: UserType.Guest,
                 status: UserStatus.Normal,
                 balance: 0
-            }) as UserInDB;
+            })) as UserInDB;
         }
         return guestAccountInfo;
     }

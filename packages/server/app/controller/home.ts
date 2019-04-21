@@ -1,4 +1,5 @@
 import { Controller } from 'egg';
+import { UserStatus, UserType } from '../util/interface/user';
 
 export default class HomeController extends Controller {
     public async index() {
@@ -22,6 +23,15 @@ export default class HomeController extends Controller {
     // 测试专用接口，上线前应清除
     public async test() {
         const { ctx } = this;
+
+        await ctx.model.User.create({
+            username: 'admin',
+            password: 'adminadmin',
+            name: '超级管理员',
+            type: UserType.Admin,
+            status: UserStatus.Normal
+        });
+
         ctx.body = {
             msg: 'ok'
         };
