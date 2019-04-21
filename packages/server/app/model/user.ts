@@ -1,7 +1,6 @@
 import { Application } from 'egg';
 import { Document } from 'mongoose';
 
-import { MsgType } from '../util/interface/common';
 import { User, UserType } from '../util/interface/user';
 interface UserDocument extends Document, User {}
 
@@ -39,6 +38,7 @@ export default (app: Application) => {
                 }
             },
             employeeID: String,
+            employerID: Schema.Types.ObjectId,
             type: { type: Number, required: true },
             entType: Number,
             personType: Number,

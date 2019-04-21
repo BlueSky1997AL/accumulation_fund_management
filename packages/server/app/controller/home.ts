@@ -6,7 +6,8 @@ export default class HomeController extends Controller {
         const { ctx } = this;
         await ctx.render('index.html', {
             username: ctx.session.username,
-            userType: ctx.session.userType
+            userType: ctx.session.userType,
+            name: ctx.session.name
         });
     }
 

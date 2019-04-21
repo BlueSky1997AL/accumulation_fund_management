@@ -3,16 +3,25 @@
 import { Controller } from 'egg';
 
 import { MsgType, ResponseData } from '../util/interface/common';
-import { UserInDB, UserStatus, UserType } from '../util/interface/user';
+import { EnterpriseType, PersonType, UserInDB, UserStatus, UserType } from '../util/interface/user';
 
 import { PasswordModificationSubmitData } from '../../../client/src/components/passwordModification';
 
 export interface UserInfoRespData {
     id: string;
     username: string;
+    name: string;
+    employeeID?: string;
     type: UserType;
+    entType?: EnterpriseType;
+    entInfo?: {
+        name: string;
+        username: string;
+    };
+    personType?: PersonType;
     status: UserStatus;
     balance: number;
+    subUserCount: number;
 }
 
 export default class UserController extends Controller {
@@ -30,6 +39,7 @@ export default class UserController extends Controller {
             ctx.session.username = username;
             ctx.session.password = password;
             ctx.session.userType = userInfo.type;
+            ctx.session.name = userInfo.name;
             response.message = MsgType.LOGIN_SUCCESS;
         } else if (!userInfo) {
             response.message = MsgType.INCORRECT_USERNAME;
@@ -67,13 +77,26 @@ export default class UserController extends Controller {
         };
 
         const userInfo = (await ctx.model.User.findOne({ username })) as UserInDB;
+        let entInfo: UserInDB = {} as any;
+        if (userInfo.type === UserType.Common && userInfo.personType === PersonType.Employees) {
+            entInfo = (await ctx.model.User.findById(userInfo.employerID)) as UserInDB;
+        }
         response.message = MsgType.OPT_SUCCESS;
         response.data = {
             id: userInfo._id,
             username: userInfo.username,
+            name: userInfo.name,
+            employeeID: userInfo.employeeID,
             type: userInfo.type,
+            entType: userInfo.entType,
+            entInfo: {
+                name: entInfo.name,
+                username: entInfo.username
+            },
+            personType: userInfo.personType,
             status: userInfo.status,
-            balance: userInfo.balance
+            balance: userInfo.balance,
+            subUserCount: userInfo.subUser!.length
         };
 
         ctx.body = response;
@@ -97,9 +120,14 @@ export default class UserController extends Controller {
             response.data = {
                 id: targetUserInfo._id,
                 username: targetUserInfo.username,
+                name: targetUserInfo.name,
+                employeeID: targetUserInfo.employeeID,
                 type: targetUserInfo.type,
+                entType: targetUserInfo.entType,
+                personType: targetUserInfo.personType,
                 status: targetUserInfo.status,
-                balance: targetUserInfo.balance
+                balance: targetUserInfo.balance,
+                subUserCount: targetUserInfo.subUser!.length
             };
             response.message = MsgType.OPT_SUCCESS;
         }

@@ -221,7 +221,7 @@ function Frame ({ children }: FrameProps) {
             <Layout>
                 <Header className="frame-header">
                     <div className="username">
-                        当前用户：<span className="highlight-text">{window.username}</span>
+                        当前用户：<span className="highlight-text">{window.name}</span>
                     </div>
                     <div className="user-type">
                         账户类型：<span className="highlight-text">{userTypeToString(window.userType)}</span>

@@ -5,6 +5,7 @@ export interface User {
     password: string;
     name: string;
     employeeID?: string;
+    employerID?: objectID;
     type: UserType;
     entType?: EnterpriseType;
     personType?: PersonType;

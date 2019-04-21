@@ -194,6 +194,8 @@ export default class WorkOrderService extends Service {
     public async execSignUp(workOrder: WorkOrder) {
         const { ctx } = this;
         const { payload } = workOrder;
+        const { username } = ctx.session;
+
         if (payload) {
             const execData = JSON.parse(payload) as SignUpSubmitData;
 
@@ -212,6 +214,7 @@ export default class WorkOrderService extends Service {
 
                 if (execData.type === UserType.Common && execData.personType === PersonType.Employees) {
                     const entUser = (await ctx.model.User.findOne({ username: execData.entID })) as UserInDB;
+                    await ctx.model.User.updateOne({ _id: createdUser._id }, { employerID: entUser._id });
                     await ctx.model.User.updateOne(
                         { username: execData.entID },
                         { subUser: [ ...entUser.subUser!, createdUser._id ] }
@@ -219,8 +222,11 @@ export default class WorkOrderService extends Service {
                 }
 
                 if (execData.balance) {
+                    const operatorInfo = (await ctx.model.User.findOne({ username })) as UserInDB;
+
                     const amountChange = (await ctx.model.AmountChange.create({
                         owner: createdUser._id,
+                        operatorID: operatorInfo._id,
                         amount: execData.balance,
                         type: AmountChangeType.Positive,
                         source: AmountChangeSource.AccountCreation

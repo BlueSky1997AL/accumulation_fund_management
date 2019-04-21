@@ -2,6 +2,7 @@ type objectID = string;
 
 export interface AmountChange {
     owner: objectID;
+    operatorID: objectID;
     amount: number;
     type: AmountChangeType;
     source: AmountChangeSource;

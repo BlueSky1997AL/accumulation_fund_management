@@ -7,9 +7,9 @@ import './index.less';
 import { UserInfoRespData } from '~server/app/controller/user';
 import { MsgType } from '~server/app/util/interface/common';
 
-import { UserStatus, UserType } from '~server/app/util/interface/user';
+import { PersonType, UserStatus, UserType } from '~server/app/util/interface/user';
 import { getUserInfo } from '~utils/commonRequest';
-import { moneyToHumanReadable, userStatusToString, userTypeToString } from '~utils/user';
+import { moneyToHumanReadable, personTypeToString, userStatusToString, userTypeToString } from '~utils/user';
 import { userLost } from './request';
 function UserInfo () {
     const [ userInfo, setUserInfo ] = useState<UserInfoRespData>();
@@ -144,7 +144,7 @@ function UserInfo () {
     }
 
     function getBalanceRow () {
-        if (userInfo && userInfo.type !== UserType.Admin && userInfo.status !== UserStatus.Lost) {
+        if (userInfo && userInfo.type === UserType.Common && userInfo.status !== UserStatus.Lost) {
             return (
                 <Row className="info-row">
                     <Col span={labelSpan} className="info-text info-label">
@@ -159,7 +159,76 @@ function UserInfo () {
         return null;
     }
 
-    const labelSpan = 3;
+    function getNameRowLabel () {
+        switch (userInfo && userInfo.type) {
+            case UserType.Common:
+                return '姓名';
+            case UserType.Enterprise:
+                return '企业名称';
+            default:
+                return '名称';
+        }
+    }
+
+    function getUsernameRowLabel () {
+        switch (userInfo && userInfo.type) {
+            case UserType.Common:
+                return '身份证号码';
+            case UserType.Enterprise:
+                return '统一社会信用代码';
+            default:
+                return '用户名';
+        }
+    }
+
+    function getPersonTypeRow () {
+        if (userInfo && userInfo.type === UserType.Common) {
+            return (
+                <Row className="info-row">
+                    <Col span={labelSpan} className="info-text info-label">
+                        个人账户类型：
+                    </Col>
+                    <Col span={contentSpan} className="info-text">
+                        {personTypeToString(userInfo && userInfo.personType)}
+                    </Col>
+                </Row>
+            );
+        }
+    }
+
+    function getEntNameRow () {
+        if (userInfo && userInfo.type === UserType.Common && userInfo.personType === PersonType.Employees) {
+            return (
+                <Row className="info-row">
+                    <Col span={labelSpan} className="info-text info-label">
+                        所在企业名称：
+                    </Col>
+                    <Col span={contentSpan} className="info-text">
+                        {userInfo && userInfo.entInfo && userInfo.entInfo.name}
+                    </Col>
+                </Row>
+            );
+        }
+        return null;
+    }
+
+    function getEntUsernameRow () {
+        if (userInfo && userInfo.type === UserType.Common && userInfo.personType === PersonType.Employees) {
+            return (
+                <Row className="info-row">
+                    <Col span={labelSpan} className="info-text info-label">
+                        所在企业统一社会信用代码：
+                    </Col>
+                    <Col span={contentSpan} className="info-text">
+                        {userInfo && userInfo.entInfo && userInfo.entInfo.username}
+                    </Col>
+                </Row>
+            );
+        }
+        return null;
+    }
+
+    const labelSpan = 5;
     const contentSpan = 24 - labelSpan;
 
     const opIconStyle: React.CSSProperties = {
@@ -176,7 +245,7 @@ function UserInfo () {
             <Card title={'账户信息'} bodyStyle={{ height: '100%', width: '100%' }}>
                 <Row className="info-row">
                     <Col span={labelSpan} className="info-text info-label">
-                        账户ID：
+                        账户唯一标识：
                     </Col>
                     <Col span={contentSpan} className="info-text">
                         {userInfo && userInfo.id}
@@ -184,10 +253,18 @@ function UserInfo () {
                 </Row>
                 <Row className="info-row">
                     <Col span={labelSpan} className="info-text info-label">
-                        账户名称：
+                        {getUsernameRowLabel()}：
                     </Col>
                     <Col span={contentSpan} className="info-text">
                         {userInfo && userInfo.username}
+                    </Col>
+                </Row>
+                <Row className="info-row">
+                    <Col span={labelSpan} className="info-text info-label">
+                        {getNameRowLabel()}：
+                    </Col>
+                    <Col span={contentSpan} className="info-text">
+                        {userInfo && userInfo.name}
                     </Col>
                 </Row>
                 <Row className="info-row">
@@ -207,6 +284,9 @@ function UserInfo () {
                     </Col>
                 </Row>
                 {getBalanceRow()}
+                {getPersonTypeRow()}
+                {getEntNameRow()}
+                {getEntUsernameRow()}
                 {getAccountOperations()}
             </Card>
         </div>
