@@ -1,4 +1,4 @@
-import { Button, Card, Form, Icon, Input, notification, Row } from 'antd';
+import { Button, Card, Form, Input, notification, Row } from 'antd';
 import React from 'react';
 import { Link } from 'react-router-dom';
 
@@ -57,12 +57,27 @@ function PasswordModification (props: FormComponentProps) {
                 <Form.Item label="原密码">
                     {getFieldDecorator('oldPassword', {
                         rules: [ { required: true, message: '请输入原密码' } ]
-                    })(<Input type="password" />)}
+                    })(<Input type="password" placeholder="请输入原密码" />)}
                 </Form.Item>
                 <Form.Item label="新密码">
                     {getFieldDecorator('newPassword', {
-                        rules: [ { required: true, message: '请输入新密码' } ]
-                    })(<Input type="password" />)}
+                        rules: [
+                            { required: true, message: '请输入新密码' },
+                            { min: 6, message: '密码长度不能小于6位' },
+                            { max: 16, message: '密码长度不能大于16位' },
+                            {
+                                validator(rule, value, callback) {
+                                    if (!value) {
+                                        callback();
+                                    }
+                                    if (getFieldValue('oldPassword') === value) {
+                                        callback('新密码与旧密码不能相同');
+                                    }
+                                    callback();
+                                }
+                            }
+                        ]
+                    })(<Input type="password" placeholder="6 - 16位新密码" />)}
                 </Form.Item>
                 <Form.Item label="确认密码">
                     {getFieldDecorator('confirmPassword', {
@@ -80,7 +95,7 @@ function PasswordModification (props: FormComponentProps) {
                                 }
                             }
                         ]
-                    })(<Input type="password" onPressEnter={handleSubmit} />)}
+                    })(<Input type="password" onPressEnter={handleSubmit} placeholder="确认您的新密码" />)}
                 </Form.Item>
                 <Row type="flex" justify="space-around">
                     <Button type="default" style={buttonStyle}>
