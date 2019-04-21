@@ -8,13 +8,14 @@ export interface WorkOrder {
     owner: objectID;
     comments?: string;
     auditer?: objectID;
+    auditTimestamp?: Date;
     payload?: string;
 }
 
 export interface WorkOrderInDB extends WorkOrder {
-    _id: string;
-    createdAt: string;
-    updatedAt: string;
+    _id: objectID;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 export interface WorkOrderWithUserInfo {
