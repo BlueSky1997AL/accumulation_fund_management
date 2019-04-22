@@ -1,5 +1,6 @@
 import { InputNumber, Select } from 'antd';
 import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
+import { moneyToHumanReadable } from '~utils/user';
 
 export interface AmountMap {
     usernames: string[];
@@ -30,9 +31,9 @@ function AmountMapInput ({ value = {} as AmountMap, onChange }: AmountMapInputPr
         () => {
             if (baseAmount && ratio) {
                 const newAmount = baseAmount * ratio / 100;
-                if (newAmount > 6096) {
-                    setAmount(6096);
-                    triggerChange({ amount: 6096 });
+                if (newAmount > 3048) {
+                    setAmount(3048);
+                    triggerChange({ amount: 3048 });
                 } else {
                     setAmount(newAmount);
                     triggerChange({ amount: newAmount });
@@ -81,7 +82,7 @@ function AmountMapInput ({ value = {} as AmountMap, onChange }: AmountMapInputPr
             />
             <span style={{ marginRight: 16 }}>%</span>
             <span>应缴额：</span>
-            <span>{('amount' in value ? value.amount : amount) || 0}</span>
+            <span>{moneyToHumanReadable('amount' in value ? value.amount * 100 : amount && amount * 100)}</span>
             <span style={{ marginRight: 16 }}>元</span>
         </span>
     );

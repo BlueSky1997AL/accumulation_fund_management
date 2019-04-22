@@ -44,7 +44,7 @@ function FundRemitForm (props: EnterpriseFundRemitFormProps) {
                 amountMap: formData.amountMap.map((item: AmountMap) => {
                     return {
                         usernames: item.usernames,
-                        amount: item.amount * 100
+                        amount: Math.round(item.amount * 100)
                     };
                 }),
                 comments: formData.comments,
@@ -113,7 +113,7 @@ function FundRemitForm (props: EnterpriseFundRemitFormProps) {
                     {
                         validator: (rule, value: AmountMap, callback) => {
                             if (!value || !value.usernames.length) {
-                                callback('请输入员工用户名或删除该条目');
+                                callback('请输入员工身份证号或删除该条目');
                                 return;
                             }
                             if (!value.amount) {
