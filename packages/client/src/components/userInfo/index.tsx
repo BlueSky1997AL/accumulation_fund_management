@@ -257,15 +257,16 @@ function UserInfo () {
 
     return (
         <div className="user-info-container">
-            <Card title={'账户信息'} bodyStyle={{ height: '100%', width: '100%' }}>
-                <Row className="info-row">
-                    <Col span={labelSpan} className="info-text info-label">
-                        账户唯一标识：
-                    </Col>
-                    <Col span={contentSpan} className="info-text">
-                        {userInfo && userInfo.id}
-                    </Col>
-                </Row>
+            <Card
+                title={'账户信息'}
+                bodyStyle={{ height: '100%', width: '100%' }}
+                extra={
+                    <div>
+                        <span className="id-zone">账户唯一标识：</span>
+                        <span className="id-zone">{userInfo && userInfo.id}</span>
+                    </div>
+                }
+            >
                 <Row className="info-row">
                     <Col span={labelSpan} className="info-text info-label">
                         {getUsernameRowLabel()}：
