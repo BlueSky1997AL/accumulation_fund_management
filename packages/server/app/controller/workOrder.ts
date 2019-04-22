@@ -190,7 +190,7 @@ export default class WorkOrderController extends Controller {
 
     public async creactEnterpriseFundBackWorkOrder() {
         const { ctx } = this;
-        const { amountMap, comments, accessory } = ctx.request.body as EnterpriseFundBackSubmitData;
+        const { month, amountMap, comments, accessory } = ctx.request.body as EnterpriseFundBackSubmitData;
         const { username } = ctx.session;
 
         const response: ResponseData<WorkOrder | null> = {
@@ -245,7 +245,7 @@ export default class WorkOrderController extends Controller {
                 return;
             }
 
-            const payload = JSON.stringify({ amountMap, comments, accessory });
+            const payload = JSON.stringify({ month, amountMap, comments, accessory });
             const workOrder: WorkOrder = {
                 status: WorkOrderStatus.Open,
                 type: WorkOrderType.EnterpriseBack,

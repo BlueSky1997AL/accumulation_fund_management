@@ -63,17 +63,34 @@ export default class WorkOrderService extends Service {
 
     public async execEnterpriseBack(workOrder: WorkOrder) {
         const { ctx } = this;
-        const { payload } = workOrder;
+        const { payload, owner } = workOrder;
         if (payload) {
             const execData = JSON.parse(payload) as EnterpriseFundBackSubmitData;
 
             await Promise.all(
                 execData.amountMap.map(async amountInfo => {
-                    const amount = amountInfo.amount;
+                    const amount = amountInfo.amount * 2;
                     await Promise.all(
                         amountInfo.usernames.map(async username => {
                             const targetUserInfo = await ctx.model.User.findOne({ username });
-                            await ctx.model.User.update({ username }, { balance: targetUserInfo.balance + amount });
+
+                            const amountChange = (await ctx.model.AmountChange.create({
+                                owner: targetUserInfo._id,
+                                amount,
+                                type: AmountChangeType.Positive,
+                                source: AmountChangeSource.EnterpriseBack,
+                                payload: JSON.stringify({
+                                    month: execData.month,
+                                    entID: owner
+                                })
+                            })) as AmountChangeInDB;
+                            await ctx.model.User.update(
+                                { username },
+                                {
+                                    balance: targetUserInfo.balance + amount,
+                                    amountChanges: [ ...targetUserInfo.amountChanges!, amountChange._id ]
+                                }
+                            );
                         })
                     );
                 })

@@ -1,7 +1,10 @@
-import { Button, Form, Icon, Input, Upload } from 'antd';
+import { Button, DatePicker, Form, Icon, Input, Upload } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
 import Cookies from 'js-cookie';
+import { Moment } from 'moment';
 import React from 'react';
+
+const { MonthPicker } = DatePicker;
 
 import { UploadChangeParam } from 'antd/lib/upload';
 import { UploadFile } from 'antd/lib/upload/interface';
@@ -12,6 +15,7 @@ import { uploadFilesToFileInfos } from '~utils/file';
 import AmountMapInput, { AmountMap } from './amountMapInput';
 
 export interface EnterpriseFundBackSubmitData {
+    month: string;
     amountMap: AmountMap[];
     comments?: string;
     accessory?: FileInfo[];
@@ -36,6 +40,7 @@ function FundBackForm (props: EnterpriseFundBackFormProps) {
             }
 
             const submitData: EnterpriseFundBackSubmitData = {
+                month: (formData.month as Moment).toISOString(),
                 amountMap: formData.amountMap.map((item: AmountMap) => {
                     return {
                         usernames: item.usernames,
@@ -134,6 +139,11 @@ function FundBackForm (props: EnterpriseFundBackFormProps) {
                 padding: '16px 0'
             }}
         >
+            <Form.Item {...formItemLayout} label="补缴月份">
+                {getFieldDecorator('month', {
+                    rules: [ { required: true, message: '请选择补缴月份' } ]
+                })(<MonthPicker placeholder="选择补缴月份" />)}
+            </Form.Item>
             {formItems}
             <Form.Item {...formItemLayoutWithOutLabel}>
                 <Button type="dashed" onClick={add} style={{ width: '100%' }}>
@@ -142,13 +152,14 @@ function FundBackForm (props: EnterpriseFundBackFormProps) {
             </Form.Item>
             <Form.Item {...formItemLayout} label="备注">
                 {getFieldDecorator('comments', {
-                    rules: []
+                    rules: [ { required: true, message: '请输入相关备注内容' } ]
                 })(<Input.TextArea autosize={true} />)}
             </Form.Item>
             <Form.Item {...formItemLayout} label="相关材料">
                 {getFieldDecorator('accessory', {
                     valuePropName: 'fileList',
-                    getValueFromEvent: normFile
+                    getValueFromEvent: normFile,
+                    rules: [ { required: true, message: '请上传相关材料' } ]
                 })(
                     <Upload action={`/api/file/upload?_csrf=${csrfToken}`}>
                         <Button>
