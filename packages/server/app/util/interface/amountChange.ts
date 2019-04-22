@@ -2,10 +2,10 @@ type objectID = string;
 
 export interface AmountChange {
     owner: objectID;
-    operatorID: objectID;
     amount: number;
     type: AmountChangeType;
     source: AmountChangeSource;
+    payload: string;
 }
 
 export interface AmountChangeInDB extends AmountChange {
@@ -20,5 +20,6 @@ export enum AmountChangeType {
 }
 
 export enum AmountChangeSource {
-    AccountCreation
+    AccountCreation,
+    EnterpriseRemit
 }

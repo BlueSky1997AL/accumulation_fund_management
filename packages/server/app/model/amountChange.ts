@@ -11,10 +11,10 @@ export default (app: Application) => {
     const AmountChangeSchema = new Schema(
         {
             owner: { type: Schema.Types.ObjectId, required: true },
-            operatorID: { type: Schema.Types.ObjectId, required: true },
             amount: { type: Number, required: true },
             type: { type: Number, required: true },
-            source: { type: Number, required: true }
+            source: { type: Number, required: true },
+            payload: String
         },
         {
             timestamps: true
