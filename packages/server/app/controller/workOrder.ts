@@ -157,10 +157,13 @@ export default class WorkOrderController extends Controller {
         } else {
             const workOrderInfo = (await ctx.model.WorkOrder.findOne({ _id: workOrderID })) as WorkOrder;
 
+            const dateNow = new Date();
             if (opType === AuditOperationType.Granted) {
                 workOrderInfo.status = WorkOrderStatus.Granted;
+                workOrderInfo.auditTimestamp = dateNow;
             } else if (opType === AuditOperationType.Rejected) {
                 workOrderInfo.status = WorkOrderStatus.Rejected;
+                workOrderInfo.auditTimestamp = dateNow;
             } else {
                 response.message = MsgType.ILLEGAL_ARGS;
                 ctx.body = response;
