@@ -4,6 +4,7 @@ export interface User {
     username: string;
     password: string;
     name: string;
+    cardNo?: string;
     employeeID?: string;
     employerID?: objectID;
     type: UserType;

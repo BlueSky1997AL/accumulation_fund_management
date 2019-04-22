@@ -228,6 +228,21 @@ function UserInfo () {
         return null;
     }
 
+    function getCardNoRow () {
+        if (userInfo && (userInfo.type === UserType.Common || userInfo.type === UserType.Enterprise)) {
+            return (
+                <Row className="info-row">
+                    <Col span={labelSpan} className="info-text info-label">
+                        银行卡号：
+                    </Col>
+                    <Col span={contentSpan} className="info-text">
+                        {userInfo && userInfo.cardNo}
+                    </Col>
+                </Row>
+            );
+        }
+    }
+
     const labelSpan = 5;
     const contentSpan = 24 - labelSpan;
 
@@ -287,6 +302,7 @@ function UserInfo () {
                 {getPersonTypeRow()}
                 {getEntNameRow()}
                 {getEntUsernameRow()}
+                {getCardNoRow()}
                 {getAccountOperations()}
             </Card>
         </div>

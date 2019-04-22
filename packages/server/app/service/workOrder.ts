@@ -204,6 +204,7 @@ export default class WorkOrderService extends Service {
                     username: execData.username,
                     password: execData.password,
                     name: execData.name,
+                    cardNo: execData.cardNo,
                     employeeID: execData.employeeID,
                     type: execData.type,
                     entType: execData.entType,

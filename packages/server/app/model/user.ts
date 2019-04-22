@@ -37,6 +37,17 @@ export default (app: Application) => {
                     return true;
                 }
             },
+            cardNo: {
+                type: String,
+                validate(val: string) {
+                    const that = this as User;
+                    if (that.type === UserType.Common || that.type === UserType.Enterprise) {
+                        return /^([1-9]{1})(\d{14}|\d{18})$/.test(val);
+                    }
+                    return true;
+                },
+                default: ''
+            },
             employeeID: String,
             employerID: Schema.Types.ObjectId,
             type: { type: Number, required: true },

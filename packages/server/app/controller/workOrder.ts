@@ -11,7 +11,7 @@ import { PersonalFundDrawSubmitData } from '../../../client/src/components/fundD
 import { EnterpriseFundRemitSubmitData } from '../../../client/src/components/fundRemitWorkflow/enterpriseFundRemitForm';
 import { SignUpSubmitData } from '../../../client/src/components/signup';
 import { MsgType, ResponseData } from '../util/interface/common';
-import { User, UserInDB, UserType, PersonType } from '../util/interface/user';
+import { PersonType, User, UserInDB, UserType } from '../util/interface/user';
 import {
     AuditOperationType,
     WorkOrder,
@@ -601,6 +601,7 @@ export default class WorkOrderController extends Controller {
             username,
             password,
             name,
+            cardNo,
             employeeID,
             type,
             entType,
@@ -648,6 +649,7 @@ export default class WorkOrderController extends Controller {
                 username,
                 password,
                 name,
+                cardNo,
                 employeeID,
                 type,
                 entType,

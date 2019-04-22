@@ -26,6 +26,7 @@ export interface SignUpSubmitData {
     username: string;
     password: string;
     name: string;
+    cardNo: string;
     employeeID?: string;
     type: UserType;
     entType?: EnterpriseType;
@@ -61,6 +62,7 @@ function SignUpView (props: FormComponentProps) {
                 username: formData.username,
                 password: formData.password,
                 name: formData.name,
+                cardNo: formData.cardNo,
                 employeeID: formData.employeeID,
                 type: formData.type,
                 entType: formData.entType,
@@ -311,6 +313,24 @@ function SignUpView (props: FormComponentProps) {
                                 }
                             ]
                         })(<Input type="password" placeholder="确认您的密码" />)}
+                    </Form.Item>
+                    <Form.Item label="银行卡号">
+                        {getFieldDecorator('cardNo', {
+                            rules: [
+                                { required: true, message: '请输入您的银行卡号' },
+                                {
+                                    validator(rule, value, callback) {
+                                        if (!value) {
+                                            callback();
+                                        }
+                                        if (/^([1-9]{1})(\d{14}|\d{18})$/.test(value)) {
+                                            callback();
+                                        }
+                                        callback('银行卡号不合法，请检查您的输入是否正确');
+                                    }
+                                }
+                            ]
+                        })(<Input type="password" placeholder="请输入您的银行卡号" />)}
                     </Form.Item>
                     {getPersonalTypeFormItem()}
                     {getEnterpriseIDFormItem()}

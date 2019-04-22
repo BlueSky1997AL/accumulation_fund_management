@@ -11,6 +11,7 @@ export interface UserInfoRespData {
     id: string;
     username: string;
     name: string;
+    cardNo?: string;
     employeeID?: string;
     type: UserType;
     entType?: EnterpriseType;
@@ -86,6 +87,7 @@ export default class UserController extends Controller {
             id: userInfo._id,
             username: userInfo.username,
             name: userInfo.name,
+            cardNo: userInfo.cardNo,
             employeeID: userInfo.employeeID,
             type: userInfo.type,
             entType: userInfo.entType,
@@ -121,6 +123,7 @@ export default class UserController extends Controller {
                 id: targetUserInfo._id,
                 username: targetUserInfo.username,
                 name: targetUserInfo.name,
+                cardNo: targetUserInfo.cardNo,
                 employeeID: targetUserInfo.employeeID,
                 type: targetUserInfo.type,
                 entType: targetUserInfo.entType,
