@@ -5,7 +5,10 @@ import { EnterpriseSubUserRemoveSubmitData } from '../../../client/src/component
 import { EnterpriseFundBackSubmitData } from '../../../client/src/components/fundBackWorkflow/enterpriseFundBackForm';
 import { PersonalFundBackSubmitData } from '../../../client/src/components/fundBackWorkflow/personalFundBackForm';
 import { PersonalFundDepositSubmitData } from '../../../client/src/components/fundDepositWorkflow/personalFundDepositForm';
-import { PersonalFundDrawSubmitData } from '../../../client/src/components/fundDrawWorkflow/personalFundDrawForm';
+import {
+    DrawType,
+    PersonalFundDrawSubmitData
+} from '../../../client/src/components/fundDrawWorkflow/personalFundDrawForm';
 import { EnterpriseFundRemitSubmitData } from '../../../client/src/components/fundRemitWorkflow/enterpriseFundRemitForm';
 import { SignUpSubmitData } from '../../../client/src/components/signup';
 import { AmountChangeInDB, AmountChangeSource, AmountChangeType } from '../util/interface/amountChange';
@@ -194,7 +197,44 @@ export default class WorkOrderService extends Service {
                 return MsgType.INSUFFICIENT_BALANCE;
             }
 
-            await ctx.model.User.update({ _id: owner }, { balance: ownerInfo.balance - execData.amount });
+            switch (execData.type) {
+                case DrawType.Partial: {
+                    const amountChange = (await ctx.model.AmountChange.create({
+                        owner,
+                        amount: execData.amount,
+                        type: AmountChangeType.Negative,
+                        source: AmountChangeSource.PersonalPartialDraw
+                    })) as AmountChangeInDB;
+                    await ctx.model.User.update(
+                        { _id: owner },
+                        {
+                            balance: ownerInfo.balance - execData.amount,
+                            amountChanges: [ ...ownerInfo.amountChanges!, amountChange._id ]
+                        }
+                    );
+                    break;
+                }
+                case DrawType.Cancellation: {
+                    const amountChange = (await ctx.model.AmountChange.create({
+                        owner,
+                        amount: ownerInfo.balance,
+                        type: AmountChangeType.Negative,
+                        source: AmountChangeSource.PersonalCancellationDraw
+                    })) as AmountChangeInDB;
+                    await ctx.model.User.update(
+                        { _id: owner },
+                        {
+                            status: UserStatus.Disabled,
+                            balance: 0,
+                            amountChanges: [ ...ownerInfo.amountChanges!, amountChange._id ]
+                        }
+                    );
+                    break;
+                }
+                default: {
+                    return MsgType.ILLEGAL_ARGS;
+                }
+            }
         }
         return null;
     }

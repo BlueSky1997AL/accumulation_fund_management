@@ -24,5 +24,6 @@ export enum MsgType {
     ALREADY_IN_SUB_USERS = '目标账号已存在于当前账号的子账号中',
     INVALID_NAME = '姓名不合法',
     INVALID_USERNAME = '用户名不合法',
-    ENTERPRISE_NOT_FOUND = '企业信息不存在'
+    ENTERPRISE_NOT_FOUND = '企业信息不存在',
+    EXCEED_MAXIMUM_AMOUNT = '最高可提取额不得超过账户总余额减10元'
 }

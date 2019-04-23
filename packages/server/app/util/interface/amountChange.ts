@@ -24,5 +24,7 @@ export enum AmountChangeSource {
     EnterpriseRemit,
     EnterpriseBack,
     PersonalBack,
-    PersonalDeposit
+    PersonalDeposit,
+    PersonalPartialDraw,
+    PersonalCancellationDraw
 }

@@ -7,7 +7,7 @@ import { EnterpriseSubUserAddSubmitData } from '../../../client/src/components/e
 import { EnterpriseSubUserRemoveSubmitData } from '../../../client/src/components/enterpriseSubUserRemoveWorkflow';
 import { EnterpriseFundBackSubmitData } from '../../../client/src/components/fundBackWorkflow/enterpriseFundBackForm';
 import { PersonalFundBackSubmitData } from '../../../client/src/components/fundBackWorkflow/personalFundBackForm';
-import { PersonalFundDepositSubmitData } from '../../../client/src/components/fundDepositWorkflow/personalFundBackForm';
+import { PersonalFundDepositSubmitData } from '../../../client/src/components/fundDepositWorkflow/personalFundDepositForm';
 import { PersonalFundDrawSubmitData } from '../../../client/src/components/fundDrawWorkflow/personalFundDrawForm';
 import { EnterpriseFundRemitSubmitData } from '../../../client/src/components/fundRemitWorkflow/enterpriseFundRemitForm';
 import { SignUpSubmitData } from '../../../client/src/components/signup';
@@ -441,7 +441,7 @@ export default class WorkOrderController extends Controller {
 
     public async createPersonalFundDrawWorkOrder() {
         const { ctx } = this;
-        const { amount, comments, accessory } = ctx.request.body as PersonalFundDrawSubmitData;
+        const { type, amount, comments, accessory } = ctx.request.body as PersonalFundDrawSubmitData;
         const { username } = ctx.session;
 
         const response: ResponseData<WorkOrder | null> = {
@@ -453,7 +453,19 @@ export default class WorkOrderController extends Controller {
         if (userInfo.type !== UserType.Common) {
             response.message = MsgType.NO_PERMISSION;
         } else {
-            const payload = JSON.stringify({ amount, comments, accessory });
+            if (amount && amount > userInfo.balance) {
+                (response.message = MsgType.INSUFFICIENT_BALANCE), (ctx.body = response);
+                return;
+            }
+
+            // 公积金的部分提取：最高可提取额为账户总金额减10元
+            if (amount && amount > userInfo.balance - 1000) {
+                response.message = MsgType.EXCEED_MAXIMUM_AMOUNT;
+                ctx.body = response;
+                return;
+            }
+
+            const payload = JSON.stringify({ type, amount, comments, accessory });
             const workOrder: WorkOrder = {
                 status: WorkOrderStatus.Open,
                 type: WorkOrderType.Draw,
