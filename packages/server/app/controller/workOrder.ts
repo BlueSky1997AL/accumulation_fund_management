@@ -441,18 +441,14 @@ export default class WorkOrderController extends Controller {
                 try {
                     await Promise.all(
                         amountMap.map(async amountItem => {
-                            await Promise.all(
-                                amountItem.usernames.map(async targetUsername => {
-                                    const targetUserInfo = await ctx.model.User.findOne({ username: targetUsername });
-                                    if (targetUserInfo) {
-                                        targetUserInfos.push(targetUserInfo);
-                                    } else {
-                                        response.message = MsgType.USER_NOT_DOUND;
-                                        ctx.body = response;
-                                        throw new Error(MsgType.USER_NOT_DOUND);
-                                    }
-                                })
-                            );
+                            const targetUserInfo = await ctx.model.User.findOne({ username: amountItem.username });
+                            if (targetUserInfo) {
+                                targetUserInfos.push(targetUserInfo);
+                            } else {
+                                response.message = MsgType.USER_NOT_DOUND;
+                                ctx.body = response;
+                                throw new Error(MsgType.USER_NOT_DOUND);
+                            }
                         })
                     );
                 } catch (error) {

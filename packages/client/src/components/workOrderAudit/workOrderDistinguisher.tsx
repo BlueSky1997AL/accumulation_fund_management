@@ -21,21 +21,9 @@ export default function (contentSpan: number, labelSpan: number, workOrder?: Wor
                 />
             );
         case WorkOrderType.EnterpriseBack:
-            return (
-                <EnterpriseFundBack
-                    contentSpan={contentSpan}
-                    labelSpan={labelSpan}
-                    workOrder={workOrder as WorkOrderWithUserInfo}
-                />
-            );
+            return <EnterpriseFundBack contentSpan={contentSpan} labelSpan={labelSpan} workOrder={workOrder} />;
         case WorkOrderType.Remit:
-            return (
-                <EnterpriseFundRemit
-                    contentSpan={contentSpan}
-                    labelSpan={labelSpan}
-                    jsonStr={workOrder && workOrder.payload}
-                />
-            );
+            return <EnterpriseFundRemit contentSpan={contentSpan} labelSpan={labelSpan} workOrder={workOrder} />;
         case WorkOrderType.Draw:
             return (
                 <PersonalFundDraw

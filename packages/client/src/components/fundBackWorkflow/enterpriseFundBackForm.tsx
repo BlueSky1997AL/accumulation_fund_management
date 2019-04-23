@@ -1,14 +1,13 @@
 import { Button, DatePicker, Form, Icon, Input, Upload } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
+import { UploadChangeParam } from 'antd/lib/upload';
+import { UploadFile } from 'antd/lib/upload/interface';
 import Cookies from 'js-cookie';
 import { Moment } from 'moment';
 import React from 'react';
+import { FileInfo } from '~server/app/util/interface/file';
 
 const { MonthPicker } = DatePicker;
-
-import { UploadChangeParam } from 'antd/lib/upload';
-import { UploadFile } from 'antd/lib/upload/interface';
-import { FileInfo } from '~server/app/util/interface/file';
 
 import { uploadFilesToFileInfos } from '~utils/file';
 

@@ -10,7 +10,7 @@ import { MsgType } from '~server/app/util/interface/common';
 import { WorkOrderWithUserInfo } from '~server/app/util/interface/workOrder';
 
 import { getTargetSubUserInfo } from '~components/enterpriseSubUserRemoveWorkflow/request';
-import { moneyToHumanReadable, userStatusToString } from '~utils/user';
+import { enterpriseTypeToString, moneyToHumanReadable, userStatusToString } from '~utils/user';
 
 interface EnterpriseFundBackProps {
     workOrder?: WorkOrderWithUserInfo;
@@ -132,6 +132,14 @@ function EnterpriseFundBack ({ workOrder, labelSpan, contentSpan }: EnterpriseFu
                 </Col>
                 <Col span={contentSpan} className="info-text">
                     {workOrder && workOrder.owner.name}
+                </Col>
+            </Row>
+            <Row className="info-row">
+                <Col span={labelSpan} className="info-text info-label">
+                    企业类型：
+                </Col>
+                <Col span={contentSpan} className="info-text">
+                    {enterpriseTypeToString(workOrder && workOrder.owner.entType)}
                 </Col>
             </Row>
             <Row className="info-row">
