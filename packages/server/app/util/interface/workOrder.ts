@@ -41,6 +41,7 @@ export enum WorkOrderStatus {
 export enum WorkOrderType {
     EnterpriseBack,
     PersonalBack,
+    PersonalDeposit,
     Remit,
     Draw,
     DisableOrExport,

@@ -4,6 +4,7 @@ import { EnterpriseSubUserAddSubmitData } from '../../../client/src/components/e
 import { EnterpriseSubUserRemoveSubmitData } from '../../../client/src/components/enterpriseSubUserRemoveWorkflow';
 import { EnterpriseFundBackSubmitData } from '../../../client/src/components/fundBackWorkflow/enterpriseFundBackForm';
 import { PersonalFundBackSubmitData } from '../../../client/src/components/fundBackWorkflow/personalFundBackForm';
+import { PersonalFundDepositSubmitData } from '../../../client/src/components/fundDepositWorkflow/personalFundDepositForm';
 import { PersonalFundDrawSubmitData } from '../../../client/src/components/fundDrawWorkflow/personalFundDrawForm';
 import { EnterpriseFundRemitSubmitData } from '../../../client/src/components/fundRemitWorkflow/enterpriseFundRemitForm';
 import { SignUpSubmitData } from '../../../client/src/components/signup';
@@ -20,6 +21,9 @@ export default class WorkOrderService extends Service {
             }
             case WorkOrderType.EnterpriseBack: {
                 return await this.execEnterpriseBack(workOrder);
+            }
+            case WorkOrderType.PersonalDeposit: {
+                return await this.execPersonalDeposit(workOrder);
             }
             case WorkOrderType.Remit: {
                 return await this.execEnterpriseRemit(workOrder);
@@ -45,6 +49,33 @@ export default class WorkOrderService extends Service {
             case WorkOrderType.SignUp: {
                 return await this.execSignUp(workOrder);
             }
+        }
+        return null;
+    }
+
+    public async execPersonalDeposit(workOrder: WorkOrder) {
+        const { ctx } = this;
+        const { payload, owner } = workOrder;
+        if (payload) {
+            const ownerInfo = (await ctx.model.User.findOne({ _id: owner })) as UserInDB;
+            const execData = JSON.parse(payload) as PersonalFundDepositSubmitData;
+
+            const amountChange = (await ctx.model.AmountChange.create({
+                owner,
+                amount: execData.amount,
+                type: AmountChangeType.Positive,
+                source: AmountChangeSource.PersonalDeposit,
+                payload: JSON.stringify({
+                    month: execData.month
+                })
+            })) as AmountChangeInDB;
+            await ctx.model.User.update(
+                { _id: owner },
+                {
+                    balance: ownerInfo.balance + execData.amount,
+                    amountChanges: [ ...ownerInfo.amountChanges!, amountChange._id ]
+                }
+            );
         }
         return null;
     }

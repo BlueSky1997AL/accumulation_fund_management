@@ -8,7 +8,7 @@ const SubMenu = Menu.SubMenu;
 import './index.less';
 
 import { MsgType } from '~server/app/util/interface/common';
-import { UserType } from '~server/app/util/interface/user';
+import { PersonType, UserType } from '~server/app/util/interface/user';
 
 import { userTypeToString } from '~utils/user';
 import { logout } from './request';
@@ -19,6 +19,7 @@ interface FrameProps {
 
 function Frame ({ children }: FrameProps) {
     const userType = window.userType as UserType;
+    const personType = window.personType as PersonType;
 
     const [ sideBarCollapsed, setCollapseState ] = useState(false);
 
@@ -59,7 +60,7 @@ function Frame ({ children }: FrameProps) {
     }
 
     function getSiderMenuByUserType (type: UserType) {
-        switch (userType) {
+        switch (type) {
             case UserType.Admin: {
                 return (
                     <Menu
@@ -101,6 +102,62 @@ function Frame ({ children }: FrameProps) {
                 );
             }
             case UserType.Common: {
+                if (personType === PersonType.IndividualBusiness) {
+                    return (
+                        <Menu
+                            theme="dark"
+                            defaultSelectedKeys={[ getSelectedKey() ]}
+                            defaultOpenKeys={[ '/account', '/work_order', '/fund' ]}
+                            mode="inline"
+                        >
+                            <SubMenu
+                                key="/account"
+                                title={
+                                    <span>
+                                        <Icon type="user" />
+                                        <span>账户管理</span>
+                                    </span>
+                                }
+                            >
+                                <Menu.Item key="/account/info">
+                                    <Link to="/account/info">账户信息</Link>
+                                </Menu.Item>
+                            </SubMenu>
+                            <SubMenu
+                                key="/work_order"
+                                title={
+                                    <span>
+                                        <Icon type="tags" />
+                                        <span>工单管理</span>
+                                    </span>
+                                }
+                            >
+                                <Menu.Item key="/work_order/mine">
+                                    <Link to="/work_order/mine">我的工单</Link>
+                                </Menu.Item>
+                            </SubMenu>
+                            <SubMenu
+                                key="/fund"
+                                title={
+                                    <span>
+                                        <Icon type="money-collect" />
+                                        <span>公积金管理</span>
+                                    </span>
+                                }
+                            >
+                                <Menu.Item key="/fund/deposit">
+                                    <Link to="/fund/deposit">缴存</Link>
+                                </Menu.Item>
+                                <Menu.Item key="/fund/back">
+                                    <Link to="/fund/back">补缴</Link>
+                                </Menu.Item>
+                                <Menu.Item key="/fund/draw">
+                                    <Link to="/fund/draw">支取</Link>
+                                </Menu.Item>
+                            </SubMenu>
+                        </Menu>
+                    );
+                }
                 return (
                     <Menu
                         theme="dark"
@@ -143,9 +200,6 @@ function Frame ({ children }: FrameProps) {
                                 </span>
                             }
                         >
-                            <Menu.Item key="/fund/back">
-                                <Link to="/fund/back">补缴</Link>
-                            </Menu.Item>
                             <Menu.Item key="/fund/draw">
                                 <Link to="/fund/draw">支取</Link>
                             </Menu.Item>

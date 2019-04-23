@@ -7,6 +7,7 @@ export default class HomeController extends Controller {
         await ctx.render('index.html', {
             username: ctx.session.username,
             userType: ctx.session.userType,
+            personType: ctx.session.personType || 'undefined',
             name: ctx.session.name
         });
     }

@@ -7,6 +7,7 @@ import { EnterpriseSubUserAddSubmitData } from '../../../client/src/components/e
 import { EnterpriseSubUserRemoveSubmitData } from '../../../client/src/components/enterpriseSubUserRemoveWorkflow';
 import { EnterpriseFundBackSubmitData } from '../../../client/src/components/fundBackWorkflow/enterpriseFundBackForm';
 import { PersonalFundBackSubmitData } from '../../../client/src/components/fundBackWorkflow/personalFundBackForm';
+import { PersonalFundDepositSubmitData } from '../../../client/src/components/fundDepositWorkflow/personalFundBackForm';
 import { PersonalFundDrawSubmitData } from '../../../client/src/components/fundDrawWorkflow/personalFundDrawForm';
 import { EnterpriseFundRemitSubmitData } from '../../../client/src/components/fundRemitWorkflow/enterpriseFundRemitForm';
 import { SignUpSubmitData } from '../../../client/src/components/signup';
@@ -268,6 +269,47 @@ export default class WorkOrderController extends Controller {
                 console.error(error);
                 response.message = MsgType.OPT_FAILED;
             }
+        }
+        ctx.body = response;
+    }
+
+    public async creactPersonalFundDepositWorkOrder() {
+        const { ctx } = this;
+        const { month, amount, comments, accessory } = ctx.request.body as PersonalFundDepositSubmitData;
+        const { username } = ctx.session;
+
+        const response: ResponseData<WorkOrder | null> = {
+            message: MsgType.UNKNOWN_ERR,
+            data: null
+        };
+
+        const userInfo = (await ctx.model.User.findOne({ username })) as User;
+        if (userInfo.type === UserType.Common && userInfo.personType === PersonType.IndividualBusiness) {
+            const payload = JSON.stringify({ month, amount, comments, accessory });
+            const workOrder: WorkOrder = {
+                status: WorkOrderStatus.Open,
+                type: WorkOrderType.PersonalDeposit,
+                owner: userInfo['_id'],
+                payload
+            };
+
+            try {
+                const createdDoc = await ctx.model.WorkOrder.create(workOrder);
+                if (userInfo.workOrders) {
+                    userInfo.workOrders.push(createdDoc['_id']);
+                } else {
+                    userInfo.workOrders = [ createdDoc['_id'] ];
+                }
+                await ctx.model.User.update({ _id: userInfo['_id'] }, userInfo);
+
+                response.message = MsgType.OPT_SUCCESS;
+                response.data = createdDoc;
+            } catch (error) {
+                console.error(error);
+                response.message = MsgType.OPT_FAILED;
+            }
+        } else {
+            response.message = MsgType.NO_PERMISSION;
         }
         ctx.body = response;
     }

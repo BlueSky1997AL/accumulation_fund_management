@@ -2,7 +2,7 @@ import { Exception } from 'ant-design-pro';
 import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
-import { UserType } from '~server/app/util/interface/user';
+import { PersonType, UserType } from '~server/app/util/interface/user';
 import { WorkOrderType } from '~server/app/util/interface/workOrder';
 
 import { Card } from 'antd';
@@ -14,6 +14,7 @@ import EnterpriseSubUserRemoveWorkflow from './enterpriseSubUserRemoveWorkflow';
 import EnterpriseUserList from './enterpriseUserList';
 import Frame from './frame';
 import FundBackWorkflow from './fundBackWorkflow';
+import FundDepositWorkflow from './fundDepositWorkflow';
 import FundDrawWorkFlow from './fundDrawWorkflow';
 import FundRemitWorkflow from './fundRemitWorkflow';
 import PasswordModification from './passwordModification';
@@ -49,6 +50,7 @@ function DisableWorkflow () {
 
 export default function () {
     const userType = window.userType as UserType;
+    const personType = window.personType as PersonType;
 
     function getRoutesByUserType (type: UserType) {
         switch (type) {
@@ -56,7 +58,12 @@ export default function () {
                 return [
                     <Route key="/account/list" exact={true} path="/account/list" component={UserAdminList} />,
                     <Route key="/account/create" exact={true} path="/account/create" component={AccountCreateForm} />,
-                    <Route key="/account/password" exact={true} path="/account/password" component={PasswordModification} />,
+                    <Route
+                        key="/account/password"
+                        exact={true}
+                        path="/account/password"
+                        component={PasswordModification}
+                    />,
                     <Route
                         key="/account/:userID/edit"
                         path="/account/:userID/edit"
@@ -80,9 +87,57 @@ export default function () {
                 ];
             }
             case UserType.Common: {
+                if (personType === PersonType.IndividualBusiness) {
+                    return [
+                        <Route key="/account/freeze" exact={true} path="/account/freeze" component={FreezeWorkflow} />,
+                        <Route
+                            key="/account/password"
+                            exact={true}
+                            path="/account/password"
+                            component={PasswordModification}
+                        />,
+                        <Route
+                            key="/account/unfreeze"
+                            exact={true}
+                            path="/account/unfreeze"
+                            component={UnfreezeWorkflow}
+                        />,
+                        <Route
+                            key="/account/disable"
+                            exact={true}
+                            path="/account/disable"
+                            component={DisableWorkflow}
+                        />,
+                        <Route
+                            key="/work_order/mine"
+                            exact={true}
+                            path="/work_order/mine"
+                            component={MineWorkOrderList}
+                        />,
+                        <Route
+                            key="/work_order/:workOrderID/detail"
+                            path="/work_order/:workOrderID/detail"
+                            render={({ match }) => {
+                                return (
+                                    <Card title="工单详情">
+                                        <WorkflowFrame workOrderID={match.params.workOrderID} />
+                                    </Card>
+                                );
+                            }}
+                        />,
+                        <Route key="/fund/deposit" exact={true} path="/fund/deposit" component={FundDepositWorkflow} />,
+                        <Route key="/fund/back" exact={true} path="/fund/back" component={FundBackWorkflow} />,
+                        <Route key="/fund/draw" exact={true} path="/fund/draw" component={FundDrawWorkFlow} />
+                    ];
+                }
                 return [
                     <Route key="/account/freeze" exact={true} path="/account/freeze" component={FreezeWorkflow} />,
-                    <Route key="/account/password" exact={true} path="/account/password" component={PasswordModification} />,
+                    <Route
+                        key="/account/password"
+                        exact={true}
+                        path="/account/password"
+                        component={PasswordModification}
+                    />,
                     <Route
                         key="/account/unfreeze"
                         exact={true}
@@ -102,14 +157,18 @@ export default function () {
                             );
                         }}
                     />,
-                    <Route key="/fund/back" exact={true} path="/fund/back" component={FundBackWorkflow} />,
                     <Route key="/fund/draw" exact={true} path="/fund/draw" component={FundDrawWorkFlow} />
                 ];
             }
             case UserType.Enterprise: {
                 return [
                     <Route key="/account/list" exact={true} path="/account/list" component={EnterpriseUserList} />,
-                    <Route key="/account/password" exact={true} path="/account/password" component={PasswordModification} />,
+                    <Route
+                        key="/account/password"
+                        exact={true}
+                        path="/account/password"
+                        component={PasswordModification}
+                    />,
                     <Route key="/account/freeze" exact={true} path="/account/freeze" component={FreezeWorkflow} />,
                     <Route
                         key="/account/unfreeze"

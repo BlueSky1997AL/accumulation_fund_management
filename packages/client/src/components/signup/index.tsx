@@ -204,7 +204,7 @@ function SignUpView (props: FormComponentProps) {
                     })(
                         <RadioGroup>
                             <Radio value={PersonType.Employees}>企业职员</Radio>
-                            <Radio value={PersonType.IndividualBusiness}>个体工商户</Radio>
+                            <Radio value={PersonType.IndividualBusiness}>个体工商户 / 自由职业者</Radio>
                         </RadioGroup>
                     )}
                 </Form.Item>

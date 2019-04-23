@@ -62,7 +62,7 @@ export function personTypeToString (personType?: PersonType) {
         case PersonType.Employees:
             return '企业职员';
         case PersonType.IndividualBusiness:
-            return '个体工商户';
+            return '个体工商户 / 自由职业者';
         default:
             return '未知个人账户类型';
     }

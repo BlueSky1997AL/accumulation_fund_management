@@ -40,6 +40,7 @@ export default class UserController extends Controller {
             ctx.session.username = username;
             ctx.session.password = password;
             ctx.session.userType = userInfo.type;
+            ctx.session.personType = userInfo.personType;
             ctx.session.name = userInfo.name;
             response.message = MsgType.LOGIN_SUCCESS;
         } else if (!userInfo) {

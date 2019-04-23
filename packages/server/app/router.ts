@@ -53,6 +53,12 @@ export default (app: Application) => {
         controller.workOrder.creactPersonalFundBackWorkOrder
     );
     router.post(
+        '/api/work_order/fund/deposit/personal/create',
+        authCheckMiddleware,
+        userProtectionMiddleware,
+        controller.workOrder.creactPersonalFundDepositWorkOrder
+    );
+    router.post(
         '/api/work_order/fund/remit/enterprise/create',
         authCheckMiddleware,
         userProtectionMiddleware,
