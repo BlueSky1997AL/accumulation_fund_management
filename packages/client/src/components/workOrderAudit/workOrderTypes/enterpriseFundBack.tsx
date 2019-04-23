@@ -128,10 +128,10 @@ function EnterpriseFundBack ({ workOrder, labelSpan, contentSpan }: EnterpriseFu
         <div>
             <Row className="info-row">
                 <Col span={labelSpan} className="info-text info-label">
-                    补缴月份：
+                    企业名称：
                 </Col>
                 <Col span={contentSpan} className="info-text">
-                    {getMonth()}
+                    {workOrder && workOrder.owner.name}
                 </Col>
             </Row>
             <Row className="info-row">
@@ -140,6 +140,14 @@ function EnterpriseFundBack ({ workOrder, labelSpan, contentSpan }: EnterpriseFu
                 </Col>
                 <Col span={contentSpan} className="info-text">
                     {workOrder && workOrder.owner.cardNo}
+                </Col>
+            </Row>
+            <Row className="info-row">
+                <Col span={labelSpan} className="info-text info-label">
+                    补缴月份：
+                </Col>
+                <Col span={contentSpan} className="info-text">
+                    {getMonth()}
                 </Col>
             </Row>
             <Row className="info-row">

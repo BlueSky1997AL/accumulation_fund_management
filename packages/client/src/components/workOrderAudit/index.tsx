@@ -7,6 +7,7 @@ import './index.less';
 import { MsgType } from '~server/app/util/interface/common';
 import { WorkOrderStatus, WorkOrderWithUserInfo } from '~server/app/util/interface/workOrder';
 
+import { UserType } from '~server/app/util/interface/user';
 import { getWorkOrderInfo } from '~utils/commonRequest';
 import { userStatusToString, userTypeToString } from '~utils/user';
 import { workOrderStatusToString, workOrderTypeToString } from '~utils/workOrder';
@@ -122,6 +123,20 @@ function WorkOrderAudit ({ workOrderID, history }: WorkOrderAuditProps) {
         );
     }
 
+    function getCreatorLabelContent () {
+        switch (workOrderInfo && workOrderInfo.owner.type) {
+            case UserType.Enterprise: {
+                return '创建人统一社会信用代码';
+            }
+            case UserType.Common: {
+                return '创建人身份证号';
+            }
+            default: {
+                return '创建人用户名';
+            }
+        }
+    }
+
     const labelSpan = 9;
     const contentSpan = 24 - labelSpan;
 
@@ -140,7 +155,7 @@ function WorkOrderAudit ({ workOrderID, history }: WorkOrderAuditProps) {
                 <div className="info-container">
                     <Row className="info-row">
                         <Col span={labelSpan} className="info-text info-label">
-                            创建人：
+                            {getCreatorLabelContent()}：
                         </Col>
                         <Col span={contentSpan} className="info-text">
                             {workOrderInfo && workOrderInfo.owner.username}
@@ -164,7 +179,7 @@ function WorkOrderAudit ({ workOrderID, history }: WorkOrderAuditProps) {
                     </Row>
                     <Row className="info-row">
                         <Col span={labelSpan} className="info-text info-label">
-                            状态：
+                            工单状态：
                         </Col>
                         <Col span={contentSpan} className="info-text">
                             {workOrderStatusToString(workOrderInfo && workOrderInfo.status)}
@@ -172,7 +187,7 @@ function WorkOrderAudit ({ workOrderID, history }: WorkOrderAuditProps) {
                     </Row>
                     <Row className="info-row">
                         <Col span={labelSpan} className="info-text info-label">
-                            类型：
+                            工单类型：
                         </Col>
                         <Col span={contentSpan} className="info-text">
                             {workOrderTypeToString(workOrderInfo && workOrderInfo.type)}
