@@ -42,7 +42,7 @@ function FundDepositWorkflow () {
 
     return (
         <div className="fund-deposit-workflow-container">
-            <Card title="新建补缴工单" bodyStyle={{ height: '100%', width: '100%' }} extra={getCardExtraInfo()}>
+            <Card title="新建缴存工单" bodyStyle={{ height: '100%', width: '100%' }} extra={getCardExtraInfo()}>
                 <WorkflowFrame data={currentWorkOrder}>
                     <PersonalFundDepositForm onSubmit={data => handleSubmitPersonalFundDepositWorkOrder(data)} />
                 </WorkflowFrame>

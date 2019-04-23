@@ -1,4 +1,5 @@
 import { Col, Row } from 'antd/es/grid';
+import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 
 import FileDownloadButton from '~components/fileDownloadButton';
@@ -31,6 +32,13 @@ function PersonalFundDeposit ({ workOrder, labelSpan, contentSpan }: PersonalFun
         [ workOrder ]
     );
 
+    function getMonth () {
+        if (data) {
+            return moment(data.month).format('YYYY-MM');
+        }
+        return null;
+    }
+
     return (
         <div>
             <Row className="info-row">
@@ -59,10 +67,18 @@ function PersonalFundDeposit ({ workOrder, labelSpan, contentSpan }: PersonalFun
             </Row>
             <Row className="info-row">
                 <Col span={labelSpan} className="info-text info-label">
-                    金额（元/人民币）：
+                    缴存月份：
                 </Col>
                 <Col span={contentSpan} className="info-text">
-                    {moneyToHumanReadable(data && data.amount)}
+                    {getMonth()}
+                </Col>
+            </Row>
+            <Row className="info-row">
+                <Col span={labelSpan} className="info-text info-label">
+                    缴存金额：
+                </Col>
+                <Col span={contentSpan} className="info-text">
+                    {`${moneyToHumanReadable(data && data.amount)}元`}
                 </Col>
             </Row>
             <Row className="info-row">

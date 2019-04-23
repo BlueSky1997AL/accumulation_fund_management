@@ -1,4 +1,5 @@
 import { Button, Card, Col, Divider, Input, notification, Row } from 'antd';
+import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 
@@ -137,6 +138,36 @@ function WorkOrderAudit ({ workOrderID, history }: WorkOrderAuditProps) {
         }
     }
 
+    function getAuditTimestampRow () {
+        if (workOrderInfo && workOrderInfo.status !== WorkOrderStatus.Open) {
+            return (
+                <Row className="info-row">
+                    <Col span={labelSpan} className="info-text info-label">
+                        工单审核时间：
+                    </Col>
+                    <Col span={contentSpan} className="info-text">
+                        {moment(workOrderInfo.auditTimestamp).format('YYYY-MM-DD HH:mm:ss')}
+                    </Col>
+                </Row>
+            );
+        }
+    }
+
+    function getCreateTimestampRow () {
+        if (workOrderInfo) {
+            return (
+                <Row className="info-row">
+                    <Col span={labelSpan} className="info-text info-label">
+                        工单创建时间：
+                    </Col>
+                    <Col span={contentSpan} className="info-text">
+                        {moment(workOrderInfo.createdAt).format('YYYY-MM-DD HH:mm:ss')}
+                    </Col>
+                </Row>
+            );
+        }
+    }
+
     const labelSpan = 9;
     const contentSpan = 24 - labelSpan;
 
@@ -159,6 +190,8 @@ function WorkOrderAudit ({ workOrderID, history }: WorkOrderAuditProps) {
                 }
             >
                 <div className="info-container">
+                    {getCreateTimestampRow()}
+                    {getAuditTimestampRow()}
                     <Row className="info-row">
                         <Col span={labelSpan} className="info-text info-label">
                             {getCreatorLabelContent()}：
