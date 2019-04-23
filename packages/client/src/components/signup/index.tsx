@@ -14,6 +14,7 @@ import { UploadFile } from 'antd/lib/upload/interface';
 import { MsgType } from '~server/app/util/interface/common';
 import { FileInfo } from '~server/app/util/interface/file';
 import { EnterpriseType, PersonType, UserType } from '~server/app/util/interface/user';
+import { WorkOrderInDB } from '~server/app/util/interface/workOrder';
 
 import idNoChecker from '~server/app/util/idNoChecker';
 import { uploadFilesToFileInfos } from '~utils/file';
@@ -42,6 +43,7 @@ function SignUpView (props: FormComponentProps) {
     const [ submitted, setSubmitted ] = useState(false);
     const [ currentUserType, setCurrentUserType ] = useState<UserType>();
     const [ currentPersonType, setCurrentPersonType ] = useState<PersonType>();
+    const [ createdWorkOrder, setCreatedWorkOrder ] = useState<WorkOrderInDB>();
 
     useEffect(() => {
         const userType = getFieldValue('type') as UserType;
@@ -79,6 +81,7 @@ function SignUpView (props: FormComponentProps) {
                     throw new Error(resp.message);
                 }
                 setSubmitted(true);
+                setCreatedWorkOrder(resp.data);
             } catch (error) {
                 notification.error({
                     message: (error as Error).message
@@ -367,6 +370,18 @@ function SignUpView (props: FormComponentProps) {
         }
     }
 
+    function getCardExtraInfo () {
+        if (createdWorkOrder) {
+            return (
+                <div>
+                    <span className="id-zone">工单唯一标识：</span>
+                    <span className="id-zone">{createdWorkOrder._id}</span>
+                </div>
+            );
+        }
+        return null;
+    }
+
     const buttonStyle: React.CSSProperties = {
         width: 150
     };
@@ -378,6 +393,7 @@ function SignUpView (props: FormComponentProps) {
                 title="账户创建申请"
                 style={{ width: 768 }}
                 bodyStyle={{ height: '100%', width: '100%' }}
+                extra={getCardExtraInfo()}
             >
                 {getCardContent()}
             </Card>

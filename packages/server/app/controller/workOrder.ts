@@ -832,7 +832,7 @@ export default class WorkOrderController extends Controller {
             accessory
         } = ctx.request.body as SignUpSubmitData;
 
-        const response: ResponseData<WorkOrder | null> = {
+        const response: ResponseData<WorkOrderInDB | null> = {
             message: MsgType.UNKNOWN_ERR,
             data: null
         };

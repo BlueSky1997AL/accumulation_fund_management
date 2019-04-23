@@ -151,6 +151,12 @@ function WorkOrderAudit ({ workOrderID, history }: WorkOrderAuditProps) {
                     justifyContent: 'center',
                     alignItems: 'center'
                 }}
+                extra={
+                    <div>
+                        <span className="id-zone">工单唯一标识：</span>
+                        <span className="id-zone">{workOrderInfo && workOrderInfo._id}</span>
+                    </div>
+                }
             >
                 <div className="info-container">
                     <Row className="info-row">

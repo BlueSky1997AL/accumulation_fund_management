@@ -17,14 +17,16 @@ export function workOrderStatusToString (workOrderStatus?: WorkOrderStatus) {
 
 export function workOrderTypeToString (workOrderType?: WorkOrderType) {
     switch (workOrderType) {
-        case WorkOrderType.PersonalBack:
-            return '个人补缴';
         case WorkOrderType.EnterpriseBack:
             return '企业补缴';
         case WorkOrderType.Remit:
             return '企业汇缴';
+        case WorkOrderType.PersonalBack:
+            return '个人补缴';
         case WorkOrderType.Draw:
             return '个人支取';
+        case WorkOrderType.PersonalDeposit:
+            return '个人缴存';
         case WorkOrderType.DisableOrExport:
             return '注销/调出';
         case WorkOrderType.Freeze:

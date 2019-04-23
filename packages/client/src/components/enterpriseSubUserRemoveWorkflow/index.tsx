@@ -92,12 +92,24 @@ function EnterpriseSubUserRemoveWorkflow ({ userID, form }: EnterpriseSubUserRem
         return e && e.fileList;
     }
 
+    function getCardExtraInfo () {
+        if (currentWorkOrder) {
+            return (
+                <div>
+                    <span className="id-zone">工单唯一标识：</span>
+                    <span className="id-zone">{currentWorkOrder._id}</span>
+                </div>
+            );
+        }
+        return null;
+    }
+
     const labelSpan = 6;
     const contentSpan = 24 - labelSpan;
 
     return (
         <div className="enterprise-sub-user-remove-workflow-container">
-            <Card title="新建移除/转出子账户工单" bodyStyle={{ height: '100%', width: '100%' }}>
+            <Card title="新建移除/转出子账户工单" bodyStyle={{ height: '100%', width: '100%' }} extra={getCardExtraInfo()}>
                 <WorkflowFrame data={currentWorkOrder}>
                     <div
                         style={{

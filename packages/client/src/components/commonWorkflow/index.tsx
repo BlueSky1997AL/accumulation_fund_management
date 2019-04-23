@@ -84,9 +84,21 @@ function CommonWorkflow ({ workOrderType, form }: CommonWorkflowProps) {
         }
     }
 
+    function getCardExtraInfo () {
+        if (currentWorkOrder) {
+            return (
+                <div>
+                    <span className="id-zone">工单唯一标识：</span>
+                    <span className="id-zone">{currentWorkOrder._id}</span>
+                </div>
+            );
+        }
+        return null;
+    }
+
     return (
         <div className="common-workflow-container">
-            <Card title={getWorkOrderTitle()} bodyStyle={{ height: '100%', width: '100%' }}>
+            <Card title={getWorkOrderTitle()} bodyStyle={{ height: '100%', width: '100%' }} extra={getCardExtraInfo()}>
                 <WorkflowFrame data={currentWorkOrder}>
                     <Form
                         style={{

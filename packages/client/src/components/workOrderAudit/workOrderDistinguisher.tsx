@@ -7,6 +7,7 @@ import EnterpriseFundRemit from './workOrderTypes/enterpriseFundRemit';
 import EnterpriseSubUserAdd from './workOrderTypes/enterpriseSubUserAdd';
 import EnterpriseSubUserRemove from './workOrderTypes/enterpriseSubUserRemove';
 import PersonalFundBack from './workOrderTypes/personalFundBack';
+import PersonalFundDeposit from './workOrderTypes/personalFundDeposit';
 import PersonalFundDraw from './workOrderTypes/personalFundDraw';
 import SignUp from './workOrderTypes/signup';
 
@@ -20,6 +21,8 @@ export default function (contentSpan: number, labelSpan: number, workOrder?: Wor
                     jsonStr={workOrder && workOrder.payload}
                 />
             );
+        case WorkOrderType.PersonalDeposit:
+            return <PersonalFundDeposit contentSpan={contentSpan} labelSpan={labelSpan} workOrder={workOrder} />;
         case WorkOrderType.EnterpriseBack:
             return <EnterpriseFundBack contentSpan={contentSpan} labelSpan={labelSpan} workOrder={workOrder} />;
         case WorkOrderType.Remit:

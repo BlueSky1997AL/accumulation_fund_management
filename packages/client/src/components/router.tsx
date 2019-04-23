@@ -2,6 +2,8 @@ import { Exception } from 'ant-design-pro';
 import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 
+import './router.less';
+
 import { PersonType, UserType } from '~server/app/util/interface/user';
 import { WorkOrderType } from '~server/app/util/interface/workOrder';
 
@@ -119,7 +121,15 @@ export default function () {
                             path="/work_order/:workOrderID/detail"
                             render={({ match }) => {
                                 return (
-                                    <Card title="工单详情">
+                                    <Card
+                                        title="工单详情"
+                                        extra={
+                                            <div>
+                                                <span className="id-zone">工单唯一标识：</span>
+                                                <span className="id-zone">{match.params.workOrderID}</span>
+                                            </div>
+                                        }
+                                    >
                                         <WorkflowFrame workOrderID={match.params.workOrderID} />
                                     </Card>
                                 );
@@ -151,7 +161,15 @@ export default function () {
                         path="/work_order/:workOrderID/detail"
                         render={({ match }) => {
                             return (
-                                <Card title="工单详情">
+                                <Card
+                                    title="工单详情"
+                                    extra={
+                                        <div>
+                                            <span className="id-zone">工单唯一标识：</span>
+                                            <span className="id-zone">{match.params.workOrderID}</span>
+                                        </div>
+                                    }
+                                >
                                     <WorkflowFrame workOrderID={match.params.workOrderID} />
                                 </Card>
                             );
@@ -196,7 +214,15 @@ export default function () {
                         path="/work_order/:workOrderID/detail"
                         render={({ match }) => {
                             return (
-                                <Card title="工单详情">
+                                <Card
+                                    title="工单详情"
+                                    extra={
+                                        <div>
+                                            <span className="id-zone">工单唯一标识：</span>
+                                            <span className="id-zone">{match.params.workOrderID}</span>
+                                        </div>
+                                    }
+                                >
                                     <WorkflowFrame workOrderID={match.params.workOrderID} />
                                 </Card>
                             );
