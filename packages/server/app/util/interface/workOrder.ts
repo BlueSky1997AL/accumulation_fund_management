@@ -1,4 +1,4 @@
-import { UserStatus, UserType } from './user';
+import { EnterpriseType, PersonType, UserStatus, UserType } from './user';
 
 type objectID = string;
 
@@ -19,16 +19,26 @@ export interface WorkOrderInDB extends WorkOrder {
 }
 
 export interface WorkOrderWithUserInfo {
+    _id: objectID;
     status: WorkOrderStatus;
     type: WorkOrderType;
     owner: {
         username: string;
+        name: string;
+        cardNo?: string;
+        employeeID?: string;
+        employerID?: objectID;
         type: UserType;
+        entType?: EnterpriseType;
+        personType?: PersonType;
         status: UserStatus;
     };
     comments?: string;
     auditer?: objectID;
+    auditTimestamp?: Date;
     payload?: string;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 export enum WorkOrderStatus {

@@ -43,13 +43,13 @@ function workOrderStatusToWorkflowStatus (status: WorkOrderStatus) {
 }
 
 interface WorkflowFrameProps {
-    data?: WorkOrder | WorkOrderWithUserInfo;
+    data?: WorkOrderWithUserInfo;
     workOrderID?: string;
     children?: JSX.Element | string;
 }
 
 function WorkflowFrame ({ data, children, workOrderID }: WorkflowFrameProps) {
-    const [ workOrderData, setWorkOrderData ] = useState<WorkOrder | WorkOrderWithUserInfo>();
+    const [ workOrderData, setWorkOrderData ] = useState<WorkOrderWithUserInfo>();
     const [ currentStep, setCurrentStep ] = useState(0);
     const [ currentStatus, setCurrentStatus ] = useState<'wait' | 'process' | 'finish' | 'error'>('wait');
     const [ currentDisplayStep, setCurrentDisplayStep ] = useState(0);
@@ -173,12 +173,7 @@ function WorkflowFrame ({ data, children, workOrderID }: WorkflowFrameProps) {
                                     {workOrderTypeToString(workOrderData && workOrderData.type)}
                                 </Col>
                             </Row>
-                            {getWorkOrderDetailComponent(
-                                contentSpan,
-                                labelSpan,
-                                workOrderData && workOrderData.payload,
-                                workOrderData && workOrderData.type
-                            )}
+                            {getWorkOrderDetailComponent(contentSpan, labelSpan, workOrderData)}
                         </div>
                     }
                     style={{

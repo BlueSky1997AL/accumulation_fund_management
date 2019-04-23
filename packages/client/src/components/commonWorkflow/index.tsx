@@ -11,7 +11,7 @@ import { UploadChangeParam } from 'antd/lib/upload';
 import { UploadFile } from 'antd/lib/upload/interface';
 import { MsgType } from '~server/app/util/interface/common';
 import { FileInfo } from '~server/app/util/interface/file';
-import { WorkOrder, WorkOrderType } from '~server/app/util/interface/workOrder';
+import { WorkOrderType, WorkOrderWithUserInfo } from '~server/app/util/interface/workOrder';
 
 import { uploadFilesToFileInfos } from '~utils/file';
 import { createCommonWorkOrder } from './request';
@@ -31,7 +31,7 @@ interface CommonWorkflowProps extends FormComponentProps {
 function CommonWorkflow ({ workOrderType, form }: CommonWorkflowProps) {
     const { getFieldDecorator, validateFields } = form;
 
-    const [ currentWorkOrder, setCurrentWorkOrder ] = useState<WorkOrder>();
+    const [ currentWorkOrder, setCurrentWorkOrder ] = useState<WorkOrderWithUserInfo>();
 
     async function handleSubmitCommonWorkOrder (payload: CommonWorkOrderSubmitData) {
         try {

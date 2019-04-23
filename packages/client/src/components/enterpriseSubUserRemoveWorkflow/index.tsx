@@ -12,7 +12,7 @@ import { UploadFile } from 'antd/lib/upload/interface';
 import { UserInfoRespData } from '~server/app/controller/user';
 import { MsgType } from '~server/app/util/interface/common';
 import { FileInfo } from '~server/app/util/interface/file';
-import { WorkOrder } from '~server/app/util/interface/workOrder';
+import { WorkOrderWithUserInfo } from '~server/app/util/interface/workOrder';
 
 import { uploadFilesToFileInfos } from '~utils/file';
 import { userStatusToString, userTypeToString } from '~utils/user';
@@ -33,7 +33,7 @@ interface EnterpriseSubUserRemoveWorkflowProps extends FormComponentProps {
 function EnterpriseSubUserRemoveWorkflow ({ userID, form }: EnterpriseSubUserRemoveWorkflowProps) {
     const { getFieldDecorator, validateFields } = form;
 
-    const [ currentWorkOrder, setCurrentWorkOrder ] = useState<WorkOrder>();
+    const [ currentWorkOrder, setCurrentWorkOrder ] = useState<WorkOrderWithUserInfo>();
     const [ targetUserInfo, setTargetUserInfo ] = useState<UserInfoRespData>();
 
     async function fetchUserInfo (id: string) {

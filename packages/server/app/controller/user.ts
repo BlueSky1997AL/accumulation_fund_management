@@ -108,18 +108,34 @@ export default class UserController extends Controller {
     public async getTargetUserInfo() {
         const { ctx } = this;
         const { username } = ctx.session;
-        const { userID } = ctx.query;
+        const { userID, username: targetUsername } = ctx.query;
 
         const response: ResponseData<UserInfoRespData | null> = {
             message: MsgType.UNKNOWN_ERR,
             data: null
         };
 
+        const queryInfo: { [propName: string]: string } = {};
+        if (userID) {
+            queryInfo._id = userID;
+        }
+        if (targetUsername) {
+            queryInfo.username = targetUsername;
+        }
+
         const userInfo = (await ctx.model.User.findOne({ username })) as UserInDB;
-        if (userInfo.type !== UserType.Enterprise || (userInfo.subUser as string[]).indexOf(userID) === -1) {
-            response.message = MsgType.NO_PERMISSION;
-        } else {
-            const targetUserInfo = (await ctx.model.User.findOne({ _id: userID })) as UserInDB;
+        const targetUserInfo = (await ctx.model.User.findOne(queryInfo)) as UserInDB;
+
+        if (!targetUserInfo) {
+            response.message = MsgType.INCORRECT_USERNAME;
+            ctx.body = response;
+            return;
+        }
+
+        if (
+            userInfo.type === UserType.Admin ||
+            (userInfo.type === UserType.Enterprise && (userInfo.subUser as string[]).indexOf(targetUserInfo._id) !== -1)
+        ) {
             response.data = {
                 id: targetUserInfo._id,
                 username: targetUserInfo.username,
@@ -134,6 +150,8 @@ export default class UserController extends Controller {
                 subUserCount: targetUserInfo.subUser!.length
             };
             response.message = MsgType.OPT_SUCCESS;
+        } else {
+            response.message = MsgType.NO_PERMISSION;
         }
 
         ctx.body = response;
@@ -142,7 +160,7 @@ export default class UserController extends Controller {
     public async getFullUserInfo() {
         const { ctx } = this;
         const { username } = ctx.session;
-        const { id } = ctx.query;
+        const { id, username: targetUsername } = ctx.query;
 
         const response: ResponseData<UserInDB | null> = {
             message: MsgType.UNKNOWN_ERR,
@@ -153,7 +171,15 @@ export default class UserController extends Controller {
         if (userInfo.type !== UserType.Admin) {
             response.message = MsgType.NO_PERMISSION;
         } else {
-            const targetUserInfo = (await ctx.model.User.findOne({ _id: id })) as UserInDB;
+            const queryInfo: { [propName: string]: string } = {};
+            if (id) {
+                queryInfo._id = id;
+            }
+            if (targetUsername) {
+                queryInfo.username = targetUsername;
+            }
+
+            const targetUserInfo = (await ctx.model.User.findOne(queryInfo)) as UserInDB;
             response.message = MsgType.OPT_SUCCESS;
             response.data = targetUserInfo;
         }

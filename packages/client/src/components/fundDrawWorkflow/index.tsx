@@ -7,12 +7,12 @@ import WorkflowFrame from '~components/workflowFrame';
 import PersonalFundDrawForm, { PersonalFundDrawSubmitData } from './personalFundDrawForm';
 
 import { MsgType } from '~server/app/util/interface/common';
-import { WorkOrder } from '~server/app/util/interface/workOrder';
+import { WorkOrderWithUserInfo } from '~server/app/util/interface/workOrder';
 
 import { createPersonalFundDrawWorkOrder } from './request';
 
 function FundBackWorkflow () {
-    const [ currentWorkOrder, setCurrentWorkOrder ] = useState<WorkOrder>();
+    const [ currentWorkOrder, setCurrentWorkOrder ] = useState<WorkOrderWithUserInfo>();
 
     async function handleSubmitPersonalFundBackWorkOrder (payload: PersonalFundDrawSubmitData) {
         try {

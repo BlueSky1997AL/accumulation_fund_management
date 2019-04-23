@@ -7,12 +7,12 @@ import WorkflowFrame from '~components/workflowFrame';
 import EnterpriseSubUserAddForm, { EnterpriseSubUserAddSubmitData } from './enterpriseSubUserAddForm';
 
 import { MsgType } from '~server/app/util/interface/common';
-import { WorkOrder } from '~server/app/util/interface/workOrder';
+import { WorkOrderWithUserInfo } from '~server/app/util/interface/workOrder';
 
 import { createEnterpriseSubUserAddWorkOrder } from './request';
 
 function EnterpriseSubUserAddWorkflow () {
-    const [ currentWorkOrder, setCurrentWorkOrder ] = useState<WorkOrder>();
+    const [ currentWorkOrder, setCurrentWorkOrder ] = useState<WorkOrderWithUserInfo>();
 
     async function handleSubmitPersonalFundBackWorkOrder (payload: EnterpriseSubUserAddSubmitData) {
         try {

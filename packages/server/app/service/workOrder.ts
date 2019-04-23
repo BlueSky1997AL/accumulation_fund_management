@@ -119,28 +119,24 @@ export default class WorkOrderService extends Service {
             await Promise.all(
                 execData.amountMap.map(async amountInfo => {
                     const amount = amountInfo.amount * 2;
-                    await Promise.all(
-                        amountInfo.usernames.map(async username => {
-                            const targetUserInfo = await ctx.model.User.findOne({ username });
+                    const targetUserInfo = await ctx.model.User.findOne({ username: amountInfo.username });
 
-                            const amountChange = (await ctx.model.AmountChange.create({
-                                owner: targetUserInfo._id,
-                                amount,
-                                type: AmountChangeType.Positive,
-                                source: AmountChangeSource.EnterpriseBack,
-                                payload: JSON.stringify({
-                                    month: execData.month,
-                                    entID: owner
-                                })
-                            })) as AmountChangeInDB;
-                            await ctx.model.User.update(
-                                { username },
-                                {
-                                    balance: targetUserInfo.balance + amount,
-                                    amountChanges: [ ...targetUserInfo.amountChanges!, amountChange._id ]
-                                }
-                            );
+                    const amountChange = (await ctx.model.AmountChange.create({
+                        owner: targetUserInfo._id,
+                        amount,
+                        type: AmountChangeType.Positive,
+                        source: AmountChangeSource.EnterpriseBack,
+                        payload: JSON.stringify({
+                            month: execData.month,
+                            entID: owner
                         })
+                    })) as AmountChangeInDB;
+                    await ctx.model.User.update(
+                        { username: amountInfo.username },
+                        {
+                            balance: targetUserInfo.balance + amount,
+                            amountChanges: [ ...targetUserInfo.amountChanges!, amountChange._id ]
+                        }
                     );
                 })
             );

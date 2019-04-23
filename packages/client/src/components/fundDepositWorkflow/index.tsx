@@ -7,12 +7,12 @@ import WorkflowFrame from '~components/workflowFrame';
 import PersonalFundDepositForm, { PersonalFundDepositSubmitData } from './personalFundDepositForm';
 
 import { MsgType } from '~server/app/util/interface/common';
-import { WorkOrder } from '~server/app/util/interface/workOrder';
+import { WorkOrderWithUserInfo } from '~server/app/util/interface/workOrder';
 
 import { createPersonalFundDepositWorkOrder } from './request';
 
 function FundDepositWorkflow () {
-    const [ currentWorkOrder, setCurrentWorkOrder ] = useState<WorkOrder>();
+    const [ currentWorkOrder, setCurrentWorkOrder ] = useState<WorkOrderWithUserInfo>();
 
     async function handleSubmitPersonalFundDepositWorkOrder (payload: PersonalFundDepositSubmitData) {
         try {

@@ -26,13 +26,13 @@ export default class HomeController extends Controller {
     public async test() {
         const { ctx } = this;
 
-        await ctx.model.User.create({
-            username: 'admin',
-            password: 'adminadmin',
-            name: '超级管理员',
-            type: UserType.Admin,
-            status: UserStatus.Normal
-        });
+        // await ctx.model.User.create({
+        //     username: 'admin',
+        //     password: 'adminadmin',
+        //     name: '超级管理员',
+        //     type: UserType.Admin,
+        //     status: UserStatus.Normal
+        // });
 
         ctx.body = {
             msg: 'ok'

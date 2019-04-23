@@ -4,13 +4,13 @@ import Cookies from 'js-cookie';
 import { ResponseData } from '~server/app/util/interface/common';
 import { UserInDB } from '~server/app/util/interface/user';
 
-export async function getFullUserInfo (id: string) {
+export async function getFullUserInfo (id?: string, username?: string) {
     const csrfToken = Cookies.get('csrfToken');
     const resp = await axios.get<ResponseData<UserInDB>>('/api/user/full_info', {
         headers: {
             'x-csrf-token': csrfToken
         },
-        params: { id }
+        params: { id, username }
     });
     return resp.data;
 }

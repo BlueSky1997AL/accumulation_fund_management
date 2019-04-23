@@ -8,13 +8,13 @@ import EnterpriseFundBackForm, { EnterpriseFundBackSubmitData } from './enterpri
 import PersonalFundBackForm, { PersonalFundBackSubmitData } from './personalFundBackForm';
 
 import { MsgType } from '~server/app/util/interface/common';
-import { WorkOrder } from '~server/app/util/interface/workOrder';
+import { WorkOrderWithUserInfo } from '~server/app/util/interface/workOrder';
 
 import { UserType } from '~server/app/util/interface/user';
 import { createEnterpriseFundBackWorkOrder, createPersonalFundBackWorkOrder } from './request';
 
 function FundBackWorkflow () {
-    const [ currentWorkOrder, setCurrentWorkOrder ] = useState<WorkOrder>();
+    const [ currentWorkOrder, setCurrentWorkOrder ] = useState<WorkOrderWithUserInfo>();
 
     async function handleSubmitEnterpriseFundBackWorkOrder (payload: EnterpriseFundBackSubmitData) {
         try {

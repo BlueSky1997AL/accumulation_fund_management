@@ -330,7 +330,7 @@ function SignUpView (props: FormComponentProps) {
                                     }
                                 }
                             ]
-                        })(<Input type="password" placeholder="请输入您的银行卡号" />)}
+                        })(<Input placeholder="请输入您的银行卡号" />)}
                     </Form.Item>
                     {getPersonalTypeFormItem()}
                     {getEnterpriseIDFormItem()}

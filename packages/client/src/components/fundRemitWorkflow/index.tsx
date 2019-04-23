@@ -7,12 +7,12 @@ import WorkflowFrame from '~components/workflowFrame';
 import EnterpriseFundRemitForm, { EnterpriseFundRemitSubmitData } from './enterpriseFundRemitForm';
 
 import { MsgType } from '~server/app/util/interface/common';
-import { WorkOrder } from '~server/app/util/interface/workOrder';
+import { WorkOrderWithUserInfo } from '~server/app/util/interface/workOrder';
 
 import { createEnterpriseFundRemitWorkOrder } from './request';
 
 function FundRemitWorkflow () {
-    const [ currentWorkOrder, setCurrentWorkOrder ] = useState<WorkOrder>();
+    const [ currentWorkOrder, setCurrentWorkOrder ] = useState<WorkOrderWithUserInfo>();
 
     async function handleSubmitEnterpriseFundBackWorkOrder (payload: EnterpriseFundRemitSubmitData) {
         try {

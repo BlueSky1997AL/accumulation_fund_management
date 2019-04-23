@@ -14,9 +14,14 @@ import { uploadFilesToFileInfos } from '~utils/file';
 
 import AmountMapInput, { AmountMap } from './amountMapInput';
 
+export interface AmountInfo {
+    username: string;
+    amount: number;
+}
+
 export interface EnterpriseFundBackSubmitData {
     month: string;
-    amountMap: AmountMap[];
+    amountMap: AmountInfo[];
     comments?: string;
     accessory?: FileInfo[];
 }
@@ -39,14 +44,19 @@ function FundBackForm (props: EnterpriseFundBackFormProps) {
                 return;
             }
 
+            const amountMap: AmountInfo[] = [];
+            formData.amountMap.map((item: AmountMap) => {
+                item.usernames.map(username => {
+                    amountMap.push({
+                        username,
+                        amount: Math.round(item.amount * 100)
+                    });
+                });
+            });
+
             const submitData: EnterpriseFundBackSubmitData = {
                 month: (formData.month as Moment).toISOString(),
-                amountMap: formData.amountMap.map((item: AmountMap) => {
-                    return {
-                        usernames: item.usernames,
-                        amount: Math.round(item.amount * 100)
-                    };
-                }),
+                amountMap,
                 comments: formData.comments,
                 accessory: uploadFilesToFileInfos(formData.accessory)
             };

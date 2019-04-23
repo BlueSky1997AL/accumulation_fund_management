@@ -178,12 +178,7 @@ function WorkOrderAudit ({ workOrderID, history }: WorkOrderAuditProps) {
                             {workOrderTypeToString(workOrderInfo && workOrderInfo.type)}
                         </Col>
                     </Row>
-                    {getWorkOrderDetailComponent(
-                        contentSpan,
-                        labelSpan,
-                        workOrderInfo && workOrderInfo.payload,
-                        workOrderInfo && workOrderInfo.type
-                    )}
+                    {getWorkOrderDetailComponent(contentSpan, labelSpan, workOrderInfo)}
                     {getCommentBox(workOrderInfo)}
                     {getOperationButtons(workOrderInfo && workOrderInfo.status)}
                 </div>
