@@ -56,28 +56,29 @@ function EnterpriseSubUserAddForm (props: EnterpriseSubUserAddFormProps) {
             }}
             className="login-form"
         >
-            <Form.Item label="用户名">
+            <Form.Item label="员工身份证号">
                 {getFieldDecorator('usernames', {
-                    rules: [ { required: true, message: '请输入用户名' } ]
+                    rules: [ { required: true, message: '请输入员工身份证号码' } ]
                 })(
                     <Select
                         mode="tags"
                         open={false}
                         allowClear={true}
                         tokenSeparators={[ ',', '，', ' ' ]}
-                        placeholder="输入用户名，多个用户名请使用逗号或空格分割"
+                        placeholder="输入员工身份证号，多个号码请使用逗号或空格分割"
                     />
                 )}
             </Form.Item>
             <Form.Item label="备注">
                 {getFieldDecorator('comments', {
-                    rules: []
+                    rules: [ { required: true, message: '请填写申请备注' } ]
                 })(<Input.TextArea autosize={true} />)}
             </Form.Item>
             <Form.Item label="相关材料">
                 {getFieldDecorator('accessory', {
                     valuePropName: 'fileList',
-                    getValueFromEvent: normFile
+                    getValueFromEvent: normFile,
+                    rules: [ { required: true, message: '请上传相关材料' } ]
                 })(
                     <Upload action={`/api/file/upload?_csrf=${csrfToken}`}>
                         <Button>

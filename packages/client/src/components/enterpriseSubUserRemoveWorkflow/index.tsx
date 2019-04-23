@@ -111,7 +111,7 @@ function EnterpriseSubUserRemoveWorkflow ({ userID, form }: EnterpriseSubUserRem
                         </Divider>
                         <Row className="info-row">
                             <Col span={labelSpan} className="info-text info-label">
-                                账户ID：
+                                账户唯一标识：
                             </Col>
                             <Col span={contentSpan} className="info-text">
                                 {targetUserInfo && targetUserInfo.id}
@@ -119,10 +119,18 @@ function EnterpriseSubUserRemoveWorkflow ({ userID, form }: EnterpriseSubUserRem
                         </Row>
                         <Row className="info-row">
                             <Col span={labelSpan} className="info-text info-label">
-                                账户名称：
+                                身份证号码：
                             </Col>
                             <Col span={contentSpan} className="info-text">
                                 {targetUserInfo && targetUserInfo.username}
+                            </Col>
+                        </Row>
+                        <Row className="info-row">
+                            <Col span={labelSpan} className="info-text info-label">
+                                姓名：
+                            </Col>
+                            <Col span={contentSpan} className="info-text">
+                                {targetUserInfo && targetUserInfo.name}
                             </Col>
                         </Row>
                         <Row className="info-row">
@@ -141,19 +149,36 @@ function EnterpriseSubUserRemoveWorkflow ({ userID, form }: EnterpriseSubUserRem
                                 {userStatusToString(targetUserInfo && targetUserInfo.status)}
                             </Col>
                         </Row>
+                        <Row className="info-row">
+                            <Col span={labelSpan} className="info-text info-label">
+                                工号：
+                            </Col>
+                            <Col span={contentSpan} className="info-text">
+                                {targetUserInfo && targetUserInfo.employeeID}
+                            </Col>
+                        </Row>
+                        <Row className="info-row">
+                            <Col span={labelSpan} className="info-text info-label">
+                                银行卡号：
+                            </Col>
+                            <Col span={contentSpan} className="info-text">
+                                {targetUserInfo && targetUserInfo.cardNo}
+                            </Col>
+                        </Row>
                         <Divider orientation="left" style={{ marginTop: 20 }}>
                             填写信息
                         </Divider>
                         <Form>
                             <Form.Item label="备注信息">
                                 {getFieldDecorator('comments', {
-                                    rules: []
+                                    rules: [ { required: true, message: '请填写申请备注' } ]
                                 })(<Input.TextArea autosize={{ minRows: 4 }} />)}
                             </Form.Item>
                             <Form.Item label="相关材料">
                                 {getFieldDecorator('accessory', {
                                     valuePropName: 'fileList',
-                                    getValueFromEvent: normFile
+                                    getValueFromEvent: normFile,
+                                    rules: [ { required: true, message: '请上传相关材料' } ]
                                 })(
                                     <Upload action={`/api/file/upload?_csrf=${csrfToken}`}>
                                         <Button>

@@ -9,7 +9,13 @@ import { MsgType } from '~server/app/util/interface/common';
 
 import { PersonType, UserStatus, UserType } from '~server/app/util/interface/user';
 import { getUserInfo } from '~utils/commonRequest';
-import { moneyToHumanReadable, personTypeToString, userStatusToString, userTypeToString } from '~utils/user';
+import {
+    enterpriseTypeToString,
+    moneyToHumanReadable,
+    personTypeToString,
+    userStatusToString,
+    userTypeToString
+} from '~utils/user';
 import { userLost } from './request';
 function UserInfo () {
     const [ userInfo, setUserInfo ] = useState<UserInfoRespData>();
@@ -212,6 +218,36 @@ function UserInfo () {
         return null;
     }
 
+    function getEmployeeIDRow () {
+        if (userInfo && userInfo.type === UserType.Common && userInfo.personType === PersonType.Employees) {
+            return (
+                <Row className="info-row">
+                    <Col span={labelSpan} className="info-text info-label">
+                        工号：
+                    </Col>
+                    <Col span={contentSpan} className="info-text">
+                        {userInfo && userInfo.employeeID}
+                    </Col>
+                </Row>
+            );
+        }
+    }
+
+    function getSubUserCount () {
+        if (userInfo && userInfo.type === UserType.Enterprise) {
+            return (
+                <Row className="info-row">
+                    <Col span={labelSpan} className="info-text info-label">
+                        子账户数量：
+                    </Col>
+                    <Col span={contentSpan} className="info-text">
+                        {userInfo && userInfo.subUserCount}
+                    </Col>
+                </Row>
+            );
+        }
+    }
+
     function getEntUsernameRow () {
         if (userInfo && userInfo.type === UserType.Common && userInfo.personType === PersonType.Employees) {
             return (
@@ -237,6 +273,21 @@ function UserInfo () {
                     </Col>
                     <Col span={contentSpan} className="info-text">
                         {userInfo && userInfo.cardNo}
+                    </Col>
+                </Row>
+            );
+        }
+    }
+
+    function getEntTypeRow () {
+        if (userInfo && userInfo.type === UserType.Enterprise) {
+            return (
+                <Row className="info-row">
+                    <Col span={labelSpan} className="info-text info-label">
+                        企业类型：
+                    </Col>
+                    <Col span={contentSpan} className="info-text">
+                        {enterpriseTypeToString(userInfo && userInfo.entType)}
                     </Col>
                 </Row>
             );
@@ -299,11 +350,14 @@ function UserInfo () {
                         {userStatusToString(userInfo && userInfo.status)}
                     </Col>
                 </Row>
+                {getEntTypeRow()}
                 {getBalanceRow()}
                 {getPersonTypeRow()}
                 {getEntNameRow()}
                 {getEntUsernameRow()}
+                {getEmployeeIDRow()}
                 {getCardNoRow()}
+                {getSubUserCount()}
                 {getAccountOperations()}
             </Card>
         </div>

@@ -80,7 +80,7 @@ function CommonWorkflow ({ workOrderType, form }: CommonWorkflowProps) {
             case WorkOrderType.Unfreeze:
                 return '新建解除冻结申请工单';
             case WorkOrderType.RemoveSubUser:
-                return '新建移除/转出子账户工单'
+                return '新建移除/转出子账户工单';
         }
     }
 
@@ -97,13 +97,14 @@ function CommonWorkflow ({ workOrderType, form }: CommonWorkflowProps) {
                     >
                         <Form.Item label="备注信息">
                             {getFieldDecorator('comments', {
-                                rules: []
+                                rules: [ { required: true, message: '请填写申请备注' } ]
                             })(<Input.TextArea autosize={{ minRows: 4 }} />)}
                         </Form.Item>
                         <Form.Item label="相关材料">
                             {getFieldDecorator('accessory', {
                                 valuePropName: 'fileList',
-                                getValueFromEvent: normFile
+                                getValueFromEvent: normFile,
+                                rules: [ { required: true, message: '请上传相关材料' } ]
                             })(
                                 <Upload action={`/api/file/upload?_csrf=${csrfToken}`}>
                                     <Button>
