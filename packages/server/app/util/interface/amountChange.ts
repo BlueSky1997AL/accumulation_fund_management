@@ -22,5 +22,6 @@ export enum AmountChangeType {
 export enum AmountChangeSource {
     AccountCreation,
     EnterpriseRemit,
-    EnterpriseBack
+    EnterpriseBack,
+    PersonalBack
 }

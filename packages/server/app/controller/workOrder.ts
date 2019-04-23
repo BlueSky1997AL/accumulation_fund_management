@@ -274,7 +274,7 @@ export default class WorkOrderController extends Controller {
 
     public async creactPersonalFundBackWorkOrder() {
         const { ctx } = this;
-        const { amount, comments, accessory } = ctx.request.body as PersonalFundBackSubmitData;
+        const { month, amount, comments, accessory } = ctx.request.body as PersonalFundBackSubmitData;
         const { username } = ctx.session;
 
         const response: ResponseData<WorkOrder | null> = {
@@ -283,10 +283,8 @@ export default class WorkOrderController extends Controller {
         };
 
         const userInfo = (await ctx.model.User.findOne({ username })) as User;
-        if (userInfo.type !== UserType.Common) {
-            response.message = MsgType.NO_PERMISSION;
-        } else {
-            const payload = JSON.stringify({ amount, comments, accessory });
+        if (userInfo.type === UserType.Common && userInfo.personType === PersonType.IndividualBusiness) {
+            const payload = JSON.stringify({ month, amount, comments, accessory });
             const workOrder: WorkOrder = {
                 status: WorkOrderStatus.Open,
                 type: WorkOrderType.PersonalBack,
@@ -309,6 +307,8 @@ export default class WorkOrderController extends Controller {
                 console.error(error);
                 response.message = MsgType.OPT_FAILED;
             }
+        } else {
+            response.message = MsgType.NO_PERMISSION;
         }
         ctx.body = response;
     }

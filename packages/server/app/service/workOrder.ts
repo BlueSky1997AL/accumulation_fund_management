@@ -56,7 +56,22 @@ export default class WorkOrderService extends Service {
             const ownerInfo = (await ctx.model.User.findOne({ _id: owner })) as UserInDB;
             const execData = JSON.parse(payload) as PersonalFundBackSubmitData;
 
-            await ctx.model.User.update({ _id: owner }, { balance: ownerInfo.balance + execData.amount });
+            const amountChange = (await ctx.model.AmountChange.create({
+                owner,
+                amount: execData.amount,
+                type: AmountChangeType.Positive,
+                source: AmountChangeSource.PersonalBack,
+                payload: JSON.stringify({
+                    month: execData.month
+                })
+            })) as AmountChangeInDB;
+            await ctx.model.User.update(
+                { _id: owner },
+                {
+                    balance: ownerInfo.balance + execData.amount,
+                    amountChanges: [ ...ownerInfo.amountChanges!, amountChange._id ]
+                }
+            );
         }
         return null;
     }
