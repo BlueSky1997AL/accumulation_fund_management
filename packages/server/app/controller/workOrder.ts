@@ -8,7 +8,10 @@ import { EnterpriseSubUserRemoveSubmitData } from '../../../client/src/component
 import { EnterpriseFundBackSubmitData } from '../../../client/src/components/fundBackWorkflow/enterpriseFundBackForm';
 import { PersonalFundBackSubmitData } from '../../../client/src/components/fundBackWorkflow/personalFundBackForm';
 import { PersonalFundDepositSubmitData } from '../../../client/src/components/fundDepositWorkflow/personalFundDepositForm';
-import { PersonalFundDrawSubmitData } from '../../../client/src/components/fundDrawWorkflow/personalFundDrawForm';
+import {
+    DrawType,
+    PersonalFundDrawSubmitData
+} from '../../../client/src/components/fundDrawWorkflow/personalFundDrawForm';
 import { EnterpriseFundRemitSubmitData } from '../../../client/src/components/fundRemitWorkflow/enterpriseFundRemitForm';
 import { SignUpSubmitData } from '../../../client/src/components/signup';
 import { MsgType, ResponseData } from '../util/interface/common';
@@ -535,20 +538,37 @@ export default class WorkOrderController extends Controller {
         const userInfo = (await ctx.model.User.findOne({ username })) as UserInDB;
         if (userInfo.type !== UserType.Common) {
             response.message = MsgType.NO_PERMISSION;
-        } else {
+        } else if (type === DrawType.Cancellation || type === DrawType.Partial) {
             if (amount && amount > userInfo.balance) {
                 (response.message = MsgType.INSUFFICIENT_BALANCE), (ctx.body = response);
                 return;
             }
 
             // 公积金的部分提取：最高可提取额为账户总金额减10元
-            if (amount && amount > userInfo.balance - 1000) {
+            if (type === DrawType.Partial && amount > userInfo.balance - 1000) {
                 response.message = MsgType.EXCEED_MAXIMUM_AMOUNT;
                 ctx.body = response;
                 return;
             }
 
-            const payload = JSON.stringify({ type, amount, comments, accessory });
+            let targetAmount = 0;
+            if (type === DrawType.Partial) {
+                targetAmount = amount;
+            }
+            if (type === DrawType.Cancellation) {
+                targetAmount = userInfo.balance;
+            }
+
+            const entInfoInDB = (await ctx.model.User.findOne({ _id: userInfo.employerID })) as UserInDB;
+            const entInfo = {
+                username: entInfoInDB.username,
+                name: entInfoInDB.name,
+                cardNo: entInfoInDB.cardNo,
+                entType: entInfoInDB.entType,
+                status: entInfoInDB.status
+            };
+
+            const payload = JSON.stringify({ type, amount: targetAmount, comments, accessory, entInfo });
             const workOrder: WorkOrder = {
                 status: WorkOrderStatus.Open,
                 type: WorkOrderType.Draw,
@@ -591,6 +611,8 @@ export default class WorkOrderController extends Controller {
                 console.error(error);
                 response.message = MsgType.OPT_FAILED;
             }
+        } else {
+            response.message = MsgType.ILLEGAL_ARGS;
         }
         ctx.body = response;
     }

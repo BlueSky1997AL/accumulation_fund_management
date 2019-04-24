@@ -26,6 +26,13 @@ export default class HomeController extends Controller {
     public async test() {
         const { ctx } = this;
 
+        // await ctx.model.User.updateOne(
+        //     {
+        //         username: '142303121212312'
+        //     },
+        //     { cardNo: '888888888' }
+        // );
+
         // await ctx.model.User.create({
         //     username: 'admin',
         //     password: 'adminadmin',

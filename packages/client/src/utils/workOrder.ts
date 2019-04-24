@@ -1,3 +1,4 @@
+import { DrawType } from '~components/fundDrawWorkflow/personalFundDrawForm';
 import { WorkOrderStatus, WorkOrderType } from '~server/app/util/interface/workOrder';
 
 export function workOrderStatusToString (workOrderStatus?: WorkOrderStatus) {
@@ -41,5 +42,16 @@ export function workOrderTypeToString (workOrderType?: WorkOrderType) {
             return '账户创建';
         default:
             return '未知工单类型';
+    }
+}
+
+export function drawTypeToString (drawType?: DrawType) {
+    switch (drawType) {
+        case DrawType.Partial:
+            return '部分提取';
+        case DrawType.Cancellation:
+            return '销户提取';
+        default:
+            return '未知提取类型';
     }
 }

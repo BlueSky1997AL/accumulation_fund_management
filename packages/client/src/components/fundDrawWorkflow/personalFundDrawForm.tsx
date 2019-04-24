@@ -8,6 +8,7 @@ import React, { useEffect, useState } from 'react';
 const RadioGroup = Radio.Group;
 
 import { FileInfo } from '~server/app/util/interface/file';
+import { EnterpriseType, UserStatus } from '~server/app/util/interface/user';
 import { uploadFilesToFileInfos } from '~utils/file';
 
 export enum DrawType {
@@ -20,6 +21,13 @@ export interface PersonalFundDrawSubmitData {
     amount: number;
     comments?: string;
     accessory?: FileInfo[];
+    entInfo?: {
+        username: string;
+        name: string;
+        cardNo: string;
+        entType: EnterpriseType;
+        status: UserStatus;
+    };
 }
 
 interface PersonalFundDrawFormProps extends FormComponentProps {

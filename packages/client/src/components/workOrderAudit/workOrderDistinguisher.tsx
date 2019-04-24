@@ -14,13 +14,7 @@ import SignUp from './workOrderTypes/signup';
 export default function (contentSpan: number, labelSpan: number, workOrder?: WorkOrderWithUserInfo) {
     switch (workOrder && workOrder.type) {
         case WorkOrderType.PersonalBack:
-            return (
-                <PersonalFundBack
-                    contentSpan={contentSpan}
-                    labelSpan={labelSpan}
-                    jsonStr={workOrder && workOrder.payload}
-                />
-            );
+            return <PersonalFundBack contentSpan={contentSpan} labelSpan={labelSpan} workOrder={workOrder} />;
         case WorkOrderType.PersonalDeposit:
             return <PersonalFundDeposit contentSpan={contentSpan} labelSpan={labelSpan} workOrder={workOrder} />;
         case WorkOrderType.EnterpriseBack:
@@ -28,13 +22,7 @@ export default function (contentSpan: number, labelSpan: number, workOrder?: Wor
         case WorkOrderType.Remit:
             return <EnterpriseFundRemit contentSpan={contentSpan} labelSpan={labelSpan} workOrder={workOrder} />;
         case WorkOrderType.Draw:
-            return (
-                <PersonalFundDraw
-                    contentSpan={contentSpan}
-                    labelSpan={labelSpan}
-                    jsonStr={workOrder && workOrder.payload}
-                />
-            );
+            return <PersonalFundDraw contentSpan={contentSpan} labelSpan={labelSpan} workOrder={workOrder} />;
         case WorkOrderType.DisableOrExport:
             return (
                 <CommonWorkOrder
