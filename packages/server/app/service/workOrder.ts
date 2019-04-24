@@ -35,7 +35,7 @@ export default class WorkOrderService extends Service {
                 return await this.execPersonalDraw(workOrder);
             }
             case WorkOrderType.DisableOrExport: {
-                return await this.execChangeUserStatus(workOrder);
+                return await this.execDisableOrExportUser(workOrder);
             }
             case WorkOrderType.Freeze: {
                 return await this.execChangeUserStatus(workOrder);
@@ -230,6 +230,30 @@ export default class WorkOrderService extends Service {
                 }
             }
         }
+        return null;
+    }
+
+    public async execDisableOrExportUser(workOrder: WorkOrder) {
+        const { ctx } = this;
+        const { owner } = workOrder;
+
+        const ownerInfo = (await ctx.model.User.findOne({ _id: owner })) as UserInDB;
+
+        const amountChange = (await ctx.model.AmountChange.create({
+            owner,
+            amount: ownerInfo.balance,
+            type: AmountChangeType.Negative,
+            source: AmountChangeSource.PersonalCancellationDraw
+        })) as AmountChangeInDB;
+        await ctx.model.User.update(
+            { _id: owner },
+            {
+                status: UserStatus.Disabled,
+                balance: 0,
+                amountChanges: [ ...ownerInfo.amountChanges!, amountChange._id ]
+            }
+        );
+
         return null;
     }
 
