@@ -48,13 +48,7 @@ export default function (contentSpan: number, labelSpan: number, workOrder?: Wor
                 />
             );
         case WorkOrderType.RemoveSubUser:
-            return (
-                <EnterpriseSubUserRemove
-                    contentSpan={contentSpan}
-                    labelSpan={labelSpan}
-                    jsonStr={workOrder && workOrder.payload}
-                />
-            );
+            return <EnterpriseSubUserRemove contentSpan={contentSpan} labelSpan={labelSpan} workOrder={workOrder} />;
         case WorkOrderType.AddSubUser:
             return <EnterpriseSubUserAdd contentSpan={contentSpan} labelSpan={labelSpan} workOrder={workOrder} />;
         case WorkOrderType.SignUp:

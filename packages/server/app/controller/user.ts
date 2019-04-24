@@ -93,8 +93,8 @@ export default class UserController extends Controller {
             type: userInfo.type,
             entType: userInfo.entType,
             entInfo: {
-                name: entInfo.name,
-                username: entInfo.username
+                name: entInfo && entInfo.name,
+                username: entInfo && entInfo.username
             },
             personType: userInfo.personType,
             status: userInfo.status,

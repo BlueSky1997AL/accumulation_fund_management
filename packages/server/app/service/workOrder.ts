@@ -271,7 +271,7 @@ export default class WorkOrderService extends Service {
             const ownerInfo = (await ctx.model.User.findOne({ _id: owner })) as UserInDB;
             const execData = JSON.parse(payload) as EnterpriseSubUserRemoveSubmitData;
 
-            const newSubUsers = (ownerInfo.subUser as string[])
+            const newSubUsers = ownerInfo.subUser!
                 .map(subUserID => {
                     if (String(subUserID) !== execData.userID) {
                         return subUserID;
@@ -280,6 +280,14 @@ export default class WorkOrderService extends Service {
                 .filter(item => !!item) as string[];
 
             await ctx.model.User.updateOne({ _id: owner }, { subUser: newSubUsers });
+            await ctx.model.User.updateOne(
+                { _id: execData.userID },
+                {
+                    employerID: null,
+                    employeeID: null,
+                    personType: PersonType.Employees
+                }
+            );
         }
         return null;
     }

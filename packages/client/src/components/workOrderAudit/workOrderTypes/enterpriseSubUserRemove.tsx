@@ -1,18 +1,18 @@
 import { Col, Divider, notification, Row } from 'antd';
-import axios from 'axios';
-import Cookies from 'js-cookie';
 import React, { useEffect, useState } from 'react';
 
 import FileDownloadButton from '~components/fileDownloadButton';
 
 import { EnterpriseSubUserRemoveSubmitData } from '~components/enterpriseSubUserRemoveWorkflow';
+import { UserInfoRespData } from '~server/app/controller/user';
+import { MsgType } from '~server/app/util/interface/common';
+import { WorkOrderWithUserInfo } from '~server/app/util/interface/workOrder';
 
-import { MsgType, ResponseData } from '~server/app/util/interface/common';
-import { UserInDB } from '~server/app/util/interface/user';
-import { moneyToHumanReadable, userStatusToString, userTypeToString } from '~utils/user';
+import { getTargetSubUserInfo } from '~components/enterpriseSubUserRemoveWorkflow/request';
+import { enterpriseTypeToString, moneyToHumanReadable, userStatusToString, userTypeToString } from '~utils/user';
 
 interface EnterpriseSubUserRemoveProps {
-    jsonStr?: string;
+    workOrder?: WorkOrderWithUserInfo;
     labelSpan: number;
     contentSpan: number;
 }
@@ -22,13 +22,13 @@ const downloadBtnStyle: React.CSSProperties = {
     marginRight: 10
 };
 
-function EnterpriseSubUserRemove ({ jsonStr, labelSpan, contentSpan }: EnterpriseSubUserRemoveProps) {
+function EnterpriseSubUserRemove ({ workOrder, labelSpan, contentSpan }: EnterpriseSubUserRemoveProps) {
     const [ data, setData ] = useState<EnterpriseSubUserRemoveSubmitData>();
-    const [ targetUserInfo, setTargetUserInfo ] = useState<UserInDB>();
+    const [ targetUserInfo, setTargetUserInfo ] = useState<UserInfoRespData>();
 
-    async function fetchFullUserInfo (id: string) {
+    async function getTargetUserInfo (id: string) {
         try {
-            const resp = await getFullUserInfo(id);
+            const resp = await getTargetSubUserInfo(id);
             if (resp.message !== MsgType.OPT_SUCCESS) {
                 throw new Error(resp.message);
             }
@@ -40,30 +40,19 @@ function EnterpriseSubUserRemove ({ jsonStr, labelSpan, contentSpan }: Enterpris
         }
     }
 
-    async function getFullUserInfo (id: string) {
-        const csrfToken = Cookies.get('csrfToken');
-        const resp = await axios.get<ResponseData<UserInDB>>('/api/user/full_info', {
-            headers: {
-                'x-csrf-token': csrfToken
-            },
-            params: { id }
-        });
-        return resp.data;
-    }
-
     useEffect(
         () => {
-            if (jsonStr) {
-                setData(JSON.parse(jsonStr));
+            if (workOrder && workOrder.payload) {
+                setData(JSON.parse(workOrder.payload));
             }
         },
-        [ jsonStr ]
+        [ workOrder ]
     );
 
     useEffect(
         () => {
             if (data) {
-                fetchFullUserInfo(data.userID);
+                getTargetUserInfo(data.userID);
             }
         },
         [ data ]
@@ -71,18 +60,42 @@ function EnterpriseSubUserRemove ({ jsonStr, labelSpan, contentSpan }: Enterpris
 
     return (
         <div>
-            <Divider orientation="left">目标账户信息</Divider>
             <Row className="info-row">
                 <Col span={labelSpan} className="info-text info-label">
-                    账户ID：
+                    企业名称：
                 </Col>
                 <Col span={contentSpan} className="info-text">
-                    {targetUserInfo && targetUserInfo._id}
+                    {workOrder && workOrder.owner.name}
                 </Col>
             </Row>
             <Row className="info-row">
                 <Col span={labelSpan} className="info-text info-label">
-                    用户名：
+                    企业类型：
+                </Col>
+                <Col span={contentSpan} className="info-text">
+                    {enterpriseTypeToString(workOrder && workOrder.owner.entType)}
+                </Col>
+            </Row>
+            <Row className="info-row">
+                <Col span={labelSpan} className="info-text info-label">
+                    企业银行卡号：
+                </Col>
+                <Col span={contentSpan} className="info-text">
+                    {workOrder && workOrder.owner.cardNo}
+                </Col>
+            </Row>
+            <Divider orientation="left">目标账户信息</Divider>
+            <Row className="info-row">
+                <Col span={labelSpan} className="info-text info-label">
+                    账户唯一标识：
+                </Col>
+                <Col span={contentSpan} className="info-text">
+                    {targetUserInfo && targetUserInfo.id}
+                </Col>
+            </Row>
+            <Row className="info-row">
+                <Col span={labelSpan} className="info-text info-label">
+                    身份证号码：
                 </Col>
                 <Col span={contentSpan} className="info-text">
                     {targetUserInfo && targetUserInfo.username}
@@ -90,10 +103,34 @@ function EnterpriseSubUserRemove ({ jsonStr, labelSpan, contentSpan }: Enterpris
             </Row>
             <Row className="info-row">
                 <Col span={labelSpan} className="info-text info-label">
+                    姓名：
+                </Col>
+                <Col span={contentSpan} className="info-text">
+                    {targetUserInfo && targetUserInfo.name}
+                </Col>
+            </Row>
+            <Row className="info-row">
+                <Col span={labelSpan} className="info-text info-label">
+                    工号：
+                </Col>
+                <Col span={contentSpan} className="info-text">
+                    {targetUserInfo && targetUserInfo.employeeID}
+                </Col>
+            </Row>
+            <Row className="info-row">
+                <Col span={labelSpan} className="info-text info-label">
+                    银行卡号：
+                </Col>
+                <Col span={contentSpan} className="info-text">
+                    {targetUserInfo && targetUserInfo.cardNo}
+                </Col>
+            </Row>
+            <Row className="info-row">
+                <Col span={labelSpan} className="info-text info-label">
                     账户余额：
                 </Col>
                 <Col span={contentSpan} className="info-text">
-                    {moneyToHumanReadable(targetUserInfo && targetUserInfo.balance)}
+                    {`${moneyToHumanReadable(targetUserInfo && targetUserInfo.balance)}元`}
                 </Col>
             </Row>
             <Row className="info-row">
