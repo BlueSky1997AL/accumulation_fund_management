@@ -52,7 +52,7 @@ export default function (contentSpan: number, labelSpan: number, workOrder?: Wor
         case WorkOrderType.AddSubUser:
             return <EnterpriseSubUserAdd contentSpan={contentSpan} labelSpan={labelSpan} workOrder={workOrder} />;
         case WorkOrderType.SignUp:
-            return <SignUp contentSpan={contentSpan} labelSpan={labelSpan} jsonStr={workOrder && workOrder.payload} />;
+            return <SignUp contentSpan={contentSpan} labelSpan={labelSpan} workOrder={workOrder} />;
         default:
             return null;
     }
