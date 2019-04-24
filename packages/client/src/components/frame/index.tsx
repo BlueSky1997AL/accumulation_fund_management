@@ -68,6 +68,7 @@ function Frame ({ children }: FrameProps) {
                         defaultSelectedKeys={[ getSelectedKey() ]}
                         defaultOpenKeys={[ '/account', '/work_order' ]}
                         mode="inline"
+                        style={{ marginBottom: 48 }}
                     >
                         <SubMenu
                             key="/account"
@@ -94,9 +95,48 @@ function Frame ({ children }: FrameProps) {
                                 </span>
                             }
                         >
-                            <Menu.Item key="/work_order/audit">
-                                <Link to="/work_order/audit">工单审核</Link>
+                            <Menu.Item key="/work_order/not_audited">
+                                <Link to="/work_order/not_audited">未审核工单</Link>
                             </Menu.Item>
+                            <SubMenu key="/work_order/enterprise" title={<span>企业工单</span>}>
+                                <Menu.Item key="/work_order/enterprise/back">
+                                    <Link to="/work_order/enterprise/back">企业补缴</Link>
+                                </Menu.Item>
+                                <Menu.Item key="/work_order/enterprise/remit">
+                                    <Link to="/work_order/enterprise/remit">企业汇缴</Link>
+                                </Menu.Item>
+                                <Menu.Item key="/work_order/enterprise/sub_user_remove">
+                                    <Link to="/work_order/enterprise/sub_user_remove">企业子账户移除</Link>
+                                </Menu.Item>
+                                <Menu.Item key="/work_order/enterprise/sub_user_add">
+                                    <Link to="/work_order/enterprise/sub_user_add">企业子账户添加</Link>
+                                </Menu.Item>
+                            </SubMenu>
+                            <SubMenu key="/work_order/personal" title={<span>个人工单</span>}>
+                                <Menu.Item key="/work_order/personal/back">
+                                    <Link to="/work_order/personal/back">个人补缴</Link>
+                                </Menu.Item>
+                                <Menu.Item key="/work_order/personal/deposit">
+                                    <Link to="/work_order/personal/deposit">个人缴存</Link>
+                                </Menu.Item>
+                                <Menu.Item key="/work_order/personal/draw">
+                                    <Link to="/work_order/personal/draw">个人支取</Link>
+                                </Menu.Item>
+                            </SubMenu>
+                            <SubMenu key="/work_order/account" title={<span>账号工单</span>}>
+                                <Menu.Item key="/work_order/account/disable_export">
+                                    <Link to="/work_order/account/disable_export">账号注销/调出</Link>
+                                </Menu.Item>
+                                <Menu.Item key="/work_order/account/freeze">
+                                    <Link to="/work_order/account/freeze">账号冻结</Link>
+                                </Menu.Item>
+                                <Menu.Item key="/work_order/account/unfreeze">
+                                    <Link to="/work_order/account/unfreeze">账号解冻</Link>
+                                </Menu.Item>
+                                <Menu.Item key="/work_order/account/signup">
+                                    <Link to="/work_order/account/signup">账户创建</Link>
+                                </Menu.Item>
+                            </SubMenu>
                         </SubMenu>
                     </Menu>
                 );
@@ -109,6 +149,7 @@ function Frame ({ children }: FrameProps) {
                             defaultSelectedKeys={[ getSelectedKey() ]}
                             defaultOpenKeys={[ '/account', '/work_order', '/fund' ]}
                             mode="inline"
+                            style={{ marginBottom: 48 }}
                         >
                             <SubMenu
                                 key="/account"
@@ -128,13 +169,35 @@ function Frame ({ children }: FrameProps) {
                                 title={
                                     <span>
                                         <Icon type="tags" />
-                                        <span>工单管理</span>
+                                        <span>我的工单</span>
                                     </span>
                                 }
                             >
-                                <Menu.Item key="/work_order/mine">
-                                    <Link to="/work_order/mine">我的工单</Link>
+                                <Menu.Item key="/work_order/not_audited">
+                                    <Link to="/work_order/not_audited">未审核工单</Link>
                                 </Menu.Item>
+                                <SubMenu key="/work_order/fund" title={<span>公积金工单</span>}>
+                                    <Menu.Item key="/work_order/fund/back">
+                                        <Link to="/work_order/fund/back">补缴</Link>
+                                    </Menu.Item>
+                                    <Menu.Item key="/work_order/fund/deposit">
+                                        <Link to="/work_order/fund/deposit">缴存</Link>
+                                    </Menu.Item>
+                                    <Menu.Item key="/work_order/fund/draw">
+                                        <Link to="/work_order/fund/draw">支取</Link>
+                                    </Menu.Item>
+                                </SubMenu>
+                                <SubMenu key="/work_order/account" title={<span>账户工单</span>}>
+                                    <Menu.Item key="/work_order/account/disable_export">
+                                        <Link to="/work_order/account/disable_export">注销/转出</Link>
+                                    </Menu.Item>
+                                    <Menu.Item key="/work_order/account/freeze">
+                                        <Link to="/work_order/account/freeze">冻结</Link>
+                                    </Menu.Item>
+                                    <Menu.Item key="/work_order/account/unfreeze">
+                                        <Link to="/work_order/account/unfreeze">解冻</Link>
+                                    </Menu.Item>
+                                </SubMenu>
                             </SubMenu>
                             <SubMenu
                                 key="/fund"
@@ -164,6 +227,7 @@ function Frame ({ children }: FrameProps) {
                         defaultSelectedKeys={[ getSelectedKey() ]}
                         defaultOpenKeys={[ '/account', '/work_order', '/fund' ]}
                         mode="inline"
+                        style={{ marginBottom: 48 }}
                     >
                         <SubMenu
                             key="/account"
@@ -183,13 +247,29 @@ function Frame ({ children }: FrameProps) {
                             title={
                                 <span>
                                     <Icon type="tags" />
-                                    <span>工单管理</span>
+                                    <span>我的工单</span>
                                 </span>
                             }
                         >
-                            <Menu.Item key="/work_order/mine">
-                                <Link to="/work_order/mine">我的工单</Link>
+                            <Menu.Item key="/work_order/not_audited">
+                                <Link to="/work_order/not_audited">未审核工单</Link>
                             </Menu.Item>
+                            <SubMenu key="/work_order/fund" title={<span>公积金工单</span>}>
+                                <Menu.Item key="/work_order/fund/draw">
+                                    <Link to="/work_order/fund/draw">支取</Link>
+                                </Menu.Item>
+                            </SubMenu>
+                            <SubMenu key="/work_order/account" title={<span>账户工单</span>}>
+                                <Menu.Item key="/work_order/account/disable_export">
+                                    <Link to="/work_order/account/disable_export">注销/转出</Link>
+                                </Menu.Item>
+                                <Menu.Item key="/work_order/account/freeze">
+                                    <Link to="/work_order/account/freeze">冻结</Link>
+                                </Menu.Item>
+                                <Menu.Item key="/work_order/account/unfreeze">
+                                    <Link to="/work_order/account/unfreeze">解冻</Link>
+                                </Menu.Item>
+                            </SubMenu>
                         </SubMenu>
                         <SubMenu
                             key="/fund"
@@ -214,6 +294,7 @@ function Frame ({ children }: FrameProps) {
                         defaultSelectedKeys={[ getSelectedKey() ]}
                         defaultOpenKeys={[ '/account', '/work_order', '/fund', '/record' ]}
                         mode="inline"
+                        style={{ marginBottom: 48 }}
                     >
                         <SubMenu
                             key="/account"
@@ -268,12 +349,18 @@ function Frame ({ children }: FrameProps) {
 
     return (
         <Layout style={{ minHeight: '100vh' }}>
-            <Sider theme="dark" collapsible={true} collapsed={sideBarCollapsed} onCollapse={setCollapseState}>
+            <Sider
+                theme="dark"
+                collapsible={true}
+                collapsed={sideBarCollapsed}
+                onCollapse={setCollapseState}
+                style={{ overflow: 'auto', height: '100vh', position: 'fixed', left: 0 }}
+            >
                 <div className="frame-logo">{getLogo(sideBarCollapsed)}</div>
                 {getSiderMenuByUserType(userType)}
             </Sider>
-            <Layout>
-                <Header className="frame-header">
+            <Layout style={{ marginLeft: sideBarCollapsed ? 80 : 200 }}>
+                <Header className="frame-header" style={{ left: sideBarCollapsed ? 80 : 200 }}>
                     <div className="username">
                         当前用户：<span className="highlight-text">{window.name}</span>
                     </div>
@@ -284,7 +371,7 @@ function Frame ({ children }: FrameProps) {
                         注销
                     </div>
                 </Header>
-                <Content style={{ margin: '16px' }}>{children}</Content>
+                <Content style={{ margin: '16px', marginTop: '80px' }}>{children}</Content>
                 <Footer style={{ textAlign: 'center' }}>公积金管理系统 ©2019 东北农业大学 微机1501 刘秉楠</Footer>
             </Layout>
         </Layout>

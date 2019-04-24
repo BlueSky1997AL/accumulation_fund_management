@@ -32,27 +32,53 @@ interface WorkOrderAuditSubmitData {
 }
 
 export default class WorkOrderController extends Controller {
-    public async getAllWorkOrder() {
+    public async getAllWorkOrdersByQuery() {
         const { ctx } = this;
         const { username } = ctx.session;
+        const { id, status, type, owner, ownerUsername, auditer, auditerUsername } = ctx.query;
 
         const response: ResponseData<WorkOrderWithUserInfo[] | null> = {
             message: MsgType.UNKNOWN_ERR,
             data: null
         };
 
-        const userInfo = (await ctx.model.User.findOne({ username })) as User;
+        const userInfo = (await ctx.model.User.findOne({ username })) as UserInDB;
         if (userInfo.type !== UserType.Admin) {
             response.message = MsgType.NO_PERMISSION;
         } else {
-            const docs = (await ctx.model.WorkOrder.find().sort({ createdAt: -1 })) as WorkOrder[];
+            const query = {} as WorkOrderInDB;
+            if (id) {
+                query._id = id;
+            }
+            if (status) {
+                query.status = status;
+            }
+            if (type) {
+                query.type = type;
+            }
+            if (owner) {
+                query.owner = owner;
+            }
+            if (ownerUsername) {
+                const ownerInfo = (await ctx.model.User.findOne({ username: ownerUsername })) as UserInDB;
+                query.owner = ownerInfo && ownerInfo._id;
+            }
+            if (auditer) {
+                query.auditer = auditer;
+            }
+            if (auditerUsername) {
+                const auditerInfo = (await ctx.model.User.findOne({ username: auditerUsername })) as UserInDB;
+                query.auditer = auditerInfo && auditerInfo._id;
+            }
+
+            const docs = (await ctx.model.WorkOrder.find(query).sort({ createdAt: -1 })) as WorkOrderInDB[];
             const docsWithUserInfo = await Promise.all(
                 docs.map(async doc => {
                     const docUserInfo = (await ctx.model.User.findOne({ _id: doc.owner })) as User;
                     const newDoc = {
-                        _id: doc['_id'],
-                        status: doc['status'],
-                        type: doc['type'],
+                        _id: doc._id,
+                        status: doc.status,
+                        type: doc.type,
                         owner: {
                             username: docUserInfo.username,
                             name: docUserInfo.name,
@@ -64,12 +90,11 @@ export default class WorkOrderController extends Controller {
                             personType: docUserInfo.personType,
                             status: docUserInfo.status
                         },
-                        payload: doc['payload'],
-                        createdAt: doc['createdAt'],
-                        updatedAt: doc['updatedAt'],
-                        __v: doc['__v']
-                    };
-                    return newDoc as WorkOrderWithUserInfo;
+                        payload: doc.payload,
+                        createdAt: doc.createdAt,
+                        updatedAt: doc.updatedAt
+                    } as WorkOrderWithUserInfo;
+                    return newDoc;
                 })
             );
 
@@ -79,25 +104,67 @@ export default class WorkOrderController extends Controller {
         ctx.body = response;
     }
 
-    public async getPersonalWorkOrder() {
+    public async getPersonalWorkOrdersByQuery() {
         const { ctx } = this;
         const { username } = ctx.session;
+        const { id, status, type, auditer, auditerUsername } = ctx.query;
 
-        const response: ResponseData<WorkOrder[] | null> = {
+        const response: ResponseData<WorkOrderWithUserInfo[] | null> = {
             message: MsgType.UNKNOWN_ERR,
             data: null
         };
 
-        const userInfo = (await ctx.model.User.findOne({ username })) as User;
+        const userInfo = (await ctx.model.User.findOne({ username })) as UserInDB;
         if (userInfo.workOrders && userInfo.workOrders.length !== 0) {
-            const workOrderData = await Promise.all(
-                userInfo.workOrders.map(async id => {
-                    return (await ctx.model.WorkOrder.findOne({ _id: id })) as WorkOrder;
+            const query = {} as WorkOrderInDB;
+            if (id) {
+                query._id = id;
+            }
+            if (status) {
+                query.status = status;
+            }
+            if (type) {
+                query.type = type;
+            }
+            if (auditer) {
+                query.auditer = auditer;
+            }
+            if (auditerUsername) {
+                const auditerInfo = (await ctx.model.User.findOne({ username: auditerUsername })) as UserInDB;
+                query.auditer = auditerInfo && auditerInfo._id;
+            }
+
+            const docs = (await ctx.model.WorkOrder
+                .find({ owner: userInfo._id, ...query })
+                .sort({ createdAt: -1 })) as WorkOrderInDB[];
+            const docsWithUserInfo = await Promise.all(
+                docs.map(async doc => {
+                    const docUserInfo = (await ctx.model.User.findOne({ _id: doc.owner })) as User;
+                    const newDoc = {
+                        _id: doc._id,
+                        status: doc.status,
+                        type: doc.type,
+                        owner: {
+                            username: docUserInfo.username,
+                            name: docUserInfo.name,
+                            cardNo: docUserInfo.cardNo,
+                            employeeID: docUserInfo.employeeID,
+                            employerID: docUserInfo.employerID,
+                            type: docUserInfo.type,
+                            entType: docUserInfo.entType,
+                            personType: docUserInfo.personType,
+                            status: docUserInfo.status
+                        },
+                        payload: doc.payload,
+                        createdAt: doc.createdAt,
+                        updatedAt: doc.updatedAt
+                    } as WorkOrderWithUserInfo;
+                    return newDoc;
                 })
             );
 
             response.message = MsgType.OPT_SUCCESS;
-            response.data = workOrderData.reverse();
+            response.data = docsWithUserInfo;
         } else {
             response.message = MsgType.OPT_SUCCESS;
             response.data = [];
