@@ -292,15 +292,21 @@ export default class WorkOrderService extends Service {
             const execData = JSON.parse(payload) as EnterpriseSubUserAddSubmitData;
 
             const newSubUserIDs = await Promise.all(
-                execData.usernames.map(async username => {
+                execData.usernames.map(async (username, index) => {
                     const targetUserInfo = (await ctx.model.User.findOne({ username })) as UserInDB;
+                    await ctx.model.User.updateOne(
+                        { username },
+                        {
+                            employerID: ownerInfo._id,
+                            employeeID: execData.employeeIDs[index],
+                            personType: PersonType.Employees
+                        }
+                    );
                     return targetUserInfo._id;
                 })
             );
 
-            const newSubUsers = [ ...(ownerInfo.subUser as string[]), ...newSubUserIDs ];
-
-            await ctx.model.User.updateOne({ _id: owner }, { subUser: newSubUsers });
+            await ctx.model.User.updateOne({ _id: owner }, { subUser: [ ...ownerInfo.subUser!, ...newSubUserIDs ] });
         }
         return null;
     }

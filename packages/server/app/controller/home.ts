@@ -1,5 +1,4 @@
 import { Controller } from 'egg';
-import { UserStatus, UserType } from '../util/interface/user';
 
 export default class HomeController extends Controller {
     public async index() {

@@ -35,9 +35,9 @@ export function workOrderTypeToString (workOrderType?: WorkOrderType) {
         case WorkOrderType.Unfreeze:
             return '解除冻结';
         case WorkOrderType.RemoveSubUser:
-            return '移除子账户';
+            return '移除子账户（员工）';
         case WorkOrderType.AddSubUser:
-            return '添加子账户';
+            return '添加子账户（员工）';
         case WorkOrderType.SignUp:
             return '账户创建';
         default:

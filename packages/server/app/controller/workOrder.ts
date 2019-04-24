@@ -741,7 +741,7 @@ export default class WorkOrderController extends Controller {
 
     public async createEnterpriseSubUserAddWorkOrder() {
         const { ctx } = this;
-        const { usernames, comments, accessory } = ctx.request.body as EnterpriseSubUserAddSubmitData;
+        const { usernames, employeeIDs, comments, accessory } = ctx.request.body as EnterpriseSubUserAddSubmitData;
         const { username } = ctx.session;
 
         const response: ResponseData<WorkOrderWithUserInfo | null> = {
@@ -790,7 +790,7 @@ export default class WorkOrderController extends Controller {
                 return;
             }
 
-            const payload = JSON.stringify({ usernames, comments, accessory });
+            const payload = JSON.stringify({ usernames, employeeIDs, comments, accessory });
             const workOrder: WorkOrder = {
                 status: WorkOrderStatus.Open,
                 type: WorkOrderType.AddSubUser,

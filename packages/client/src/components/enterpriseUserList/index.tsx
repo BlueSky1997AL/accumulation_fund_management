@@ -39,22 +39,32 @@ function EnterpriseUserList () {
 
     const columns = [
         {
-            title: '用户ID',
+            title: '账户唯一标识',
             align: 'center',
-            dataIndex: 'id'
+            dataIndex: 'id',
+            render(value: string) {
+                return <div style={{ color: 'rgba(0, 0, 0, 0.35)' }}>{value}</div>;
+            }
         },
         {
-            title: '用户名',
+            title: '工号',
+            align: 'center',
+            dataIndex: 'employeeID'
+        },
+        {
+            title: '姓名',
+            align: 'center',
+            dataIndex: 'name'
+        },
+        {
+            title: '身份证号',
             align: 'center',
             dataIndex: 'username'
         },
         {
-            title: '账户类型',
+            title: '银行卡号',
             align: 'center',
-            dataIndex: 'type',
-            render(value: UserType) {
-                return userTypeToString(value);
-            }
+            dataIndex: 'cardNo'
         },
         {
             title: '账户状态',
@@ -65,11 +75,11 @@ function EnterpriseUserList () {
             }
         },
         {
-            title: '账户余额（元/人民币）',
+            title: '账户余额',
             align: 'center',
             dataIndex: 'balance',
             render(value: number) {
-                return moneyToHumanReadable(value);
+                return `${moneyToHumanReadable(value)}元`;
             }
         },
         {
@@ -79,7 +89,7 @@ function EnterpriseUserList () {
             render(record: UserInfoRespData) {
                 return (
                     <Link style={linkStyle} to={`/account/enterprise/${record.id}/remove`}>
-                        移除/转出
+                        转出
                     </Link>
                 );
             }
@@ -91,7 +101,7 @@ function EnterpriseUserList () {
             <Card title={'账户列表'} bodyStyle={{ height: '100%', width: '100%' }}>
                 <Row type="flex" justify="end" align="middle" style={{ marginBottom: 20 }}>
                     <Button type="primary">
-                        <Link to="/account/enterprise/create">添加用户</Link>
+                        <Link to="/account/enterprise/create">添加员工</Link>
                     </Button>
                 </Row>
                 <Table rowKey="id" columns={columns} dataSource={subUsers} />

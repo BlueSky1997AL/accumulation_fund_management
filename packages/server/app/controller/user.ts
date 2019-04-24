@@ -132,10 +132,7 @@ export default class UserController extends Controller {
             return;
         }
 
-        if (
-            userInfo.type === UserType.Admin ||
-            (userInfo.type === UserType.Enterprise && (userInfo.subUser as string[]).indexOf(targetUserInfo._id) !== -1)
-        ) {
+        if (userInfo.type === UserType.Admin || userInfo.type === UserType.Enterprise) {
             response.data = {
                 id: targetUserInfo._id,
                 username: targetUserInfo.username,
@@ -221,14 +218,16 @@ export default class UserController extends Controller {
         if (userInfo.type !== UserType.Enterprise) {
             response.message = MsgType.NO_PERMISSION;
         } else {
-            const subsUserIDs = ((await ctx.model.User.findOne({ username })) as UserInDB).subUser as string[];
+            const subsUserIDs = userInfo.subUser!;
             const retData = await Promise.all(
                 subsUserIDs.map(async userID => {
                     const targetUserInfo = (await ctx.model.User.findOne({ _id: userID })) as UserInDB;
                     return {
                         id: targetUserInfo._id,
                         username: targetUserInfo.username,
-                        type: targetUserInfo.type,
+                        name: targetUserInfo.name,
+                        cardNo: targetUserInfo.cardNo,
+                        employeeID: targetUserInfo.employeeID,
                         status: targetUserInfo.status,
                         balance: targetUserInfo.balance
                     } as UserInfoRespData;
