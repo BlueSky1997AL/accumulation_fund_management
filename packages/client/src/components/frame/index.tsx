@@ -321,9 +321,36 @@ function Frame ({ children }: FrameProps) {
                                 </span>
                             }
                         >
-                            <Menu.Item key="/work_order/mine">
-                                <Link to="/work_order/mine">我的工单</Link>
+                            <Menu.Item key="/work_order/not_audited">
+                                <Link to="/work_order/not_audited">未审核工单</Link>
                             </Menu.Item>
+                            <SubMenu key="/work_order/fund" title={<span>公积金工单</span>}>
+                                <Menu.Item key="/work_order/fund/remit">
+                                    <Link to="/work_order/fund/remit">汇缴</Link>
+                                </Menu.Item>
+                                <Menu.Item key="/work_order/fund/back">
+                                    <Link to="/work_order/fund/back">补缴</Link>
+                                </Menu.Item>
+                            </SubMenu>
+                            <SubMenu key="/work_order/sub_user" title={<span>子账户工单</span>}>
+                                <Menu.Item key="/work_order/sub_user/remove">
+                                    <Link to="/work_order/sub_user/remove">转出子账户</Link>
+                                </Menu.Item>
+                                <Menu.Item key="/work_order/sub_user/add">
+                                    <Link to="/work_order/sub_user/add">转入子账户</Link>
+                                </Menu.Item>
+                            </SubMenu>
+                            <SubMenu key="/work_order/account" title={<span>账户工单</span>}>
+                                <Menu.Item key="/work_order/account/disable_export">
+                                    <Link to="/work_order/account/disable_export">注销/转出</Link>
+                                </Menu.Item>
+                                <Menu.Item key="/work_order/account/freeze">
+                                    <Link to="/work_order/account/freeze">冻结</Link>
+                                </Menu.Item>
+                                <Menu.Item key="/work_order/account/unfreeze">
+                                    <Link to="/work_order/account/unfreeze">解冻</Link>
+                                </Menu.Item>
+                            </SubMenu>
                         </SubMenu>
                         <SubMenu
                             key="/fund"

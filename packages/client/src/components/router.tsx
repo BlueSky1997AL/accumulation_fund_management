@@ -77,6 +77,19 @@ function DrawWorkOrderList () {
     return <WorkOrderList type="mine" workOrderType={WorkOrderType.Draw} />;
 }
 
+function EnterpriseBackWorkOrderList () {
+    return <WorkOrderList type="mine" workOrderType={WorkOrderType.EnterpriseBack} />;
+}
+function RemitWorkOrderList () {
+    return <WorkOrderList type="mine" workOrderType={WorkOrderType.Remit} />;
+}
+function RemoveSubUserWorkOrderList () {
+    return <WorkOrderList type="mine" workOrderType={WorkOrderType.RemoveSubUser} />;
+}
+function AddSubUserWorkOrderList () {
+    return <WorkOrderList type="mine" workOrderType={WorkOrderType.AddSubUser} />;
+}
+
 function NotAuditedWorkOrderList () {
     return <WorkOrderList type="notAuditedUser" />;
 }
@@ -88,10 +101,6 @@ function FreezeWorkOrderList () {
 }
 function UnfreezeWorkOrderList () {
     return <WorkOrderList type="mine" workOrderType={WorkOrderType.Unfreeze} />;
-}
-
-function MineWorkOrderList () {
-    return <WorkOrderList type="mine" />;
 }
 
 function FreezeWorkflow () {
@@ -395,7 +404,54 @@ export default function () {
                         path="/account/enterprise/create"
                         component={EnterpriseSubUserAddWorkflow}
                     />,
-                    <Route key="/work_order/mine" exact={true} path="/work_order/mine" component={MineWorkOrderList} />,
+                    <Route
+                        key="/work_order/not_audited"
+                        exact={true}
+                        path="/work_order/not_audited"
+                        component={NotAuditedWorkOrderList}
+                    />,
+                    <Route
+                        key="/work_order/fund/back"
+                        exact={true}
+                        path="/work_order/fund/back"
+                        component={EnterpriseBackWorkOrderList}
+                    />,
+                    <Route
+                        key="/work_order/fund/remit"
+                        exact={true}
+                        path="/work_order/fund/remit"
+                        component={RemitWorkOrderList}
+                    />,
+                    <Route
+                        key="/work_order/sub_user/remove"
+                        exact={true}
+                        path="/work_order/sub_user/remove"
+                        component={RemoveSubUserWorkOrderList}
+                    />,
+                    <Route
+                        key="/work_order/sub_user/add"
+                        exact={true}
+                        path="/work_order/sub_user/add"
+                        component={AddSubUserWorkOrderList}
+                    />,
+                    <Route
+                        key="/work_order/account/disable_export"
+                        exact={true}
+                        path="/work_order/account/disable_export"
+                        component={DisableOrExportWorkOrderList}
+                    />,
+                    <Route
+                        key="/work_order/account/freeze"
+                        exact={true}
+                        path="/work_order/account/freeze"
+                        component={FreezeWorkOrderList}
+                    />,
+                    <Route
+                        key="/work_order/account/unfreeze"
+                        exact={true}
+                        path="/work_order/account/unfreeze"
+                        component={UnfreezeWorkOrderList}
+                    />,
                     <Route
                         key="/work_order/:workOrderID/detail"
                         path="/work_order/:workOrderID/detail"
