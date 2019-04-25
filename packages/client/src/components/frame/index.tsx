@@ -86,6 +86,12 @@ function Frame ({ children }: FrameProps) {
                                 <Link to="/account/list">账户列表</Link>
                             </Menu.Item>
                         </SubMenu>
+                        <Menu.Item key="/account/overview">
+                            <Link to="/account/overview">
+                                <Icon type="deployment-unit" />
+                                系统概览
+                            </Link>
+                        </Menu.Item>
                         <SubMenu
                             key="/work_order"
                             title={

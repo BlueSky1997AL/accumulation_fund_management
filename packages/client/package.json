@@ -43,10 +43,12 @@
         "typescript": "^3.3.3333",
         "url-loader": "^1.1.2",
         "webpack": "^4.29.6",
-        "webpack-bundle-analyzer": "^3.1.0",
+        "webpack-bundle-analyzer": "^3.3.2",
         "webpack-cli": "^3.3.0"
     },
     "dependencies": {
+        "@antv/f2": "^3.3.9",
+        "@antv/g2": "^3.5.3",
         "ant-design-pro": "^2.3.1",
         "antd": "^3.15.1",
         "axios": "^0.18.0",

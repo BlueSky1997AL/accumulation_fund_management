@@ -1,3 +1,5 @@
+import { PersonType, UserStatus } from './user';
+
 type objectID = string;
 
 export interface AmountChange {
@@ -12,6 +14,18 @@ export interface AmountChangeInDB extends AmountChange {
     _id: objectID;
     createdAt: Date;
     updatedAt: Date;
+}
+
+export interface AmountChangeInDBWithOwnerInfo extends AmountChangeInDB {
+    ownerInfo: {
+        username: string;
+        name: string;
+        cardNo?: string;
+        employeeID?: string;
+        employerID?: objectID;
+        personType?: PersonType;
+        status: UserStatus;
+    }
 }
 
 export enum AmountChangeType {

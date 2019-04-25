@@ -27,6 +27,7 @@ import WorkflowFrame from './workflowFrame';
 import WorkOrderAudit from './workOrderAudit';
 import WorkOrderList from './workOrderList';
 import WorkOrderQuery from './workOrderQuery';
+import AdminOverview from './adminOverview';
 
 function Page404 () {
     return <Exception type="404" backText="返回首页" redirect="/web" />;
@@ -147,6 +148,7 @@ export default function () {
                             return <AccountModificationForm userID={match.params.userID} />;
                         }}
                     />,
+                    <Route key="/account/overview" exact={true} path="/account/overview" component={AdminOverview} />,
                     <Route
                         key="/work_order/query"
                         exact={true}

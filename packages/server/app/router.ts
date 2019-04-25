@@ -115,6 +115,8 @@ export default (app: Application) => {
         controller.amountChange.getPersonalAmountChangesByQuery
     );
 
+    router.get('/api/sys_overview', authCheckMiddleware, userProtectionMiddleware, controller.home.getSysOverviewInfo);
+
     router.post('/api/file/upload', controller.file.upload);
     router.get('/api/file/content/:fileID', controller.file.getFileContent);
 
