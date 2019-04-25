@@ -2,11 +2,11 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 
 import { ResponseData } from '~server/app/util/interface/common';
-import { User, UserStatus } from '~server/app/util/interface/user';
+import { UserInDB, UserStatus } from '~server/app/util/interface/user';
 
 export async function getAllUsers () {
     const csrfToken = Cookies.get('csrfToken');
-    const resp = await axios.get<ResponseData<User[]>>('/api/user/all', {
+    const resp = await axios.get<ResponseData<UserInDB[]>>('/api/user/all', {
         headers: {
             'x-csrf-token': csrfToken
         }

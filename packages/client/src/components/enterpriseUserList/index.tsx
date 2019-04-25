@@ -5,8 +5,8 @@ import { ColumnProps } from 'antd/lib/table';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
-import { UserStatus, UserType } from '~server/app/util/interface/user';
-import { moneyToHumanReadable, userStatusToString, userTypeToString } from '~utils/user';
+import { UserStatus } from '~server/app/util/interface/user';
+import { moneyToHumanReadable, userStatusToString } from '~utils/user';
 
 import { UserInfoRespData } from '~server/app/controller/user';
 import { MsgType } from '~server/app/util/interface/common';
