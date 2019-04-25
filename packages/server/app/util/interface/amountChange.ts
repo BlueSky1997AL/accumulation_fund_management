@@ -26,5 +26,6 @@ export enum AmountChangeSource {
     PersonalBack,
     PersonalDeposit,
     PersonalPartialDraw,
-    PersonalCancellationDraw
+    PersonalCancellationDraw,
+    AdminUserCreate
 }

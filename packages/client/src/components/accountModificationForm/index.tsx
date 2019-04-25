@@ -20,7 +20,7 @@ interface AccountModificationFormProps extends FormComponentProps, RouteComponen
 }
 
 function AccountModificationForm ({ userID, form, history }: AccountModificationFormProps) {
-    const { getFieldDecorator, getFieldsValue, getFieldValue, validateFields } = form;
+    const { getFieldDecorator, getFieldValue, validateFields } = form;
 
     const [ fullUserInfo, setFullUserInfo ] = useState<UserInDB>();
     const [ currentUserType, setCurrentUserType ] = useState<UserType>();
@@ -142,7 +142,14 @@ function AccountModificationForm ({ userID, form, history }: AccountModification
                 );
             }
             default:
-                return null;
+                return (
+                    <Form.Item label="用户名">
+                        {getFieldDecorator('username', {
+                            initialValue: fullUserInfo && fullUserInfo.username,
+                            rules: [ { required: true, message: '请输入用户名' } ]
+                        })(<Input placeholder="企业用户名" />)}
+                    </Form.Item>
+                );
         }
     }
 
@@ -179,7 +186,14 @@ function AccountModificationForm ({ userID, form, history }: AccountModification
                 );
             }
             default:
-                return null;
+                return (
+                    <Form.Item label="用户名称">
+                        {getFieldDecorator('name', {
+                            initialValue: fullUserInfo && fullUserInfo.name,
+                            rules: [ { required: true, message: '请输入用户名称' } ]
+                        })(<Input placeholder="用户名称" />)}
+                    </Form.Item>
+                );
         }
     }
 

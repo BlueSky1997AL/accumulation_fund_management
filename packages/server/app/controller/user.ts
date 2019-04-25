@@ -2,10 +2,10 @@
 
 import { Controller } from 'egg';
 
+import { PasswordModificationSubmitData } from '../../../client/src/components/passwordModification';
+import { AmountChangeInDB, AmountChangeSource, AmountChangeType } from '../util/interface/amountChange';
 import { MsgType, ResponseData } from '../util/interface/common';
 import { EnterpriseType, PersonType, UserInDB, UserStatus, UserType } from '../util/interface/user';
-
-import { PasswordModificationSubmitData } from '../../../client/src/components/passwordModification';
 
 export interface UserInfoRespData {
     id: string;
@@ -244,7 +244,20 @@ export default class UserController extends Controller {
     public async createUser() {
         const { ctx } = this;
         const { username } = ctx.session;
-        const { username: targetUsername, status, password, balance, subUser, type } = ctx.request.body as UserInDB;
+        const {
+            username: targetUsername,
+            name,
+            cardNo,
+            employeeID,
+            employerID,
+            entType,
+            personType,
+            status,
+            password,
+            subUser,
+            type,
+            balance
+        } = ctx.request.body as UserInDB;
 
         const response: ResponseData<null> = {
             message: MsgType.UNKNOWN_ERR,
@@ -257,18 +270,37 @@ export default class UserController extends Controller {
         } else {
             const userData: { [propName: string]: any } = {
                 username: targetUsername,
+                name,
                 password,
                 status,
                 type
             };
-            if (type !== UserType.Admin) {
-                userData['balance'] = balance;
+            if (type === UserType.Enterprise || type === UserType.Common) {
+                userData.cardNo = cardNo;
+                userData.balance = balance;
+            }
+            if (type === UserType.Common) {
+                userData.employeeID = employeeID;
+                userData.employerID = employerID;
+                userData.personType = personType;
             }
             if (type === UserType.Enterprise) {
-                userData['subUser'] = subUser;
+                userData.subUser = subUser;
+                userData.entType = entType;
             }
 
-            await ctx.model.User.create(userData);
+            const createdUser = (await ctx.model.User.create(userData)) as UserInDB;
+            const amountChange = (await ctx.model.AmountChange.create({
+                owner: createdUser._id,
+                amount: balance,
+                type: AmountChangeType.Positive,
+                source: AmountChangeSource.AdminUserCreate
+            })) as AmountChangeInDB;
+            await ctx.model.User.updateOne(
+                { _id: createdUser._id },
+                { amountChanges: [ ...createdUser.amountChanges!, amountChange._id ] }
+            );
+
             response.message = MsgType.OPT_SUCCESS;
         }
 
