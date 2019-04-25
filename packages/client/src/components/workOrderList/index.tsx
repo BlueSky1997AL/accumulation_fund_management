@@ -26,6 +26,218 @@ import {
     WorkOrderUserQuery
 } from './request';
 
+export function getWorkOrderDescAdmin (info: WorkOrderWithUserInfo) {
+    switch (info.type) {
+        case WorkOrderType.EnterpriseBack: {
+            const payload = JSON.parse(info.payload!) as EnterpriseFundBackSubmitData;
+            return `企业名称：${info.owner.name} / 统一社会信用代码：${info.owner.username} / 补缴月份：${moment(payload.month).format(
+                'YYYY-MM'
+            )} / 补缴人数：${payload.amountMap.length}`;
+        }
+        case WorkOrderType.Remit: {
+            const payload = JSON.parse(info.payload!) as EnterpriseFundRemitSubmitData;
+            return `企业名称：${info.owner.name} / 统一社会信用代码：${info.owner.username} / 汇缴月份：${moment(payload.month).format(
+                'YYYY-MM'
+            )} / 汇缴人数：${payload.amountMap.length}`;
+        }
+        case WorkOrderType.RemoveSubUser: {
+            const payload = JSON.parse(info.payload!) as EnterpriseSubUserRemoveSubmitData;
+            return `企业名称：${info.owner.name} / 统一社会信用代码：${info.owner.username} / 目标员工唯一标识：${payload.userID}`;
+        }
+        case WorkOrderType.AddSubUser: {
+            const payload = JSON.parse(info.payload!) as EnterpriseSubUserAddSubmitData;
+            return `企业名称：${info.owner.name} / 统一社会信用代码：${info.owner.username} / 目标员工身份证号码：${payload.usernames &&
+                payload.usernames.join('；')}`;
+        }
+        case WorkOrderType.PersonalBack: {
+            const payload = JSON.parse(info.payload!) as PersonalFundBackSubmitData;
+            return `姓名：${info.owner.name} / 身份证号：${info.owner.username} / 补缴月份：${moment(payload.month).format(
+                'YYYY-MM'
+            )} / 补缴金额：${moneyToHumanReadable(payload.amount)}元`;
+        }
+        case WorkOrderType.PersonalDeposit: {
+            const payload = JSON.parse(info.payload!) as PersonalFundDepositSubmitData;
+            return `姓名：${info.owner.name} / 身份证号：${info.owner.username} / 缴存月份：${moment(payload.month).format(
+                'YYYY-MM'
+            )} / 缴存金额：${moneyToHumanReadable(payload.amount)}元`;
+        }
+        case WorkOrderType.Draw: {
+            const payload = JSON.parse(info.payload!) as PersonalFundDrawSubmitData;
+            return `姓名：${info.owner.name} / 身份证号：${info.owner.username} / 支取类别：${drawTypeToString(
+                payload.type
+            )} / 支取金额：${moneyToHumanReadable(payload.amount)}元`;
+        }
+        case WorkOrderType.DisableOrExport: {
+            switch (info.owner.type) {
+                case UserType.Common: {
+                    return `账户类型：${userTypeToString(info.owner.type)} / 个人账户类型：${personTypeToString(
+                        info.owner.personType
+                    )} / 姓名：${info.owner.name} / 身份证号：${info.owner.username}`;
+                }
+                case UserType.Enterprise: {
+                    return `账户类型：${userTypeToString(info.owner.type)} / 企业名称：${info.owner.name} / 统一社会信用代码：${info.owner
+                        .username}`;
+                }
+                default: {
+                    return `账户类型：${userTypeToString(info.owner.type)} / 用户名称：${info.owner.name} /用户名：${info.owner
+                        .username}`;
+                }
+            }
+        }
+        case WorkOrderType.Freeze: {
+            switch (info.owner.type) {
+                case UserType.Common: {
+                    return `账户类型：${userTypeToString(info.owner.type)} / 个人账户类型：${personTypeToString(
+                        info.owner.personType
+                    )} / 姓名：${info.owner.name} / 身份证号：${info.owner.username}`;
+                }
+                case UserType.Enterprise: {
+                    return `账户类型：${userTypeToString(info.owner.type)} / 企业名称：${info.owner.name} / 统一社会信用代码：${info.owner
+                        .username}`;
+                }
+                default: {
+                    return `账户类型：${userTypeToString(info.owner.type)} / 用户名称：${info.owner.name} /用户名：${info.owner
+                        .username}`;
+                }
+            }
+        }
+        case WorkOrderType.Unfreeze: {
+            switch (info.owner.type) {
+                case UserType.Common: {
+                    return `账户类型：${userTypeToString(info.owner.type)} / 个人账户类型：${personTypeToString(
+                        info.owner.personType
+                    )} / 姓名：${info.owner.name} / 身份证号：${info.owner.username}`;
+                }
+                case UserType.Enterprise: {
+                    return `账户类型：${userTypeToString(info.owner.type)} / 企业名称：${info.owner.name} / 统一社会信用代码：${info.owner
+                        .username}`;
+                }
+                default: {
+                    return `账户类型：${userTypeToString(info.owner.type)} / 用户名称：${info.owner.name} /用户名：${info.owner
+                        .username}`;
+                }
+            }
+        }
+        case WorkOrderType.SignUp: {
+            const payload = JSON.parse(info.payload!) as SignUpSubmitData;
+            switch (payload.type) {
+                case UserType.Common: {
+                    return `账户类型：${userTypeToString(payload.type)} / 个人账户类型：${personTypeToString(
+                        payload.personType
+                    )} / 姓名：${payload.name} / 身份证号：${payload.username}`;
+                }
+                case UserType.Enterprise: {
+                    return `账户类型：${userTypeToString(
+                        payload.type
+                    )} / 企业名称：${payload.name} / 统一社会信用代码：${payload.username}`;
+                }
+                default: {
+                    return `账户类型：${userTypeToString(payload.type)} / 用户名称：${payload.name} /用户名：${payload.username}`;
+                }
+            }
+        }
+    }
+}
+
+export function getWorkOrderDescUser (info: WorkOrderWithUserInfo) {
+    switch (info.type) {
+        case WorkOrderType.EnterpriseBack: {
+            const payload = JSON.parse(info.payload!) as EnterpriseFundBackSubmitData;
+            return `补缴月份：${moment(payload.month).format('YYYY-MM')} / 补缴人数：${payload.amountMap.length}`;
+        }
+        case WorkOrderType.Remit: {
+            const payload = JSON.parse(info.payload!) as EnterpriseFundRemitSubmitData;
+            return `汇缴月份：${moment(payload.month).format('YYYY-MM')} / 汇缴人数：${payload.amountMap.length}`;
+        }
+        case WorkOrderType.RemoveSubUser: {
+            const payload = JSON.parse(info.payload!) as EnterpriseSubUserRemoveSubmitData;
+            return `目标员工唯一标识：${payload.userID}`;
+        }
+        case WorkOrderType.AddSubUser: {
+            const payload = JSON.parse(info.payload!) as EnterpriseSubUserAddSubmitData;
+            return `目标员工身份证号码：${payload.usernames && payload.usernames.join('；')}`;
+        }
+        case WorkOrderType.PersonalBack: {
+            const payload = JSON.parse(info.payload!) as PersonalFundBackSubmitData;
+            return `补缴月份：${moment(payload.month).format('YYYY-MM')} / 补缴金额：${moneyToHumanReadable(payload.amount)}元`;
+        }
+        case WorkOrderType.PersonalDeposit: {
+            const payload = JSON.parse(info.payload!) as PersonalFundDepositSubmitData;
+            return `缴存月份：${moment(payload.month).format('YYYY-MM')} / 缴存金额：${moneyToHumanReadable(payload.amount)}元`;
+        }
+        case WorkOrderType.Draw: {
+            const payload = JSON.parse(info.payload!) as PersonalFundDrawSubmitData;
+            return `支取类别：${drawTypeToString(payload.type)} / 支取金额：${moneyToHumanReadable(payload.amount)}元`;
+        }
+        case WorkOrderType.DisableOrExport: {
+            switch (info.owner.type) {
+                case UserType.Common: {
+                    return `账户类型：${userTypeToString(info.owner.type)} / 个人账户类型：${personTypeToString(
+                        info.owner.personType
+                    )} / 姓名：${info.owner.name} / 身份证号：${info.owner.username}`;
+                }
+                case UserType.Enterprise: {
+                    return `账户类型：${userTypeToString(info.owner.type)} / 企业名称：${info.owner.name} / 统一社会信用代码：${info.owner
+                        .username}`;
+                }
+                default: {
+                    return `账户类型：${userTypeToString(info.owner.type)} / 用户名称：${info.owner.name} /用户名：${info.owner
+                        .username}`;
+                }
+            }
+        }
+        case WorkOrderType.Freeze: {
+            switch (info.owner.type) {
+                case UserType.Common: {
+                    return `账户类型：${userTypeToString(info.owner.type)} / 个人账户类型：${personTypeToString(
+                        info.owner.personType
+                    )} / 姓名：${info.owner.name} / 身份证号：${info.owner.username}`;
+                }
+                case UserType.Enterprise: {
+                    return `账户类型：${userTypeToString(info.owner.type)} / 企业名称：${info.owner.name} / 统一社会信用代码：${info.owner
+                        .username}`;
+                }
+                default: {
+                    return `账户类型：${userTypeToString(info.owner.type)} / 用户名称：${info.owner.name} /用户名：${info.owner
+                        .username}`;
+                }
+            }
+        }
+        case WorkOrderType.Unfreeze: {
+            switch (info.owner.type) {
+                case UserType.Common: {
+                    return `账户类型：${userTypeToString(info.owner.type)} / 个人账户类型：${personTypeToString(
+                        info.owner.personType
+                    )} / 姓名：${info.owner.name} / 身份证号：${info.owner.username}`;
+                }
+                case UserType.Enterprise: {
+                    return `账户类型：${userTypeToString(info.owner.type)} / 企业名称：${info.owner.name} / 统一社会信用代码：${info.owner
+                        .username}`;
+                }
+                default: {
+                    return `账户类型：${userTypeToString(info.owner.type)} / 用户名称：${info.owner.name} /用户名：${info.owner
+                        .username}`;
+                }
+            }
+        }
+    }
+}
+
+export function getAuditStatusColor (status: WorkOrderStatus) {
+    switch (status) {
+        case WorkOrderStatus.Closed:
+            return 'rgba(0, 0, 0, 0.25)';
+        case WorkOrderStatus.Granted:
+            return '#52c41a';
+        case WorkOrderStatus.Rejected:
+            return '#f5222d';
+        case WorkOrderStatus.Open:
+            return '#faad14';
+        default:
+            return '#000';
+    }
+}
+
 type WorkOrderListType = 'audit' | 'mine' | 'notAuditedAdmin' | 'notAuditedUser';
 interface WorkOrderListProps {
     type: WorkOrderListType;
@@ -118,222 +330,6 @@ function WorkOrderList ({ type, workOrderType }: WorkOrderListProps) {
             }
             default:
                 return null;
-        }
-    }
-
-    function getWorkOrderDescAdmin (info: WorkOrderWithUserInfo) {
-        switch (info.type) {
-            case WorkOrderType.EnterpriseBack: {
-                const payload = JSON.parse(info.payload!) as EnterpriseFundBackSubmitData;
-                return `企业名称：${info.owner.name} / 统一社会信用代码：${info.owner.username} / 补缴月份：${moment(payload.month).format(
-                    'YYYY-MM'
-                )} / 补缴人数：${payload.amountMap.length}`;
-            }
-            case WorkOrderType.Remit: {
-                const payload = JSON.parse(info.payload!) as EnterpriseFundRemitSubmitData;
-                return `企业名称：${info.owner.name} / 统一社会信用代码：${info.owner.username} / 汇缴月份：${moment(payload.month).format(
-                    'YYYY-MM'
-                )} / 汇缴人数：${payload.amountMap.length}`;
-            }
-            case WorkOrderType.RemoveSubUser: {
-                const payload = JSON.parse(info.payload!) as EnterpriseSubUserRemoveSubmitData;
-                return `企业名称：${info.owner.name} / 统一社会信用代码：${info.owner.username} / 目标员工唯一标识：${payload.userID}`;
-            }
-            case WorkOrderType.AddSubUser: {
-                const payload = JSON.parse(info.payload!) as EnterpriseSubUserAddSubmitData;
-                return `企业名称：${info.owner.name} / 统一社会信用代码：${info.owner.username} / 目标员工身份证号码：${payload.usernames &&
-                    payload.usernames.join('；')}`;
-            }
-            case WorkOrderType.PersonalBack: {
-                const payload = JSON.parse(info.payload!) as PersonalFundBackSubmitData;
-                return `姓名：${info.owner.name} / 身份证号：${info.owner.username} / 补缴月份：${moment(payload.month).format(
-                    'YYYY-MM'
-                )} / 补缴金额：${moneyToHumanReadable(payload.amount)}元`;
-            }
-            case WorkOrderType.PersonalDeposit: {
-                const payload = JSON.parse(info.payload!) as PersonalFundDepositSubmitData;
-                return `姓名：${info.owner.name} / 身份证号：${info.owner.username} / 缴存月份：${moment(payload.month).format(
-                    'YYYY-MM'
-                )} / 缴存金额：${moneyToHumanReadable(payload.amount)}元`;
-            }
-            case WorkOrderType.Draw: {
-                const payload = JSON.parse(info.payload!) as PersonalFundDrawSubmitData;
-                return `姓名：${info.owner.name} / 身份证号：${info.owner.username} / 支取类别：${drawTypeToString(
-                    payload.type
-                )} / 支取金额：${moneyToHumanReadable(payload.amount)}元`;
-            }
-            case WorkOrderType.DisableOrExport: {
-                switch (info.owner.type) {
-                    case UserType.Common: {
-                        return `账户类型：${userTypeToString(info.owner.type)} / 个人账户类型：${personTypeToString(
-                            info.owner.personType
-                        )} / 姓名：${info.owner.name} / 身份证号：${info.owner.username}`;
-                    }
-                    case UserType.Enterprise: {
-                        return `账户类型：${userTypeToString(info.owner.type)} / 企业名称：${info.owner.name} / 统一社会信用代码：${info
-                            .owner.username}`;
-                    }
-                    default: {
-                        return `账户类型：${userTypeToString(info.owner.type)} / 用户名称：${info.owner.name} /用户名：${info.owner
-                            .username}`;
-                    }
-                }
-            }
-            case WorkOrderType.Freeze: {
-                switch (info.owner.type) {
-                    case UserType.Common: {
-                        return `账户类型：${userTypeToString(info.owner.type)} / 个人账户类型：${personTypeToString(
-                            info.owner.personType
-                        )} / 姓名：${info.owner.name} / 身份证号：${info.owner.username}`;
-                    }
-                    case UserType.Enterprise: {
-                        return `账户类型：${userTypeToString(info.owner.type)} / 企业名称：${info.owner.name} / 统一社会信用代码：${info
-                            .owner.username}`;
-                    }
-                    default: {
-                        return `账户类型：${userTypeToString(info.owner.type)} / 用户名称：${info.owner.name} /用户名：${info.owner
-                            .username}`;
-                    }
-                }
-            }
-            case WorkOrderType.Unfreeze: {
-                switch (info.owner.type) {
-                    case UserType.Common: {
-                        return `账户类型：${userTypeToString(info.owner.type)} / 个人账户类型：${personTypeToString(
-                            info.owner.personType
-                        )} / 姓名：${info.owner.name} / 身份证号：${info.owner.username}`;
-                    }
-                    case UserType.Enterprise: {
-                        return `账户类型：${userTypeToString(info.owner.type)} / 企业名称：${info.owner.name} / 统一社会信用代码：${info
-                            .owner.username}`;
-                    }
-                    default: {
-                        return `账户类型：${userTypeToString(info.owner.type)} / 用户名称：${info.owner.name} /用户名：${info.owner
-                            .username}`;
-                    }
-                }
-            }
-            case WorkOrderType.SignUp: {
-                const payload = JSON.parse(info.payload!) as SignUpSubmitData;
-                switch (payload.type) {
-                    case UserType.Common: {
-                        return `账户类型：${userTypeToString(payload.type)} / 个人账户类型：${personTypeToString(
-                            payload.personType
-                        )} / 姓名：${payload.name} / 身份证号：${payload.username}`;
-                    }
-                    case UserType.Enterprise: {
-                        return `账户类型：${userTypeToString(
-                            payload.type
-                        )} / 企业名称：${payload.name} / 统一社会信用代码：${payload.username}`;
-                    }
-                    default: {
-                        return `账户类型：${userTypeToString(payload.type)} / 用户名称：${payload.name} /用户名：${payload.username}`;
-                    }
-                }
-            }
-        }
-    }
-
-    function getWorkOrderDescUser (info: WorkOrderWithUserInfo) {
-        switch (info.type) {
-            case WorkOrderType.EnterpriseBack: {
-                const payload = JSON.parse(info.payload!) as EnterpriseFundBackSubmitData;
-                return `补缴月份：${moment(payload.month).format('YYYY-MM')} / 补缴人数：${payload.amountMap.length}`;
-            }
-            case WorkOrderType.Remit: {
-                const payload = JSON.parse(info.payload!) as EnterpriseFundRemitSubmitData;
-                return `汇缴月份：${moment(payload.month).format('YYYY-MM')} / 汇缴人数：${payload.amountMap.length}`;
-            }
-            case WorkOrderType.RemoveSubUser: {
-                const payload = JSON.parse(info.payload!) as EnterpriseSubUserRemoveSubmitData;
-                return `目标员工唯一标识：${payload.userID}`;
-            }
-            case WorkOrderType.AddSubUser: {
-                const payload = JSON.parse(info.payload!) as EnterpriseSubUserAddSubmitData;
-                return `目标员工身份证号码：${payload.usernames && payload.usernames.join('；')}`;
-            }
-            case WorkOrderType.PersonalBack: {
-                const payload = JSON.parse(info.payload!) as PersonalFundBackSubmitData;
-                return `补缴月份：${moment(payload.month).format('YYYY-MM')} / 补缴金额：${moneyToHumanReadable(
-                    payload.amount
-                )}元`;
-            }
-            case WorkOrderType.PersonalDeposit: {
-                const payload = JSON.parse(info.payload!) as PersonalFundDepositSubmitData;
-                return `缴存月份：${moment(payload.month).format('YYYY-MM')} / 缴存金额：${moneyToHumanReadable(
-                    payload.amount
-                )}元`;
-            }
-            case WorkOrderType.Draw: {
-                const payload = JSON.parse(info.payload!) as PersonalFundDrawSubmitData;
-                return `支取类别：${drawTypeToString(payload.type)} / 支取金额：${moneyToHumanReadable(payload.amount)}元`;
-            }
-            case WorkOrderType.DisableOrExport: {
-                switch (info.owner.type) {
-                    case UserType.Common: {
-                        return `账户类型：${userTypeToString(info.owner.type)} / 个人账户类型：${personTypeToString(
-                            info.owner.personType
-                        )} / 姓名：${info.owner.name} / 身份证号：${info.owner.username}`;
-                    }
-                    case UserType.Enterprise: {
-                        return `账户类型：${userTypeToString(info.owner.type)} / 企业名称：${info.owner.name} / 统一社会信用代码：${info
-                            .owner.username}`;
-                    }
-                    default: {
-                        return `账户类型：${userTypeToString(info.owner.type)} / 用户名称：${info.owner.name} /用户名：${info.owner
-                            .username}`;
-                    }
-                }
-            }
-            case WorkOrderType.Freeze: {
-                switch (info.owner.type) {
-                    case UserType.Common: {
-                        return `账户类型：${userTypeToString(info.owner.type)} / 个人账户类型：${personTypeToString(
-                            info.owner.personType
-                        )} / 姓名：${info.owner.name} / 身份证号：${info.owner.username}`;
-                    }
-                    case UserType.Enterprise: {
-                        return `账户类型：${userTypeToString(info.owner.type)} / 企业名称：${info.owner.name} / 统一社会信用代码：${info
-                            .owner.username}`;
-                    }
-                    default: {
-                        return `账户类型：${userTypeToString(info.owner.type)} / 用户名称：${info.owner.name} /用户名：${info.owner
-                            .username}`;
-                    }
-                }
-            }
-            case WorkOrderType.Unfreeze: {
-                switch (info.owner.type) {
-                    case UserType.Common: {
-                        return `账户类型：${userTypeToString(info.owner.type)} / 个人账户类型：${personTypeToString(
-                            info.owner.personType
-                        )} / 姓名：${info.owner.name} / 身份证号：${info.owner.username}`;
-                    }
-                    case UserType.Enterprise: {
-                        return `账户类型：${userTypeToString(info.owner.type)} / 企业名称：${info.owner.name} / 统一社会信用代码：${info
-                            .owner.username}`;
-                    }
-                    default: {
-                        return `账户类型：${userTypeToString(info.owner.type)} / 用户名称：${info.owner.name} /用户名：${info.owner
-                            .username}`;
-                    }
-                }
-            }
-        }
-    }
-
-    function getAuditStatusColor (status: WorkOrderStatus) {
-        switch (status) {
-            case WorkOrderStatus.Closed:
-                return 'rgba(0, 0, 0, 0.25)';
-            case WorkOrderStatus.Granted:
-                return '#52c41a';
-            case WorkOrderStatus.Rejected:
-                return '#f5222d';
-            case WorkOrderStatus.Open:
-                return '#faad14';
-            default:
-                return '#000';
         }
     }
 

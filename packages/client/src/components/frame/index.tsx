@@ -95,6 +95,9 @@ function Frame ({ children }: FrameProps) {
                                 </span>
                             }
                         >
+                            <Menu.Item key="/work_order/query">
+                                <Link to="/work_order/query">工单查询</Link>
+                            </Menu.Item>
                             <Menu.Item key="/work_order/not_audited">
                                 <Link to="/work_order/not_audited">未审核工单</Link>
                             </Menu.Item>
@@ -173,6 +176,9 @@ function Frame ({ children }: FrameProps) {
                                     </span>
                                 }
                             >
+                                <Menu.Item key="/work_order/query">
+                                    <Link to="/work_order/query">工单查询</Link>
+                                </Menu.Item>
                                 <Menu.Item key="/work_order/not_audited">
                                     <Link to="/work_order/not_audited">未审核工单</Link>
                                 </Menu.Item>
@@ -251,6 +257,9 @@ function Frame ({ children }: FrameProps) {
                                 </span>
                             }
                         >
+                            <Menu.Item key="/work_order/query">
+                                <Link to="/work_order/query">工单查询</Link>
+                            </Menu.Item>
                             <Menu.Item key="/work_order/not_audited">
                                 <Link to="/work_order/not_audited">未审核工单</Link>
                             </Menu.Item>
@@ -321,6 +330,9 @@ function Frame ({ children }: FrameProps) {
                                 </span>
                             }
                         >
+                            <Menu.Item key="/work_order/query">
+                                <Link to="/work_order/query">工单查询</Link>
+                            </Menu.Item>
                             <Menu.Item key="/work_order/not_audited">
                                 <Link to="/work_order/not_audited">未审核工单</Link>
                             </Menu.Item>

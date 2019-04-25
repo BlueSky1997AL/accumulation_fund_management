@@ -25,6 +25,7 @@ import UserInfo from './userInfo';
 import WorkflowFrame from './workflowFrame';
 import WorkOrderAudit from './workOrderAudit';
 import WorkOrderList from './workOrderList';
+import WorkOrderQuery from './workOrderQuery';
 
 function Page404 () {
     return <Exception type="404" backText="返回首页" redirect="/web" />;
@@ -103,6 +104,13 @@ function UnfreezeWorkOrderList () {
     return <WorkOrderList type="mine" workOrderType={WorkOrderType.Unfreeze} />;
 }
 
+function AdminWorkOrderQuery () {
+    return <WorkOrderQuery type="admin" />;
+}
+function UserWorkOrderQuery () {
+    return <WorkOrderQuery type="user" />;
+}
+
 function FreezeWorkflow () {
     return <CommonWorkflow workOrderType={WorkOrderType.Freeze} />;
 }
@@ -137,6 +145,12 @@ export default function () {
                         render={({ match }) => {
                             return <AccountModificationForm userID={match.params.userID} />;
                         }}
+                    />,
+                    <Route
+                        key="/work_order/query"
+                        exact={true}
+                        path="/work_order/query"
+                        component={AdminWorkOrderQuery}
                     />,
                     <Route
                         key="/work_order/not_audited"
@@ -242,6 +256,12 @@ export default function () {
                             component={DisableWorkflow}
                         />,
                         <Route
+                            key="/work_order/query"
+                            exact={true}
+                            path="/work_order/query"
+                            component={UserWorkOrderQuery}
+                        />,
+                        <Route
                             key="/work_order/not_audited"
                             exact={true}
                             path="/work_order/not_audited"
@@ -323,6 +343,12 @@ export default function () {
                     />,
                     <Route key="/account/disable" exact={true} path="/account/disable" component={DisableWorkflow} />,
                     <Route
+                        key="/work_order/query"
+                        exact={true}
+                        path="/work_order/query"
+                        component={UserWorkOrderQuery}
+                    />,
+                    <Route
                         key="/work_order/not_audited"
                         exact={true}
                         path="/work_order/not_audited"
@@ -403,6 +429,12 @@ export default function () {
                         exact={true}
                         path="/account/enterprise/create"
                         component={EnterpriseSubUserAddWorkflow}
+                    />,
+                    <Route
+                        key="/work_order/query"
+                        exact={true}
+                        path="/work_order/query"
+                        component={UserWorkOrderQuery}
                     />,
                     <Route
                         key="/work_order/not_audited"
