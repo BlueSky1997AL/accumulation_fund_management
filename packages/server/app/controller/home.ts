@@ -1,6 +1,6 @@
 import { Controller } from 'egg';
 import { MsgType, ResponseData } from '../util/interface/common';
-import { UserInDB, UserType } from '../util/interface/user';
+import { UserInDB, UserStatus, UserType } from '../util/interface/user';
 
 export interface SysOverviewInfo {
     totalUserCount: number;
@@ -96,20 +96,13 @@ export default class HomeController extends Controller {
     public async test() {
         const { ctx } = this;
 
-        // await ctx.model.User.updateOne(
-        //     {
-        //         username: '142303121212312'
-        //     },
-        //     { cardNo: '888888888' }
-        // );
-
-        // await ctx.model.User.create({
-        //     username: 'admin',
-        //     password: 'adminadmin',
-        //     name: '超级管理员',
-        //     type: UserType.Admin,
-        //     status: UserStatus.Normal
-        // });
+        await ctx.model.User.create({
+            username: 'admin',
+            password: 'adminadmin',
+            name: '超级管理员',
+            type: UserType.Admin,
+            status: UserStatus.Normal
+        });
 
         ctx.body = {
             msg: 'ok'
