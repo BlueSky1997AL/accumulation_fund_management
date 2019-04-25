@@ -89,7 +89,7 @@ function Frame ({ children }: FrameProps) {
                         <Menu.Item key="/account/overview">
                             <Link to="/account/overview">
                                 <Icon type="deployment-unit" />
-                                系统概览
+                                {sideBarCollapsed ? '' : '系统概览'}
                             </Link>
                         </Menu.Item>
                         <SubMenu
@@ -410,8 +410,11 @@ function Frame ({ children }: FrameProps) {
                 <div className="frame-logo">{getLogo(sideBarCollapsed)}</div>
                 {getSiderMenuByUserType(userType)}
             </Sider>
-            <Layout style={{ marginLeft: sideBarCollapsed ? 80 : 200 }}>
-                <Header className="frame-header" style={{ left: sideBarCollapsed ? 80 : 200 }}>
+            <Layout className="frame-content" style={{ marginLeft: sideBarCollapsed ? 80 : 200 }}>
+                <Header
+                    className="frame-header"
+                    style={{ left: sideBarCollapsed ? 80 : 200, backgroundColor: 'rgba(255, 255, 255, 0.85)' }}
+                >
                     <div className="username">
                         当前用户：<span className="highlight-text">{window.name}</span>
                     </div>
@@ -423,7 +426,9 @@ function Frame ({ children }: FrameProps) {
                     </div>
                 </Header>
                 <Content style={{ margin: '16px', marginTop: '80px' }}>{children}</Content>
-                <Footer style={{ textAlign: 'center' }}>公积金管理系统 ©2019 东北农业大学 微机1501 刘秉楠</Footer>
+                <Footer style={{ textAlign: 'center', backgroundColor: 'rgba(255, 255, 255, 0.85)' }}>
+                    公积金管理系统 ©2019 东北农业大学 微机1501 刘秉楠
+                </Footer>
             </Layout>
         </Layout>
     );
