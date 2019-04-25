@@ -1,4 +1,4 @@
-import { Button, DatePicker, Form, Icon, Input, Upload } from 'antd';
+import { Button, Collapse, DatePicker, Divider, Form, Icon, Input, Upload } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
 import { UploadChangeParam } from 'antd/lib/upload';
 import { UploadFile } from 'antd/lib/upload/interface';
@@ -8,6 +8,7 @@ import React from 'react';
 import { FileInfo } from '~server/app/util/interface/file';
 
 const { MonthPicker } = DatePicker;
+const { Panel } = Collapse;
 
 import { uploadFilesToFileInfos } from '~utils/file';
 
@@ -32,6 +33,14 @@ interface EnterpriseFundBackFormProps extends FormComponentProps {
 let id = 1;
 
 const csrfToken = Cookies.get('csrfToken');
+
+const customPanelStyle = {
+    background: '#f1f1f1',
+    borderRadius: 4,
+    marginBottom: 24,
+    border: 0,
+    overflow: 'hidden'
+};
 
 function FundBackForm (props: EnterpriseFundBackFormProps) {
     const { getFieldDecorator, validateFields, getFieldValue, setFieldsValue } = props.form;
@@ -141,48 +150,79 @@ function FundBackForm (props: EnterpriseFundBackFormProps) {
     ));
 
     return (
-        <Form
+        <div
             style={{
                 width: '70%',
                 height: '100%',
                 padding: '16px 0'
             }}
         >
-            <Form.Item {...formItemLayout} label="补缴月份">
-                {getFieldDecorator('month', {
-                    rules: [ { required: true, message: '请选择补缴月份' } ]
-                })(<MonthPicker placeholder="选择补缴月份" />)}
-            </Form.Item>
-            {formItems}
-            <Form.Item {...formItemLayoutWithOutLabel}>
-                <Button type="dashed" onClick={add} style={{ width: '100%' }}>
-                    <Icon type="plus" /> 添加员工信息
-                </Button>
-            </Form.Item>
-            <Form.Item {...formItemLayout} label="备注">
-                {getFieldDecorator('comments', {
-                    rules: [ { required: true, message: '请输入相关备注内容' } ]
-                })(<Input.TextArea autosize={true} />)}
-            </Form.Item>
-            <Form.Item {...formItemLayout} label="相关材料">
-                {getFieldDecorator('accessory', {
-                    valuePropName: 'fileList',
-                    getValueFromEvent: normFile,
-                    rules: [ { required: true, message: '请上传相关材料' } ]
-                })(
-                    <Upload action={`/api/file/upload?_csrf=${csrfToken}`}>
-                        <Button>
-                            <Icon type="upload" /> 上传
-                        </Button>
-                    </Upload>
-                )}
-            </Form.Item>
-            <Form.Item {...formItemLayoutWithOutLabel}>
-                <Button type="primary" style={{ width: '100%' }} onClick={onSubmit}>
-                    提交
-                </Button>
-            </Form.Item>
-        </Form>
+            <Collapse
+                bordered={false}
+                defaultActiveKey={[ 'instruction' ]}
+                expandIcon={({ isActive }) => <Icon type="caret-right" rotate={isActive ? 90 : 0} />}
+            >
+                <Panel header="补缴说明" key="instruction" style={customPanelStyle}>
+                    <p>
+                        <b>补缴条件</b>
+                    </p>
+                    <p className="first-line-indent">当单位发生集体缴存以前年度缓缴公积金及应缴未缴的公积金、职工个人漏缴公积金等情况时，需通过补缴方式完成。</p>
+                    <p>
+                        <b>补缴手续</b>
+                    </p>
+                    <p className="first-line-indent">1、单位填写公积金管理中心统一印制的《公积金补缴书》。</p>
+                    <p className="first-line-indent">2、单位填写管理中心统一印制的《公积金补缴清册》一式两份，加盖单位印章。</p>
+                    <p className="first-line-indent">3、补缴原因需另附说明的，报补缴说明一份，加盖单位公章。</p>
+                    <p>
+                        <b>补缴办理</b>
+                    </p>
+                    <p className="first-line-indent">
+                        1、单位填制公积金管理中心统一印制的《公积金补缴书》、《公积金补缴清册》及与《公积金补缴书》金额一致的转账支票，到管理部办理补缴手续。对于未在《公积金补缴清册》中列明补缴原因的，还应报补缴说明一份。
+                    </p>
+                    <p className="first-line-indent">
+                        2、管理部接柜人员对《公积金补缴书》、《公积金补缴清册》及转账支票进行审核，补缴确认后，接柜人员打印《公积金补缴书》一式两份，盖章后一份退单位经办人，一份留存。
+                    </p>
+                    <i>请将上述材料以附件的形式上传至系统并填写相关表单及备注</i>
+                </Panel>
+            </Collapse>
+            <Divider orientation="left">信息填写</Divider>
+            <Form>
+                <Form.Item {...formItemLayout} label="补缴月份">
+                    {getFieldDecorator('month', {
+                        rules: [ { required: true, message: '请选择补缴月份' } ]
+                    })(<MonthPicker placeholder="选择补缴月份" />)}
+                </Form.Item>
+                {formItems}
+                <Form.Item {...formItemLayoutWithOutLabel}>
+                    <Button type="dashed" onClick={add} style={{ width: '100%' }}>
+                        <Icon type="plus" /> 添加员工信息
+                    </Button>
+                </Form.Item>
+                <Form.Item {...formItemLayout} label="备注">
+                    {getFieldDecorator('comments', {
+                        rules: [ { required: true, message: '请输入相关备注内容' } ]
+                    })(<Input.TextArea autosize={true} />)}
+                </Form.Item>
+                <Form.Item {...formItemLayout} label="相关材料">
+                    {getFieldDecorator('accessory', {
+                        valuePropName: 'fileList',
+                        getValueFromEvent: normFile,
+                        rules: [ { required: true, message: '请上传相关材料' } ]
+                    })(
+                        <Upload action={`/api/file/upload?_csrf=${csrfToken}`}>
+                            <Button>
+                                <Icon type="upload" /> 上传
+                            </Button>
+                        </Upload>
+                    )}
+                </Form.Item>
+                <Form.Item {...formItemLayoutWithOutLabel}>
+                    <Button type="primary" style={{ width: '100%' }} onClick={onSubmit}>
+                        提交
+                    </Button>
+                </Form.Item>
+            </Form>
+        </div>
     );
 }
 
