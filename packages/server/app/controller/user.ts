@@ -277,12 +277,12 @@ export default class UserController extends Controller {
             };
             if (type === UserType.Enterprise || type === UserType.Common) {
                 userData.cardNo = cardNo;
-                userData.balance = balance;
             }
             if (type === UserType.Common) {
                 userData.employeeID = employeeID;
                 userData.employerID = employerID;
                 userData.personType = personType;
+                userData.balance = balance;
             }
             if (type === UserType.Enterprise) {
                 userData.subUser = subUser;
@@ -290,16 +290,18 @@ export default class UserController extends Controller {
             }
 
             const createdUser = (await ctx.model.User.create(userData)) as UserInDB;
-            const amountChange = (await ctx.model.AmountChange.create({
-                owner: createdUser._id,
-                amount: balance,
-                type: AmountChangeType.Positive,
-                source: AmountChangeSource.AdminUserCreate
-            })) as AmountChangeInDB;
-            await ctx.model.User.updateOne(
-                { _id: createdUser._id },
-                { amountChanges: [ ...createdUser.amountChanges!, amountChange._id ] }
-            );
+            if (type === UserType.Common) {
+                const amountChange = (await ctx.model.AmountChange.create({
+                    owner: createdUser._id,
+                    amount: balance,
+                    type: AmountChangeType.Positive,
+                    source: AmountChangeSource.AdminUserCreate
+                })) as AmountChangeInDB;
+                await ctx.model.User.updateOne(
+                    { _id: createdUser._id },
+                    { amountChanges: [ ...createdUser.amountChanges!, amountChange._id ] }
+                );
+            }
 
             response.message = MsgType.OPT_SUCCESS;
         }

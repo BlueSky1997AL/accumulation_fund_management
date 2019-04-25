@@ -166,6 +166,9 @@ function Frame ({ children }: FrameProps) {
                                 <Menu.Item key="/account/info">
                                     <Link to="/account/info">账户信息</Link>
                                 </Menu.Item>
+                                <Menu.Item key="/account/amount_change">
+                                    <Link to="/account/amount_change">流水明细</Link>
+                                </Menu.Item>
                             </SubMenu>
                             <SubMenu
                                 key="/work_order"
@@ -246,6 +249,9 @@ function Frame ({ children }: FrameProps) {
                         >
                             <Menu.Item key="/account/info">
                                 <Link to="/account/info">账户信息</Link>
+                            </Menu.Item>
+                            <Menu.Item key="/account/amount_change">
+                                <Link to="/account/amount_change">流水明细</Link>
                             </Menu.Item>
                         </SubMenu>
                         <SubMenu

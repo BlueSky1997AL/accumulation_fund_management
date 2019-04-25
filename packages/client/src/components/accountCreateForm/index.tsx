@@ -77,7 +77,7 @@ function AccountCreateForm ({ form, history }: AccountModificationProps) {
     }
 
     function getBalanceFormItem () {
-        if (currentUserType === UserType.Common || currentUserType === UserType.Enterprise) {
+        if (currentUserType === UserType.Common) {
             return (
                 <Form.Item label="账户初始额（元/人名币）">
                     {getFieldDecorator('balance', {

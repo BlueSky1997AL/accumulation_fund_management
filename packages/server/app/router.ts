@@ -102,6 +102,19 @@ export default (app: Application) => {
         controller.workOrder.createEnterpriseSubUserAddWorkOrder
     );
 
+    router.get(
+        '/api/amount_change/query_admin',
+        authCheckMiddleware,
+        userProtectionMiddleware,
+        controller.amountChange.getAllAmountChangesByQuery
+    );
+    router.get(
+        '/api/amount_change/query_user',
+        authCheckMiddleware,
+        userProtectionMiddleware,
+        controller.amountChange.getPersonalAmountChangesByQuery
+    );
+
     router.post('/api/file/upload', controller.file.upload);
     router.get('/api/file/content/:fileID', controller.file.getFileContent);
 

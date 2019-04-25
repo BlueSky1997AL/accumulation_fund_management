@@ -10,6 +10,7 @@ import { WorkOrderType } from '~server/app/util/interface/workOrder';
 import { Card } from 'antd';
 import AccountCreateForm from './accountCreateForm';
 import AccountModificationForm from './accountModificationForm';
+import AmountChangeList from './amountChangeList';
 import CommonWorkflow from './commonWorkflow';
 import EnterpriseSubUserAddWorkflow from './enterpriseSubUserAddWorkflow';
 import EnterpriseSubUserRemoveWorkflow from './enterpriseSubUserRemoveWorkflow';
@@ -256,6 +257,12 @@ export default function () {
                             component={DisableWorkflow}
                         />,
                         <Route
+                            key="/account/amount_change"
+                            exact={true}
+                            path="/account/amount_change"
+                            component={AmountChangeList}
+                        />,
+                        <Route
                             key="/work_order/query"
                             exact={true}
                             path="/work_order/query"
@@ -342,6 +349,12 @@ export default function () {
                         component={UnfreezeWorkflow}
                     />,
                     <Route key="/account/disable" exact={true} path="/account/disable" component={DisableWorkflow} />,
+                    <Route
+                        key="/account/amount_change"
+                        exact={true}
+                        path="/account/amount_change"
+                        component={AmountChangeList}
+                    />,
                     <Route
                         key="/work_order/query"
                         exact={true}

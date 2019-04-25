@@ -115,6 +115,7 @@ export default class WorkOrderService extends Service {
         const { payload, owner } = workOrder;
         if (payload) {
             const execData = JSON.parse(payload) as EnterpriseFundBackSubmitData;
+            const workOrderOwnerInfo = (await ctx.model.User.findOne({ _id: owner })) as UserInDB;
 
             await Promise.all(
                 execData.amountMap.map(async amountInfo => {
@@ -128,7 +129,9 @@ export default class WorkOrderService extends Service {
                         source: AmountChangeSource.EnterpriseBack,
                         payload: JSON.stringify({
                             month: execData.month,
-                            entID: owner
+                            entID: owner,
+                            entName: workOrderOwnerInfo.name,
+                            entUsername: workOrderOwnerInfo.username
                         })
                     })) as AmountChangeInDB;
                     await ctx.model.User.update(
@@ -149,6 +152,7 @@ export default class WorkOrderService extends Service {
         const { payload, owner } = workOrder;
         if (payload) {
             const execData = JSON.parse(payload) as EnterpriseFundRemitSubmitData;
+            const workOrderOwnerInfo = (await ctx.model.User.findOne({ _id: owner })) as UserInDB;
 
             await Promise.all(
                 execData.amountMap.map(async amountInfo => {
@@ -164,7 +168,9 @@ export default class WorkOrderService extends Service {
                         source: AmountChangeSource.EnterpriseRemit,
                         payload: JSON.stringify({
                             month: execData.month,
-                            entID: owner
+                            entID: owner,
+                            entName: workOrderOwnerInfo.name,
+                            entUsername: workOrderOwnerInfo.username
                         })
                     })) as AmountChangeInDB;
                     await ctx.model.User.update(
