@@ -59,7 +59,7 @@ function WorkOrderAudit ({ workOrderID, history }: WorkOrderAuditProps) {
                 message: resp.message
             });
             setTimeout(() => {
-                history.push('/work_order/audit');
+                history.goBack();
             }, 100);
         } catch (error) {
             notification.error({

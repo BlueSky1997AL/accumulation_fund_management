@@ -34,7 +34,7 @@ function AccountCreateForm ({ form, history }: AccountModificationProps) {
             notification.success({
                 message: resp.message
             });
-            history.push('/account/list');
+            history.goBack();
         } catch (error) {
             notification.error({
                 message: (error as Error).message
