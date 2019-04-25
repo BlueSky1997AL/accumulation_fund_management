@@ -302,7 +302,19 @@ export default class UserController extends Controller {
     public async updateUserInfo() {
         const { ctx } = this;
         const { username } = ctx.session;
-        const { _id, username: targetUsername, status, password, balance, subUser } = ctx.request.body;
+        const {
+            _id,
+            username: targetUsername,
+            name,
+            cardNo,
+            employeeID,
+            employerID,
+            entType,
+            personType,
+            status,
+            password,
+            subUser
+        } = ctx.request.body as UserInDB;
 
         const response: ResponseData<null> = {
             message: MsgType.UNKNOWN_ERR,
@@ -316,14 +328,21 @@ export default class UserController extends Controller {
         } else {
             const updateData: { [propName: string]: any } = {
                 username: targetUsername,
+                name,
                 password,
                 status
             };
-            if (targetUserInfo.type !== UserType.Admin) {
-                updateData['balance'] = balance;
+            if (targetUserInfo.type === UserType.Enterprise || targetUserInfo.type === UserType.Common) {
+                updateData.cardNo = cardNo;
+            }
+            if (targetUserInfo.type === UserType.Common) {
+                updateData.employeeID = employeeID;
+                updateData.employerID = employerID;
+                updateData.personType = personType;
             }
             if (targetUserInfo.type === UserType.Enterprise) {
-                updateData['subUser'] = subUser;
+                updateData.subUser = subUser;
+                updateData.entType = entType;
             }
 
             await ctx.model.User.update({ _id }, updateData);
