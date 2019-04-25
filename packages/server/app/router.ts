@@ -121,5 +121,5 @@ export default (app: Application) => {
     router.get('/api/file/content/:fileID', controller.file.getFileContent);
 
     // 测试专用接口，上线前应清除
-    router.get('/api/test', app.controller.home.test);
+    // router.get('/api/test', app.controller.home.test);
 };
