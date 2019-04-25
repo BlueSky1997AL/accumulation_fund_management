@@ -7,11 +7,15 @@ import { EnterpriseSubUserAddSubmitData } from '../../../client/src/components/e
 import { EnterpriseSubUserRemoveSubmitData } from '../../../client/src/components/enterpriseSubUserRemoveWorkflow';
 import { EnterpriseFundBackSubmitData } from '../../../client/src/components/fundBackWorkflow/enterpriseFundBackForm';
 import { PersonalFundBackSubmitData } from '../../../client/src/components/fundBackWorkflow/personalFundBackForm';
-import { PersonalFundDrawSubmitData } from '../../../client/src/components/fundDrawWorkflow/personalFundDrawForm';
+import { PersonalFundDepositSubmitData } from '../../../client/src/components/fundDepositWorkflow/personalFundDepositForm';
+import {
+    DrawType,
+    PersonalFundDrawSubmitData
+} from '../../../client/src/components/fundDrawWorkflow/personalFundDrawForm';
 import { EnterpriseFundRemitSubmitData } from '../../../client/src/components/fundRemitWorkflow/enterpriseFundRemitForm';
 import { SignUpSubmitData } from '../../../client/src/components/signup';
 import { MsgType, ResponseData } from '../util/interface/common';
-import { User, UserInDB, UserType } from '../util/interface/user';
+import { PersonType, User, UserInDB, UserType } from '../util/interface/user';
 import {
     AuditOperationType,
     WorkOrder,
@@ -28,38 +32,69 @@ interface WorkOrderAuditSubmitData {
 }
 
 export default class WorkOrderController extends Controller {
-    public async getAllWorkOrder() {
+    public async getAllWorkOrdersByQuery() {
         const { ctx } = this;
         const { username } = ctx.session;
+        const { id, status, type, owner, ownerUsername, auditer, auditerUsername } = ctx.query;
 
         const response: ResponseData<WorkOrderWithUserInfo[] | null> = {
             message: MsgType.UNKNOWN_ERR,
             data: null
         };
 
-        const userInfo = (await ctx.model.User.findOne({ username })) as User;
+        const userInfo = (await ctx.model.User.findOne({ username })) as UserInDB;
         if (userInfo.type !== UserType.Admin) {
             response.message = MsgType.NO_PERMISSION;
         } else {
-            const docs = (await ctx.model.WorkOrder.find().sort({ createdAt: -1 })) as WorkOrder[];
+            const query = {} as WorkOrderInDB;
+            if (id) {
+                query._id = id;
+            }
+            if (status) {
+                query.status = status;
+            }
+            if (type) {
+                query.type = type;
+            }
+            if (owner) {
+                query.owner = owner;
+            }
+            if (ownerUsername) {
+                const ownerInfo = (await ctx.model.User.findOne({ username: ownerUsername })) as UserInDB;
+                query.owner = ownerInfo && ownerInfo._id;
+            }
+            if (auditer) {
+                query.auditer = auditer;
+            }
+            if (auditerUsername) {
+                const auditerInfo = (await ctx.model.User.findOne({ username: auditerUsername })) as UserInDB;
+                query.auditer = auditerInfo && auditerInfo._id;
+            }
+
+            const docs = (await ctx.model.WorkOrder.find(query).sort({ createdAt: -1 })) as WorkOrderInDB[];
             const docsWithUserInfo = await Promise.all(
                 docs.map(async doc => {
                     const docUserInfo = (await ctx.model.User.findOne({ _id: doc.owner })) as User;
                     const newDoc = {
-                        _id: doc['_id'],
-                        status: doc['status'],
-                        type: doc['type'],
+                        _id: doc._id,
+                        status: doc.status,
+                        type: doc.type,
                         owner: {
                             username: docUserInfo.username,
+                            name: docUserInfo.name,
+                            cardNo: docUserInfo.cardNo,
+                            employeeID: docUserInfo.employeeID,
+                            employerID: docUserInfo.employerID,
                             type: docUserInfo.type,
+                            entType: docUserInfo.entType,
+                            personType: docUserInfo.personType,
                             status: docUserInfo.status
                         },
-                        payload: doc['payload'],
-                        createdAt: doc['createdAt'],
-                        updatedAt: doc['updatedAt'],
-                        __v: doc['__v']
-                    };
-                    return newDoc as WorkOrderWithUserInfo;
+                        payload: doc.payload,
+                        createdAt: doc.createdAt,
+                        updatedAt: doc.updatedAt
+                    } as WorkOrderWithUserInfo;
+                    return newDoc;
                 })
             );
 
@@ -69,25 +104,67 @@ export default class WorkOrderController extends Controller {
         ctx.body = response;
     }
 
-    public async getPersonalWorkOrder() {
+    public async getPersonalWorkOrdersByQuery() {
         const { ctx } = this;
         const { username } = ctx.session;
+        const { id, status, type, auditer, auditerUsername } = ctx.query;
 
-        const response: ResponseData<WorkOrder[] | null> = {
+        const response: ResponseData<WorkOrderWithUserInfo[] | null> = {
             message: MsgType.UNKNOWN_ERR,
             data: null
         };
 
-        const userInfo = (await ctx.model.User.findOne({ username })) as User;
+        const userInfo = (await ctx.model.User.findOne({ username })) as UserInDB;
         if (userInfo.workOrders && userInfo.workOrders.length !== 0) {
-            const workOrderData = await Promise.all(
-                userInfo.workOrders.map(async id => {
-                    return (await ctx.model.WorkOrder.findOne({ _id: id })) as WorkOrder;
+            const query = {} as WorkOrderInDB;
+            if (id) {
+                query._id = id;
+            }
+            if (status) {
+                query.status = status;
+            }
+            if (type) {
+                query.type = type;
+            }
+            if (auditer) {
+                query.auditer = auditer;
+            }
+            if (auditerUsername) {
+                const auditerInfo = (await ctx.model.User.findOne({ username: auditerUsername })) as UserInDB;
+                query.auditer = auditerInfo && auditerInfo._id;
+            }
+
+            const docs = (await ctx.model.WorkOrder
+                .find({ owner: userInfo._id, ...query })
+                .sort({ createdAt: -1 })) as WorkOrderInDB[];
+            const docsWithUserInfo = await Promise.all(
+                docs.map(async doc => {
+                    const docUserInfo = (await ctx.model.User.findOne({ _id: doc.owner })) as User;
+                    const newDoc = {
+                        _id: doc._id,
+                        status: doc.status,
+                        type: doc.type,
+                        owner: {
+                            username: docUserInfo.username,
+                            name: docUserInfo.name,
+                            cardNo: docUserInfo.cardNo,
+                            employeeID: docUserInfo.employeeID,
+                            employerID: docUserInfo.employerID,
+                            type: docUserInfo.type,
+                            entType: docUserInfo.entType,
+                            personType: docUserInfo.personType,
+                            status: docUserInfo.status
+                        },
+                        payload: doc.payload,
+                        createdAt: doc.createdAt,
+                        updatedAt: doc.updatedAt
+                    } as WorkOrderWithUserInfo;
+                    return newDoc;
                 })
             );
 
             response.message = MsgType.OPT_SUCCESS;
-            response.data = workOrderData.reverse();
+            response.data = docsWithUserInfo;
         } else {
             response.message = MsgType.OPT_SUCCESS;
             response.data = [];
@@ -106,27 +183,32 @@ export default class WorkOrderController extends Controller {
             data: null
         };
 
-        const userInfo = (await ctx.model.User.findOne({ username })) as User;
-        const workOrderInfo = (await ctx.model.WorkOrder.findOne({ _id: workOrderID })) as WorkOrder;
-        const workOrderOwnerInfo = (await ctx.model.User.findOne({ _id: workOrderInfo.owner })) as User;
+        const userInfo = (await ctx.model.User.findOne({ username })) as UserInDB;
+        const workOrderInfo = (await ctx.model.WorkOrder.findOne({ _id: workOrderID })) as WorkOrderInDB;
+        const workOrderOwnerInfo = (await ctx.model.User.findOne({ _id: workOrderInfo.owner })) as UserInDB;
         const retDoc = {
-            _id: workOrderInfo['_id'],
-            status: workOrderInfo['status'],
-            type: workOrderInfo['type'],
+            _id: workOrderInfo._id,
+            status: workOrderInfo.status,
+            type: workOrderInfo.type,
             owner: {
                 username: workOrderOwnerInfo.username,
+                name: workOrderOwnerInfo.name,
+                cardNo: workOrderOwnerInfo.cardNo,
+                employeeID: workOrderOwnerInfo.employeeID,
+                employerID: workOrderOwnerInfo.employerID,
                 type: workOrderOwnerInfo.type,
+                entType: workOrderOwnerInfo.entType,
+                personType: workOrderOwnerInfo.personType,
                 status: workOrderOwnerInfo.status
             },
-            comments: workOrderInfo['comments'],
-            auditer: workOrderInfo['auditer'],
-            payload: workOrderInfo['payload'],
-            createdAt: workOrderInfo['createdAt'],
-            updatedAt: workOrderInfo['updatedAt'],
-            __v: workOrderInfo['__v']
+            comments: workOrderInfo.comments,
+            auditer: workOrderInfo.auditer,
+            payload: workOrderInfo.payload,
+            createdAt: workOrderInfo.createdAt,
+            updatedAt: workOrderInfo.updatedAt
         };
 
-        if (`${userInfo['_id']}` === `${workOrderInfo.owner}`) {
+        if (`${userInfo._id}` === `${workOrderInfo.owner}`) {
             response.message = MsgType.OPT_SUCCESS;
             response.data = retDoc;
         } else {
@@ -157,10 +239,13 @@ export default class WorkOrderController extends Controller {
         } else {
             const workOrderInfo = (await ctx.model.WorkOrder.findOne({ _id: workOrderID })) as WorkOrder;
 
+            const dateNow = new Date();
             if (opType === AuditOperationType.Granted) {
                 workOrderInfo.status = WorkOrderStatus.Granted;
+                workOrderInfo.auditTimestamp = dateNow;
             } else if (opType === AuditOperationType.Rejected) {
                 workOrderInfo.status = WorkOrderStatus.Rejected;
+                workOrderInfo.auditTimestamp = dateNow;
             } else {
                 response.message = MsgType.ILLEGAL_ARGS;
                 ctx.body = response;
@@ -187,10 +272,10 @@ export default class WorkOrderController extends Controller {
 
     public async creactEnterpriseFundBackWorkOrder() {
         const { ctx } = this;
-        const { amountMap, comments, accessory } = ctx.request.body as EnterpriseFundBackSubmitData;
+        const { month, amountMap, comments, accessory } = ctx.request.body as EnterpriseFundBackSubmitData;
         const { username } = ctx.session;
 
-        const response: ResponseData<WorkOrder | null> = {
+        const response: ResponseData<WorkOrderWithUserInfo | null> = {
             message: MsgType.UNKNOWN_ERR,
             data: null
         };
@@ -204,18 +289,14 @@ export default class WorkOrderController extends Controller {
                 try {
                     await Promise.all(
                         amountMap.map(async amountItem => {
-                            await Promise.all(
-                                amountItem.usernames.map(async targetUsername => {
-                                    const targetUserInfo = await ctx.model.User.findOne({ username: targetUsername });
-                                    if (targetUserInfo) {
-                                        targetUserInfos.push(targetUserInfo);
-                                    } else {
-                                        response.message = MsgType.USER_NOT_DOUND;
-                                        ctx.body = response;
-                                        throw new Error(MsgType.USER_NOT_DOUND);
-                                    }
-                                })
-                            );
+                            const targetUserInfo = await ctx.model.User.findOne({ username: amountItem.username });
+                            if (targetUserInfo) {
+                                targetUserInfos.push(targetUserInfo);
+                            } else {
+                                response.message = MsgType.USER_NOT_DOUND;
+                                ctx.body = response;
+                                throw new Error(MsgType.USER_NOT_DOUND);
+                            }
                         })
                     );
                 } catch (error) {
@@ -242,7 +323,7 @@ export default class WorkOrderController extends Controller {
                 return;
             }
 
-            const payload = JSON.stringify({ amountMap, comments, accessory });
+            const payload = JSON.stringify({ month, amountMap, comments, accessory });
             const workOrder: WorkOrder = {
                 status: WorkOrderStatus.Open,
                 type: WorkOrderType.EnterpriseBack,
@@ -251,7 +332,7 @@ export default class WorkOrderController extends Controller {
             };
 
             try {
-                const createdDoc = await ctx.model.WorkOrder.create(workOrder);
+                const createdDoc = (await ctx.model.WorkOrder.create(workOrder)) as WorkOrderInDB;
                 if (userInfo.workOrders) {
                     userInfo.workOrders.push(createdDoc['_id']);
                 } else {
@@ -260,7 +341,27 @@ export default class WorkOrderController extends Controller {
                 await ctx.model.User.update({ _id: userInfo['_id'] }, userInfo);
 
                 response.message = MsgType.OPT_SUCCESS;
-                response.data = createdDoc;
+                response.data = {
+                    _id: createdDoc._id,
+                    status: createdDoc.status,
+                    type: createdDoc.type,
+                    owner: {
+                        username: userInfo.username,
+                        name: userInfo.name,
+                        cardNo: userInfo.cardNo,
+                        employeeID: userInfo.employeeID,
+                        employerID: userInfo.employerID,
+                        type: userInfo.type,
+                        entType: userInfo.entType,
+                        personType: userInfo.personType,
+                        status: userInfo.status
+                    },
+                    comments: createdDoc.comments,
+                    auditer: createdDoc.auditer,
+                    payload: createdDoc.payload,
+                    createdAt: createdDoc.createdAt,
+                    updatedAt: createdDoc.updatedAt
+                };
             } catch (error) {
                 console.error(error);
                 response.message = MsgType.OPT_FAILED;
@@ -269,21 +370,80 @@ export default class WorkOrderController extends Controller {
         ctx.body = response;
     }
 
-    public async creactPersonalFundBackWorkOrder() {
+    public async creactPersonalFundDepositWorkOrder() {
         const { ctx } = this;
-        const { amount, comments, accessory } = ctx.request.body as PersonalFundBackSubmitData;
+        const { month, amount, comments, accessory } = ctx.request.body as PersonalFundDepositSubmitData;
         const { username } = ctx.session;
 
-        const response: ResponseData<WorkOrder | null> = {
+        const response: ResponseData<WorkOrderWithUserInfo | null> = {
             message: MsgType.UNKNOWN_ERR,
             data: null
         };
 
         const userInfo = (await ctx.model.User.findOne({ username })) as User;
-        if (userInfo.type !== UserType.Common) {
-            response.message = MsgType.NO_PERMISSION;
+        if (userInfo.type === UserType.Common && userInfo.personType === PersonType.IndividualBusiness) {
+            const payload = JSON.stringify({ month, amount, comments, accessory });
+            const workOrder: WorkOrder = {
+                status: WorkOrderStatus.Open,
+                type: WorkOrderType.PersonalDeposit,
+                owner: userInfo['_id'],
+                payload
+            };
+
+            try {
+                const createdDoc = (await ctx.model.WorkOrder.create(workOrder)) as WorkOrderInDB;
+                if (userInfo.workOrders) {
+                    userInfo.workOrders.push(createdDoc['_id']);
+                } else {
+                    userInfo.workOrders = [ createdDoc['_id'] ];
+                }
+                await ctx.model.User.update({ _id: userInfo['_id'] }, userInfo);
+
+                response.message = MsgType.OPT_SUCCESS;
+                response.data = {
+                    _id: createdDoc._id,
+                    status: createdDoc.status,
+                    type: createdDoc.type,
+                    owner: {
+                        username: userInfo.username,
+                        name: userInfo.name,
+                        cardNo: userInfo.cardNo,
+                        employeeID: userInfo.employeeID,
+                        employerID: userInfo.employerID,
+                        type: userInfo.type,
+                        entType: userInfo.entType,
+                        personType: userInfo.personType,
+                        status: userInfo.status
+                    },
+                    comments: createdDoc.comments,
+                    auditer: createdDoc.auditer,
+                    payload: createdDoc.payload,
+                    createdAt: createdDoc.createdAt,
+                    updatedAt: createdDoc.updatedAt
+                };
+            } catch (error) {
+                console.error(error);
+                response.message = MsgType.OPT_FAILED;
+            }
         } else {
-            const payload = JSON.stringify({ amount, comments, accessory });
+            response.message = MsgType.NO_PERMISSION;
+        }
+        ctx.body = response;
+    }
+
+    public async creactPersonalFundBackWorkOrder() {
+        const { ctx } = this;
+        const { month, amount, comments, accessory } = ctx.request.body as PersonalFundBackSubmitData;
+        const { username } = ctx.session;
+
+        const response: ResponseData<WorkOrderWithUserInfo | null> = {
+            message: MsgType.UNKNOWN_ERR,
+            data: null
+        };
+
+        const userInfo = (await ctx.model.User.findOne({ username })) as User;
+        if (userInfo.type === UserType.Common && userInfo.personType === PersonType.IndividualBusiness) {
+            const payload = JSON.stringify({ month, amount, comments, accessory });
             const workOrder: WorkOrder = {
                 status: WorkOrderStatus.Open,
                 type: WorkOrderType.PersonalBack,
@@ -292,7 +452,7 @@ export default class WorkOrderController extends Controller {
             };
 
             try {
-                const createdDoc = await ctx.model.WorkOrder.create(workOrder);
+                const createdDoc = (await ctx.model.WorkOrder.create(workOrder)) as WorkOrderInDB;
                 if (userInfo.workOrders) {
                     userInfo.workOrders.push(createdDoc['_id']);
                 } else {
@@ -301,21 +461,43 @@ export default class WorkOrderController extends Controller {
                 await ctx.model.User.update({ _id: userInfo['_id'] }, userInfo);
 
                 response.message = MsgType.OPT_SUCCESS;
-                response.data = createdDoc;
+                response.data = {
+                    _id: createdDoc._id,
+                    status: createdDoc.status,
+                    type: createdDoc.type,
+                    owner: {
+                        username: userInfo.username,
+                        name: userInfo.name,
+                        cardNo: userInfo.cardNo,
+                        employeeID: userInfo.employeeID,
+                        employerID: userInfo.employerID,
+                        type: userInfo.type,
+                        entType: userInfo.entType,
+                        personType: userInfo.personType,
+                        status: userInfo.status
+                    },
+                    comments: createdDoc.comments,
+                    auditer: createdDoc.auditer,
+                    payload: createdDoc.payload,
+                    createdAt: createdDoc.createdAt,
+                    updatedAt: createdDoc.updatedAt
+                };
             } catch (error) {
                 console.error(error);
                 response.message = MsgType.OPT_FAILED;
             }
+        } else {
+            response.message = MsgType.NO_PERMISSION;
         }
         ctx.body = response;
     }
 
     public async createEnterpriseFundRemitWorkOrder() {
         const { ctx } = this;
-        const { amountMap, comments, accessory } = ctx.request.body as EnterpriseFundRemitSubmitData;
+        const { month, amountMap, comments, accessory } = ctx.request.body as EnterpriseFundRemitSubmitData;
         const { username } = ctx.session;
 
-        const response: ResponseData<WorkOrder | null> = {
+        const response: ResponseData<WorkOrderWithUserInfo | null> = {
             message: MsgType.UNKNOWN_ERR,
             data: null
         };
@@ -329,18 +511,14 @@ export default class WorkOrderController extends Controller {
                 try {
                     await Promise.all(
                         amountMap.map(async amountItem => {
-                            await Promise.all(
-                                amountItem.usernames.map(async targetUsername => {
-                                    const targetUserInfo = await ctx.model.User.findOne({ username: targetUsername });
-                                    if (targetUserInfo) {
-                                        targetUserInfos.push(targetUserInfo);
-                                    } else {
-                                        response.message = MsgType.USER_NOT_DOUND;
-                                        ctx.body = response;
-                                        throw new Error(MsgType.USER_NOT_DOUND);
-                                    }
-                                })
-                            );
+                            const targetUserInfo = await ctx.model.User.findOne({ username: amountItem.username });
+                            if (targetUserInfo) {
+                                targetUserInfos.push(targetUserInfo);
+                            } else {
+                                response.message = MsgType.USER_NOT_DOUND;
+                                ctx.body = response;
+                                throw new Error(MsgType.USER_NOT_DOUND);
+                            }
                         })
                     );
                 } catch (error) {
@@ -367,7 +545,7 @@ export default class WorkOrderController extends Controller {
                 return;
             }
 
-            const payload = JSON.stringify({ amountMap, comments, accessory });
+            const payload = JSON.stringify({ month, amountMap, comments, accessory });
             const workOrder: WorkOrder = {
                 status: WorkOrderStatus.Open,
                 type: WorkOrderType.Remit,
@@ -376,7 +554,7 @@ export default class WorkOrderController extends Controller {
             };
 
             try {
-                const createdDoc = await ctx.model.WorkOrder.create(workOrder);
+                const createdDoc = (await ctx.model.WorkOrder.create(workOrder)) as WorkOrderInDB;
                 if (userInfo.workOrders) {
                     userInfo.workOrders.push(createdDoc['_id']);
                 } else {
@@ -385,7 +563,27 @@ export default class WorkOrderController extends Controller {
                 await ctx.model.User.update({ _id: userInfo['_id'] }, userInfo);
 
                 response.message = MsgType.OPT_SUCCESS;
-                response.data = createdDoc;
+                response.data = {
+                    _id: createdDoc._id,
+                    status: createdDoc.status,
+                    type: createdDoc.type,
+                    owner: {
+                        username: userInfo.username,
+                        name: userInfo.name,
+                        cardNo: userInfo.cardNo,
+                        employeeID: userInfo.employeeID,
+                        employerID: userInfo.employerID,
+                        type: userInfo.type,
+                        entType: userInfo.entType,
+                        personType: userInfo.personType,
+                        status: userInfo.status
+                    },
+                    comments: createdDoc.comments,
+                    auditer: createdDoc.auditer,
+                    payload: createdDoc.payload,
+                    createdAt: createdDoc.createdAt,
+                    updatedAt: createdDoc.updatedAt
+                };
             } catch (error) {
                 console.error(error);
                 response.message = MsgType.OPT_FAILED;
@@ -396,10 +594,10 @@ export default class WorkOrderController extends Controller {
 
     public async createPersonalFundDrawWorkOrder() {
         const { ctx } = this;
-        const { amount, comments, accessory } = ctx.request.body as PersonalFundDrawSubmitData;
+        const { type, amount, comments, accessory } = ctx.request.body as PersonalFundDrawSubmitData;
         const { username } = ctx.session;
 
-        const response: ResponseData<WorkOrder | null> = {
+        const response: ResponseData<WorkOrderWithUserInfo | null> = {
             message: MsgType.UNKNOWN_ERR,
             data: null
         };
@@ -407,8 +605,37 @@ export default class WorkOrderController extends Controller {
         const userInfo = (await ctx.model.User.findOne({ username })) as UserInDB;
         if (userInfo.type !== UserType.Common) {
             response.message = MsgType.NO_PERMISSION;
-        } else {
-            const payload = JSON.stringify({ amount, comments, accessory });
+        } else if (type === DrawType.Cancellation || type === DrawType.Partial) {
+            if (amount && amount > userInfo.balance) {
+                (response.message = MsgType.INSUFFICIENT_BALANCE), (ctx.body = response);
+                return;
+            }
+
+            // 公积金的部分提取：最高可提取额为账户总金额减10元
+            if (type === DrawType.Partial && amount > userInfo.balance - 1000) {
+                response.message = MsgType.EXCEED_MAXIMUM_AMOUNT;
+                ctx.body = response;
+                return;
+            }
+
+            let targetAmount = 0;
+            if (type === DrawType.Partial) {
+                targetAmount = amount;
+            }
+            if (type === DrawType.Cancellation) {
+                targetAmount = userInfo.balance;
+            }
+
+            const entInfoInDB = (await ctx.model.User.findOne({ _id: userInfo.employerID })) as UserInDB;
+            const entInfo = {
+                username: entInfoInDB.username,
+                name: entInfoInDB.name,
+                cardNo: entInfoInDB.cardNo,
+                entType: entInfoInDB.entType,
+                status: entInfoInDB.status
+            };
+
+            const payload = JSON.stringify({ type, amount: targetAmount, comments, accessory, entInfo });
             const workOrder: WorkOrder = {
                 status: WorkOrderStatus.Open,
                 type: WorkOrderType.Draw,
@@ -417,7 +644,7 @@ export default class WorkOrderController extends Controller {
             };
 
             try {
-                const createdDoc = await ctx.model.WorkOrder.create(workOrder);
+                const createdDoc = (await ctx.model.WorkOrder.create(workOrder)) as WorkOrderInDB;
                 if (userInfo.workOrders) {
                     userInfo.workOrders.push(createdDoc._id);
                 } else {
@@ -426,11 +653,33 @@ export default class WorkOrderController extends Controller {
                 await ctx.model.User.update({ _id: userInfo._id }, userInfo);
 
                 response.message = MsgType.OPT_SUCCESS;
-                response.data = createdDoc;
+                response.data = {
+                    _id: createdDoc._id,
+                    status: createdDoc.status,
+                    type: createdDoc.type,
+                    owner: {
+                        username: userInfo.username,
+                        name: userInfo.name,
+                        cardNo: userInfo.cardNo,
+                        employeeID: userInfo.employeeID,
+                        employerID: userInfo.employerID,
+                        type: userInfo.type,
+                        entType: userInfo.entType,
+                        personType: userInfo.personType,
+                        status: userInfo.status
+                    },
+                    comments: createdDoc.comments,
+                    auditer: createdDoc.auditer,
+                    payload: createdDoc.payload,
+                    createdAt: createdDoc.createdAt,
+                    updatedAt: createdDoc.updatedAt
+                };
             } catch (error) {
                 console.error(error);
                 response.message = MsgType.OPT_FAILED;
             }
+        } else {
+            response.message = MsgType.ILLEGAL_ARGS;
         }
         ctx.body = response;
     }
@@ -440,7 +689,7 @@ export default class WorkOrderController extends Controller {
         const { comments, workOrderType, accessory } = ctx.request.body as CommonWorkOrderSubmitData;
         const { username } = ctx.session;
 
-        const response: ResponseData<WorkOrder | null> = {
+        const response: ResponseData<WorkOrderWithUserInfo | null> = {
             message: MsgType.UNKNOWN_ERR,
             data: null
         };
@@ -458,7 +707,7 @@ export default class WorkOrderController extends Controller {
             };
 
             try {
-                const createdDoc = await ctx.model.WorkOrder.create(workOrder);
+                const createdDoc = (await ctx.model.WorkOrder.create(workOrder)) as WorkOrderInDB;
                 if (userInfo.workOrders) {
                     userInfo.workOrders.push(createdDoc._id);
                 } else {
@@ -467,7 +716,27 @@ export default class WorkOrderController extends Controller {
                 await ctx.model.User.update({ _id: userInfo._id }, userInfo);
 
                 response.message = MsgType.OPT_SUCCESS;
-                response.data = createdDoc;
+                response.data = {
+                    _id: createdDoc._id,
+                    status: createdDoc.status,
+                    type: createdDoc.type,
+                    owner: {
+                        username: userInfo.username,
+                        name: userInfo.name,
+                        cardNo: userInfo.cardNo,
+                        employeeID: userInfo.employeeID,
+                        employerID: userInfo.employerID,
+                        type: userInfo.type,
+                        entType: userInfo.entType,
+                        personType: userInfo.personType,
+                        status: userInfo.status
+                    },
+                    comments: createdDoc.comments,
+                    auditer: createdDoc.auditer,
+                    payload: createdDoc.payload,
+                    createdAt: createdDoc.createdAt,
+                    updatedAt: createdDoc.updatedAt
+                };
             } catch (error) {
                 console.error(error);
                 response.message = MsgType.OPT_FAILED;
@@ -481,7 +750,7 @@ export default class WorkOrderController extends Controller {
         const { comments, userID, accessory } = ctx.request.body as EnterpriseSubUserRemoveSubmitData;
         const { username } = ctx.session;
 
-        const response: ResponseData<WorkOrder | null> = {
+        const response: ResponseData<WorkOrderWithUserInfo | null> = {
             message: MsgType.UNKNOWN_ERR,
             data: null
         };
@@ -499,7 +768,7 @@ export default class WorkOrderController extends Controller {
             };
 
             try {
-                const createdDoc = await ctx.model.WorkOrder.create(workOrder);
+                const createdDoc = (await ctx.model.WorkOrder.create(workOrder)) as WorkOrderInDB;
                 if (userInfo.workOrders) {
                     userInfo.workOrders.push(createdDoc._id);
                 } else {
@@ -508,7 +777,27 @@ export default class WorkOrderController extends Controller {
                 await ctx.model.User.update({ _id: userInfo._id }, userInfo);
 
                 response.message = MsgType.OPT_SUCCESS;
-                response.data = createdDoc;
+                response.data = {
+                    _id: createdDoc._id,
+                    status: createdDoc.status,
+                    type: createdDoc.type,
+                    owner: {
+                        username: userInfo.username,
+                        name: userInfo.name,
+                        cardNo: userInfo.cardNo,
+                        employeeID: userInfo.employeeID,
+                        employerID: userInfo.employerID,
+                        type: userInfo.type,
+                        entType: userInfo.entType,
+                        personType: userInfo.personType,
+                        status: userInfo.status
+                    },
+                    comments: createdDoc.comments,
+                    auditer: createdDoc.auditer,
+                    payload: createdDoc.payload,
+                    createdAt: createdDoc.createdAt,
+                    updatedAt: createdDoc.updatedAt
+                };
             } catch (error) {
                 console.error(error);
                 response.message = MsgType.OPT_FAILED;
@@ -519,10 +808,10 @@ export default class WorkOrderController extends Controller {
 
     public async createEnterpriseSubUserAddWorkOrder() {
         const { ctx } = this;
-        const { usernames, comments, accessory } = ctx.request.body as EnterpriseSubUserAddSubmitData;
+        const { usernames, employeeIDs, comments, accessory } = ctx.request.body as EnterpriseSubUserAddSubmitData;
         const { username } = ctx.session;
 
-        const response: ResponseData<WorkOrder | null> = {
+        const response: ResponseData<WorkOrderWithUserInfo | null> = {
             message: MsgType.UNKNOWN_ERR,
             data: null
         };
@@ -568,7 +857,7 @@ export default class WorkOrderController extends Controller {
                 return;
             }
 
-            const payload = JSON.stringify({ usernames, comments, accessory });
+            const payload = JSON.stringify({ usernames, employeeIDs, comments, accessory });
             const workOrder: WorkOrder = {
                 status: WorkOrderStatus.Open,
                 type: WorkOrderType.AddSubUser,
@@ -586,7 +875,27 @@ export default class WorkOrderController extends Controller {
                 await ctx.model.User.update({ _id: userInfo._id }, userInfo);
 
                 response.message = MsgType.OPT_SUCCESS;
-                response.data = createdDoc;
+                response.data = {
+                    _id: createdDoc._id,
+                    status: createdDoc.status,
+                    type: createdDoc.type,
+                    owner: {
+                        username: userInfo.username,
+                        name: userInfo.name,
+                        cardNo: userInfo.cardNo,
+                        employeeID: userInfo.employeeID,
+                        employerID: userInfo.employerID,
+                        type: userInfo.type,
+                        entType: userInfo.entType,
+                        personType: userInfo.personType,
+                        status: userInfo.status
+                    },
+                    comments: createdDoc.comments,
+                    auditer: createdDoc.auditer,
+                    payload: createdDoc.payload,
+                    createdAt: createdDoc.createdAt,
+                    updatedAt: createdDoc.updatedAt
+                };
             } catch (error) {
                 ctx.logger.error(error);
                 response.message = MsgType.OPT_FAILED;
@@ -597,9 +906,22 @@ export default class WorkOrderController extends Controller {
 
     public async createSignUpWorkOrder() {
         const { ctx } = this;
-        const { username, password, type, balance, comments, accessory } = ctx.request.body as SignUpSubmitData;
+        const {
+            username,
+            password,
+            name,
+            cardNo,
+            employeeID,
+            type,
+            entType,
+            personType,
+            entID,
+            balance,
+            comments,
+            accessory
+        } = ctx.request.body as SignUpSubmitData;
 
-        const response: ResponseData<WorkOrder | null> = {
+        const response: ResponseData<WorkOrderInDB | null> = {
             message: MsgType.UNKNOWN_ERR,
             data: null
         };
@@ -612,7 +934,40 @@ export default class WorkOrderController extends Controller {
                 return;
             }
 
-            const payload = JSON.stringify({ username, password, type, balance, comments, accessory });
+            if (type === UserType.Common && personType === PersonType.Employees) {
+                if (!entID) {
+                    response.message = MsgType.ILLEGAL_ARGS;
+                    ctx.body = response;
+                    return;
+                }
+                const isEntExists = (await ctx.model.User.findOne({ username: entID })) as UserInDB;
+                if (!isEntExists) {
+                    response.message = MsgType.ENTERPRISE_NOT_FOUND;
+                    ctx.body = response;
+                    return;
+                }
+            }
+
+            if (type !== UserType.Common && balance) {
+                response.message = MsgType.ILLEGAL_ARGS;
+                ctx.body = response;
+                return;
+            }
+
+            const payload = JSON.stringify({
+                username,
+                password,
+                name,
+                cardNo,
+                employeeID,
+                type,
+                entType,
+                entID,
+                personType,
+                balance,
+                comments,
+                accessory
+            });
             const guestAccount = await ctx.service.user.getGuestAccount();
             const workOrder: WorkOrder = {
                 status: WorkOrderStatus.Open,
@@ -622,7 +977,7 @@ export default class WorkOrderController extends Controller {
             };
 
             try {
-                const createdDoc = await ctx.model.WorkOrder.create(workOrder);
+                const createdDoc = (await ctx.model.WorkOrder.create(workOrder)) as WorkOrderInDB;
                 if (guestAccount.workOrders) {
                     guestAccount.workOrders.push(createdDoc._id);
                 } else {

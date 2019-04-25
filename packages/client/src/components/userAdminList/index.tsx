@@ -1,18 +1,24 @@
 // tslint:disable: no-string-literal
 
-import { Button, Card, notification, Popconfirm, Row, Table } from 'antd';
+import { Button, Card, Icon, notification, Popconfirm, Row, Table, Tooltip } from 'antd';
 import { ColumnProps } from 'antd/lib/table';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
-import { User, UserInDB, UserStatus, UserType } from '~server/app/util/interface/user';
-import { moneyToHumanReadable, userStatusToString, userTypeToString } from '~utils/user';
-
 import { MsgType } from '~server/app/util/interface/common';
+import { UserInDB, UserStatus, UserType } from '~server/app/util/interface/user';
+
+import {
+    enterpriseTypeToString,
+    moneyToHumanReadable,
+    personTypeToString,
+    userStatusToString,
+    userTypeToString
+} from '~utils/user';
 import { getAllUsers, updateUserStatus } from './request';
 
 function UserAdminList () {
-    const [ allUsers, setAllUsers ] = useState<User[]>([]);
+    const [ allUsers, setAllUsers ] = useState<UserInDB[]>([]);
 
     async function fetchAndSetAllUsers () {
         try {
@@ -55,42 +61,85 @@ function UserAdminList () {
 
     const columns = [
         {
-            title: '用户名',
+            title() {
+                return (
+                    <Tooltip title="用户名 / 身份证号码 / 统一社会信用代码 [用户唯一标识]">
+                        用户名 <Icon style={{ color: 'rgba(0, 0, 0, 0.35)' }} type="info-circle" />
+                    </Tooltip>
+                );
+            },
             align: 'center',
-            dataIndex: 'username'
+            dataIndex: 'username',
+            render(value: string, userInfo) {
+                return (
+                    <div>
+                        <span>{value}</span> <span style={{ color: 'rgba(0, 0, 0, 0.35)' }}>[{userInfo._id}]</span>
+                    </div>
+                );
+            }
         },
         {
-            title: '用户ID',
+            title() {
+                return (
+                    <Tooltip title="用户名称 / 姓名 / 企业名称">
+                        名称 <Icon style={{ color: 'rgba(0, 0, 0, 0.35)' }} type="info-circle" />
+                    </Tooltip>
+                );
+            },
             align: 'center',
-            dataIndex: '_id'
+            dataIndex: 'name'
         },
         {
-            title: '账户类型',
+            title: '类型',
             align: 'center',
+            width: 150,
             dataIndex: 'type',
-            render(value: UserType) {
+            render(value: UserType, userInfo) {
+                if (value === UserType.Common) {
+                    return (
+                        <Tooltip title={personTypeToString(userInfo.personType)}>
+                            {userTypeToString(value)}&nbsp;
+                            <Icon style={{ color: 'rgba(0, 0, 0, 0.35)' }} type="info-circle" />
+                        </Tooltip>
+                    );
+                }
+                if (value === UserType.Enterprise) {
+                    return (
+                        <Tooltip title={enterpriseTypeToString(userInfo.entType)}>
+                            {userTypeToString(value)}&nbsp;
+                            <Icon style={{ color: 'rgba(0, 0, 0, 0.35)' }} type="info-circle" />
+                        </Tooltip>
+                    );
+                }
                 return userTypeToString(value);
             }
         },
         {
-            title: '账户状态',
+            title: '状态',
             align: 'center',
+            width: 60,
             dataIndex: 'status',
             render(value: UserStatus) {
                 return userStatusToString(value);
             }
         },
         {
-            title: '账户余额（元/人民币）',
+            title: '余额',
             align: 'center',
             dataIndex: 'balance',
             render(value: number) {
-                return moneyToHumanReadable(value);
+                return `${moneyToHumanReadable(value)}元`;
             }
+        },
+        {
+            title: '银行卡号',
+            align: 'center',
+            dataIndex: 'cardNo'
         },
         {
             title: '子账户数量',
             align: 'center',
+            width: 80,
             dataIndex: 'subUser',
             render(value: string[]) {
                 if (Array.isArray(value)) {
@@ -102,6 +151,7 @@ function UserAdminList () {
         {
             title: '操作',
             key: 'operation',
+            width: 100,
             align: 'center',
             render(record: UserInDB) {
                 return [
@@ -132,7 +182,7 @@ function UserAdminList () {
                 ];
             }
         }
-    ] as ColumnProps<User>[];
+    ] as ColumnProps<UserInDB>[];
 
     return (
         <div className="user-admin-list-container">

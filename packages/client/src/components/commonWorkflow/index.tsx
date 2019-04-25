@@ -11,7 +11,7 @@ import { UploadChangeParam } from 'antd/lib/upload';
 import { UploadFile } from 'antd/lib/upload/interface';
 import { MsgType } from '~server/app/util/interface/common';
 import { FileInfo } from '~server/app/util/interface/file';
-import { WorkOrder, WorkOrderType } from '~server/app/util/interface/workOrder';
+import { WorkOrderType, WorkOrderWithUserInfo } from '~server/app/util/interface/workOrder';
 
 import { uploadFilesToFileInfos } from '~utils/file';
 import { createCommonWorkOrder } from './request';
@@ -31,7 +31,7 @@ interface CommonWorkflowProps extends FormComponentProps {
 function CommonWorkflow ({ workOrderType, form }: CommonWorkflowProps) {
     const { getFieldDecorator, validateFields } = form;
 
-    const [ currentWorkOrder, setCurrentWorkOrder ] = useState<WorkOrder>();
+    const [ currentWorkOrder, setCurrentWorkOrder ] = useState<WorkOrderWithUserInfo>();
 
     async function handleSubmitCommonWorkOrder (payload: CommonWorkOrderSubmitData) {
         try {
@@ -80,13 +80,25 @@ function CommonWorkflow ({ workOrderType, form }: CommonWorkflowProps) {
             case WorkOrderType.Unfreeze:
                 return '新建解除冻结申请工单';
             case WorkOrderType.RemoveSubUser:
-                return '新建移除/转出子账户工单'
+                return '新建移除/转出子账户工单';
         }
+    }
+
+    function getCardExtraInfo () {
+        if (currentWorkOrder) {
+            return (
+                <div>
+                    <span className="id-zone">工单唯一标识：</span>
+                    <span className="id-zone">{currentWorkOrder._id}</span>
+                </div>
+            );
+        }
+        return null;
     }
 
     return (
         <div className="common-workflow-container">
-            <Card title={getWorkOrderTitle()} bodyStyle={{ height: '100%', width: '100%' }}>
+            <Card title={getWorkOrderTitle()} bodyStyle={{ height: '100%', width: '100%' }} extra={getCardExtraInfo()}>
                 <WorkflowFrame data={currentWorkOrder}>
                     <Form
                         style={{
@@ -97,13 +109,14 @@ function CommonWorkflow ({ workOrderType, form }: CommonWorkflowProps) {
                     >
                         <Form.Item label="备注信息">
                             {getFieldDecorator('comments', {
-                                rules: []
+                                rules: [ { required: true, message: '请填写申请备注' } ]
                             })(<Input.TextArea autosize={{ minRows: 4 }} />)}
                         </Form.Item>
                         <Form.Item label="相关材料">
                             {getFieldDecorator('accessory', {
                                 valuePropName: 'fileList',
-                                getValueFromEvent: normFile
+                                getValueFromEvent: normFile,
+                                rules: [ { required: true, message: '请上传相关材料' } ]
                             })(
                                 <Upload action={`/api/file/upload?_csrf=${csrfToken}`}>
                                     <Button>

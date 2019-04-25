@@ -1,5 +1,6 @@
 import { Result } from 'ant-design-pro';
 import { Col, notification, Row, Steps } from 'antd';
+import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 const { Step } = Steps;
 
@@ -43,13 +44,13 @@ function workOrderStatusToWorkflowStatus (status: WorkOrderStatus) {
 }
 
 interface WorkflowFrameProps {
-    data?: WorkOrder | WorkOrderWithUserInfo;
+    data?: WorkOrderWithUserInfo;
     workOrderID?: string;
     children?: JSX.Element | string;
 }
 
 function WorkflowFrame ({ data, children, workOrderID }: WorkflowFrameProps) {
-    const [ workOrderData, setWorkOrderData ] = useState<WorkOrder | WorkOrderWithUserInfo>();
+    const [ workOrderData, setWorkOrderData ] = useState<WorkOrderWithUserInfo>();
     const [ currentStep, setCurrentStep ] = useState(0);
     const [ currentStatus, setCurrentStatus ] = useState<'wait' | 'process' | 'finish' | 'error'>('wait');
     const [ currentDisplayStep, setCurrentDisplayStep ] = useState(0);
@@ -127,11 +128,53 @@ function WorkflowFrame ({ data, children, workOrderID }: WorkflowFrameProps) {
         }
     }
 
-    function getAuditComments () {
-        if (workOrderData && workOrderData.comments) {
-            return <div className="audit-comment">审核附加信息：{workOrderData && workOrderData.comments}</div>;
+    function getAuditExtra () {
+        const els: JSX.Element[] = [];
+        if (workOrderData && workOrderData.status !== WorkOrderStatus.Open) {
+            els.push(
+                <div key="audit-timestamp" className="audit-extra">
+                    工单审核时间：{moment(workOrderData.auditTimestamp).format('YYYY-MM-DD HH:mm:ss')}
+                </div>
+            );
         }
-        return null;
+        if (workOrderData && workOrderData.comments) {
+            els.push(
+                <div key="comments" className="audit-extra">
+                    审核附加信息：{workOrderData && workOrderData.comments}
+                </div>
+            );
+        }
+        return els;
+    }
+
+    function getAuditTimestampRow () {
+        if (workOrderData && workOrderData.status !== WorkOrderStatus.Open) {
+            return (
+                <Row className="info-row">
+                    <Col span={labelSpan} className="info-text info-label">
+                        工单审核时间：
+                    </Col>
+                    <Col span={contentSpan} className="info-text">
+                        {moment(workOrderData.auditTimestamp).format('YYYY-MM-DD HH:mm:ss')}
+                    </Col>
+                </Row>
+            );
+        }
+    }
+
+    function getCreateTimestampRow () {
+        if (workOrderData) {
+            return (
+                <Row className="info-row">
+                    <Col span={labelSpan} className="info-text info-label">
+                        工单创建时间：
+                    </Col>
+                    <Col span={contentSpan} className="info-text">
+                        {moment(workOrderData.createdAt).format('YYYY-MM-DD HH:mm:ss')}
+                    </Col>
+                </Row>
+            );
+        }
     }
 
     const steps: { title: string; onClick?: () => void; content: JSX.Element | string }[] = [
@@ -157,9 +200,11 @@ function WorkflowFrame ({ data, children, workOrderID }: WorkflowFrameProps) {
                     }
                     extra={
                         <div className="info-container">
+                            {getCreateTimestampRow()}
+                            {getAuditTimestampRow()}
                             <Row className="info-row">
                                 <Col span={labelSpan} className="info-text info-label">
-                                    状态：
+                                    工单状态：
                                 </Col>
                                 <Col span={contentSpan} className="info-text">
                                     {workOrderStatusToString(workOrderData && workOrderData.status)}
@@ -167,18 +212,13 @@ function WorkflowFrame ({ data, children, workOrderID }: WorkflowFrameProps) {
                             </Row>
                             <Row className="info-row">
                                 <Col span={labelSpan} className="info-text info-label">
-                                    类型：
+                                    工单类型：
                                 </Col>
                                 <Col span={contentSpan} className="info-text">
                                     {workOrderTypeToString(workOrderData && workOrderData.type)}
                                 </Col>
                             </Row>
-                            {getWorkOrderDetailComponent(
-                                contentSpan,
-                                labelSpan,
-                                workOrderData && workOrderData.payload,
-                                workOrderData && workOrderData.type
-                            )}
+                            {getWorkOrderDetailComponent(contentSpan, labelSpan, workOrderData)}
                         </div>
                     }
                     style={{
@@ -198,7 +238,7 @@ function WorkflowFrame ({ data, children, workOrderID }: WorkflowFrameProps) {
                 <Result
                     type={getOrderAuditStatusIconType()}
                     title={getOrderAuditStatusTipMsg()}
-                    extra={getAuditComments()}
+                    extra={getAuditExtra()}
                     style={{
                         marginTop: 24
                     }}

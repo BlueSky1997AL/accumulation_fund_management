@@ -7,9 +7,15 @@ import './index.less';
 import { UserInfoRespData } from '~server/app/controller/user';
 import { MsgType } from '~server/app/util/interface/common';
 
-import { UserStatus, UserType } from '~server/app/util/interface/user';
+import { PersonType, UserStatus, UserType } from '~server/app/util/interface/user';
 import { getUserInfo } from '~utils/commonRequest';
-import { moneyToHumanReadable, userStatusToString, userTypeToString } from '~utils/user';
+import {
+    enterpriseTypeToString,
+    moneyToHumanReadable,
+    personTypeToString,
+    userStatusToString,
+    userTypeToString
+} from '~utils/user';
 import { userLost } from './request';
 function UserInfo () {
     const [ userInfo, setUserInfo ] = useState<UserInfoRespData>();
@@ -144,7 +150,7 @@ function UserInfo () {
     }
 
     function getBalanceRow () {
-        if (userInfo && userInfo.type !== UserType.Admin && userInfo.status !== UserStatus.Lost) {
+        if (userInfo && userInfo.type === UserType.Common && userInfo.status !== UserStatus.Lost) {
             return (
                 <Row className="info-row">
                     <Col span={labelSpan} className="info-text info-label">
@@ -159,7 +165,136 @@ function UserInfo () {
         return null;
     }
 
-    const labelSpan = 3;
+    function getNameRowLabel () {
+        switch (userInfo && userInfo.type) {
+            case UserType.Common:
+                return '姓名';
+            case UserType.Enterprise:
+                return '企业名称';
+            default:
+                return '名称';
+        }
+    }
+
+    function getUsernameRowLabel () {
+        switch (userInfo && userInfo.type) {
+            case UserType.Common:
+                return '身份证号码';
+            case UserType.Enterprise:
+                return '统一社会信用代码';
+            default:
+                return '用户名';
+        }
+    }
+
+    function getPersonTypeRow () {
+        if (userInfo && userInfo.type === UserType.Common) {
+            return (
+                <Row className="info-row">
+                    <Col span={labelSpan} className="info-text info-label">
+                        个人账户类型：
+                    </Col>
+                    <Col span={contentSpan} className="info-text">
+                        {personTypeToString(userInfo && userInfo.personType)}
+                    </Col>
+                </Row>
+            );
+        }
+    }
+
+    function getEntNameRow () {
+        if (userInfo && userInfo.type === UserType.Common && userInfo.personType === PersonType.Employees) {
+            return (
+                <Row className="info-row">
+                    <Col span={labelSpan} className="info-text info-label">
+                        所在企业名称：
+                    </Col>
+                    <Col span={contentSpan} className="info-text">
+                        {userInfo && userInfo.entInfo && userInfo.entInfo.name}
+                    </Col>
+                </Row>
+            );
+        }
+        return null;
+    }
+
+    function getEmployeeIDRow () {
+        if (userInfo && userInfo.type === UserType.Common && userInfo.personType === PersonType.Employees) {
+            return (
+                <Row className="info-row">
+                    <Col span={labelSpan} className="info-text info-label">
+                        工号：
+                    </Col>
+                    <Col span={contentSpan} className="info-text">
+                        {userInfo && userInfo.employeeID}
+                    </Col>
+                </Row>
+            );
+        }
+    }
+
+    function getSubUserCount () {
+        if (userInfo && userInfo.type === UserType.Enterprise) {
+            return (
+                <Row className="info-row">
+                    <Col span={labelSpan} className="info-text info-label">
+                        子账户数量：
+                    </Col>
+                    <Col span={contentSpan} className="info-text">
+                        {userInfo && userInfo.subUserCount}
+                    </Col>
+                </Row>
+            );
+        }
+    }
+
+    function getEntUsernameRow () {
+        if (userInfo && userInfo.type === UserType.Common && userInfo.personType === PersonType.Employees) {
+            return (
+                <Row className="info-row">
+                    <Col span={labelSpan} className="info-text info-label">
+                        所在企业统一社会信用代码：
+                    </Col>
+                    <Col span={contentSpan} className="info-text">
+                        {userInfo && userInfo.entInfo && userInfo.entInfo.username}
+                    </Col>
+                </Row>
+            );
+        }
+        return null;
+    }
+
+    function getCardNoRow () {
+        if (userInfo && (userInfo.type === UserType.Common || userInfo.type === UserType.Enterprise)) {
+            return (
+                <Row className="info-row">
+                    <Col span={labelSpan} className="info-text info-label">
+                        银行卡号：
+                    </Col>
+                    <Col span={contentSpan} className="info-text">
+                        {userInfo && userInfo.cardNo}
+                    </Col>
+                </Row>
+            );
+        }
+    }
+
+    function getEntTypeRow () {
+        if (userInfo && userInfo.type === UserType.Enterprise) {
+            return (
+                <Row className="info-row">
+                    <Col span={labelSpan} className="info-text info-label">
+                        企业类型：
+                    </Col>
+                    <Col span={contentSpan} className="info-text">
+                        {enterpriseTypeToString(userInfo && userInfo.entType)}
+                    </Col>
+                </Row>
+            );
+        }
+    }
+
+    const labelSpan = 5;
     const contentSpan = 24 - labelSpan;
 
     const opIconStyle: React.CSSProperties = {
@@ -173,21 +308,30 @@ function UserInfo () {
 
     return (
         <div className="user-info-container">
-            <Card title={'账户信息'} bodyStyle={{ height: '100%', width: '100%' }}>
+            <Card
+                title={'账户信息'}
+                bodyStyle={{ height: '100%', width: '100%' }}
+                extra={
+                    <div>
+                        <span className="id-zone">账户唯一标识：</span>
+                        <span className="id-zone">{userInfo && userInfo.id}</span>
+                    </div>
+                }
+            >
                 <Row className="info-row">
                     <Col span={labelSpan} className="info-text info-label">
-                        账户ID：
+                        {getUsernameRowLabel()}：
                     </Col>
                     <Col span={contentSpan} className="info-text">
-                        {userInfo && userInfo.id}
+                        {userInfo && userInfo.username}
                     </Col>
                 </Row>
                 <Row className="info-row">
                     <Col span={labelSpan} className="info-text info-label">
-                        账户名称：
+                        {getNameRowLabel()}：
                     </Col>
                     <Col span={contentSpan} className="info-text">
-                        {userInfo && userInfo.username}
+                        {userInfo && userInfo.name}
                     </Col>
                 </Row>
                 <Row className="info-row">
@@ -206,7 +350,14 @@ function UserInfo () {
                         {userStatusToString(userInfo && userInfo.status)}
                     </Col>
                 </Row>
+                {getEntTypeRow()}
                 {getBalanceRow()}
+                {getPersonTypeRow()}
+                {getEntNameRow()}
+                {getEntUsernameRow()}
+                {getEmployeeIDRow()}
+                {getCardNoRow()}
+                {getSubUserCount()}
                 {getAccountOperations()}
             </Card>
         </div>

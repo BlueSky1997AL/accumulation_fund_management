@@ -1,18 +1,26 @@
-import { Button, Form, Icon, Input, Upload } from 'antd';
+import { Button, DatePicker, Form, Icon, Input, Upload } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
+import { UploadChangeParam } from 'antd/lib/upload';
+import { UploadFile } from 'antd/lib/upload/interface';
 import Cookies from 'js-cookie';
+import { Moment } from 'moment';
 import React from 'react';
+import { FileInfo } from '~server/app/util/interface/file';
 
-import AmountMapInput, { AmountMap } from './amountMapInput';
+const { MonthPicker } = DatePicker;
 
 import { uploadFilesToFileInfos } from '~utils/file';
 
-import { UploadChangeParam } from 'antd/lib/upload';
-import { UploadFile } from 'antd/lib/upload/interface';
-import { FileInfo } from '~server/app/util/interface/file';
+import AmountMapInput, { AmountMap } from './amountMapInput';
+
+export interface AmountInfo {
+    username: string;
+    amount: number;
+}
 
 export interface EnterpriseFundRemitSubmitData {
-    amountMap: AmountMap[];
+    month: string;
+    amountMap: AmountInfo[];
     comments?: string;
     accessory?: FileInfo[];
 }
@@ -35,13 +43,19 @@ function FundRemitForm (props: EnterpriseFundRemitFormProps) {
                 return;
             }
 
+            const amountMap: AmountInfo[] = [];
+            formData.amountMap.map((item: AmountMap) => {
+                item.usernames.map(username => {
+                    amountMap.push({
+                        username,
+                        amount: Math.round(item.amount * 100)
+                    });
+                });
+            });
+
             const submitData: EnterpriseFundRemitSubmitData = {
-                amountMap: formData.amountMap.map((item: AmountMap) => {
-                    return {
-                        usernames: item.usernames,
-                        amount: item.amount * 100
-                    };
-                }),
+                month: (formData.month as Moment).toISOString(),
+                amountMap,
                 comments: formData.comments,
                 accessory: uploadFilesToFileInfos(formData.accessory)
             };
@@ -108,7 +122,7 @@ function FundRemitForm (props: EnterpriseFundRemitFormProps) {
                     {
                         validator: (rule, value: AmountMap, callback) => {
                             if (!value || !value.usernames.length) {
-                                callback('请输入员工用户名或删除该条目');
+                                callback('请输入员工身份证号或删除该条目');
                                 return;
                             }
                             if (!value.amount) {
@@ -134,6 +148,11 @@ function FundRemitForm (props: EnterpriseFundRemitFormProps) {
                 padding: '16px 0'
             }}
         >
+            <Form.Item {...formItemLayout} label="缴存月份">
+                {getFieldDecorator('month', {
+                    rules: [ { required: true, message: '请选择缴存月份' } ]
+                })(<MonthPicker placeholder="选择缴存月份" />)}
+            </Form.Item>
             {formItems}
             <Form.Item {...formItemLayoutWithOutLabel}>
                 <Button type="dashed" onClick={add} style={{ width: '100%' }}>
@@ -142,13 +161,14 @@ function FundRemitForm (props: EnterpriseFundRemitFormProps) {
             </Form.Item>
             <Form.Item {...formItemLayout} label="备注">
                 {getFieldDecorator('comments', {
-                    rules: []
+                    rules: [ { required: true, message: '请输入相关备注内容' } ]
                 })(<Input.TextArea autosize={true} />)}
             </Form.Item>
             <Form.Item {...formItemLayout} label="相关材料">
                 {getFieldDecorator('accessory', {
                     valuePropName: 'fileList',
-                    getValueFromEvent: normFile
+                    getValueFromEvent: normFile,
+                    rules: [ { required: true, message: '请上传相关材料' } ]
                 })(
                     <Upload action={`/api/file/upload?_csrf=${csrfToken}`}>
                         <Button>

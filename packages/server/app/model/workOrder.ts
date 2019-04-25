@@ -15,6 +15,7 @@ export default (app: Application) => {
             owner: { type: Schema.Types.ObjectId, required: true },
             comments: String,
             auditer: Schema.Types.ObjectId,
+            auditTimestamp: Date,
             payload: String
         },
         {

@@ -53,6 +53,12 @@ export default (app: Application) => {
         controller.workOrder.creactPersonalFundBackWorkOrder
     );
     router.post(
+        '/api/work_order/fund/deposit/personal/create',
+        authCheckMiddleware,
+        userProtectionMiddleware,
+        controller.workOrder.creactPersonalFundDepositWorkOrder
+    );
+    router.post(
         '/api/work_order/fund/remit/enterprise/create',
         authCheckMiddleware,
         userProtectionMiddleware,
@@ -66,10 +72,10 @@ export default (app: Application) => {
     );
     router.post('/api/work_order/common/create', authCheckMiddleware, controller.workOrder.createCommonWorkOrder);
     router.get(
-        '/api/work_order/all',
+        '/api/work_order/query_admin',
         authCheckMiddleware,
         userProtectionMiddleware,
-        controller.workOrder.getAllWorkOrder
+        controller.workOrder.getAllWorkOrdersByQuery
     );
     router.get(
         '/api/work_order/detail',
@@ -78,10 +84,10 @@ export default (app: Application) => {
         controller.workOrder.getWorkOrder
     );
     router.get(
-        '/api/work_order/mine',
+        '/api/work_order/query_user',
         authCheckMiddleware,
         userProtectionMiddleware,
-        controller.workOrder.getPersonalWorkOrder
+        controller.workOrder.getPersonalWorkOrdersByQuery
     );
     router.post(
         '/api/work_order/audit',

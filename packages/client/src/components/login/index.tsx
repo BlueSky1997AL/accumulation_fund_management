@@ -56,11 +56,11 @@ function LoginView (props: FormComponentProps) {
                 >
                     <Form.Item>
                         {getFieldDecorator('username', {
-                            rules: [ { required: true, message: '请输入用户名' } ]
+                            rules: [ { required: true, message: '请输入身份证号码/统一社会信用代码' } ]
                         })(
                             <Input
                                 prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />}
-                                placeholder="用户名"
+                                placeholder="身份证号码/统一社会信用代码"
                             />
                         )}
                     </Form.Item>

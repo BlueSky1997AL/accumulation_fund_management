@@ -4,11 +4,16 @@ import { EnterpriseSubUserAddSubmitData } from '../../../client/src/components/e
 import { EnterpriseSubUserRemoveSubmitData } from '../../../client/src/components/enterpriseSubUserRemoveWorkflow';
 import { EnterpriseFundBackSubmitData } from '../../../client/src/components/fundBackWorkflow/enterpriseFundBackForm';
 import { PersonalFundBackSubmitData } from '../../../client/src/components/fundBackWorkflow/personalFundBackForm';
-import { PersonalFundDrawSubmitData } from '../../../client/src/components/fundDrawWorkflow/personalFundDrawForm';
+import { PersonalFundDepositSubmitData } from '../../../client/src/components/fundDepositWorkflow/personalFundDepositForm';
+import {
+    DrawType,
+    PersonalFundDrawSubmitData
+} from '../../../client/src/components/fundDrawWorkflow/personalFundDrawForm';
 import { EnterpriseFundRemitSubmitData } from '../../../client/src/components/fundRemitWorkflow/enterpriseFundRemitForm';
 import { SignUpSubmitData } from '../../../client/src/components/signup';
+import { AmountChangeInDB, AmountChangeSource, AmountChangeType } from '../util/interface/amountChange';
 import { MsgType } from '../util/interface/common';
-import { UserInDB, UserStatus } from '../util/interface/user';
+import { PersonType, UserInDB, UserStatus, UserType } from '../util/interface/user';
 import { WorkOrder, WorkOrderType } from '../util/interface/workOrder';
 
 export default class WorkOrderService extends Service {
@@ -20,6 +25,9 @@ export default class WorkOrderService extends Service {
             case WorkOrderType.EnterpriseBack: {
                 return await this.execEnterpriseBack(workOrder);
             }
+            case WorkOrderType.PersonalDeposit: {
+                return await this.execPersonalDeposit(workOrder);
+            }
             case WorkOrderType.Remit: {
                 return await this.execEnterpriseRemit(workOrder);
             }
@@ -27,7 +35,7 @@ export default class WorkOrderService extends Service {
                 return await this.execPersonalDraw(workOrder);
             }
             case WorkOrderType.DisableOrExport: {
-                return await this.execChangeUserStatus(workOrder);
+                return await this.execDisableOrExportUser(workOrder);
             }
             case WorkOrderType.Freeze: {
                 return await this.execChangeUserStatus(workOrder);
@@ -48,6 +56,33 @@ export default class WorkOrderService extends Service {
         return null;
     }
 
+    public async execPersonalDeposit(workOrder: WorkOrder) {
+        const { ctx } = this;
+        const { payload, owner } = workOrder;
+        if (payload) {
+            const ownerInfo = (await ctx.model.User.findOne({ _id: owner })) as UserInDB;
+            const execData = JSON.parse(payload) as PersonalFundDepositSubmitData;
+
+            const amountChange = (await ctx.model.AmountChange.create({
+                owner,
+                amount: execData.amount,
+                type: AmountChangeType.Positive,
+                source: AmountChangeSource.PersonalDeposit,
+                payload: JSON.stringify({
+                    month: execData.month
+                })
+            })) as AmountChangeInDB;
+            await ctx.model.User.update(
+                { _id: owner },
+                {
+                    balance: ownerInfo.balance + execData.amount,
+                    amountChanges: [ ...ownerInfo.amountChanges!, amountChange._id ]
+                }
+            );
+        }
+        return null;
+    }
+
     public async execPersonalBack(workOrder: WorkOrder) {
         const { ctx } = this;
         const { payload, owner } = workOrder;
@@ -55,25 +90,53 @@ export default class WorkOrderService extends Service {
             const ownerInfo = (await ctx.model.User.findOne({ _id: owner })) as UserInDB;
             const execData = JSON.parse(payload) as PersonalFundBackSubmitData;
 
-            await ctx.model.User.update({ _id: owner }, { balance: ownerInfo.balance + execData.amount });
+            const amountChange = (await ctx.model.AmountChange.create({
+                owner,
+                amount: execData.amount,
+                type: AmountChangeType.Positive,
+                source: AmountChangeSource.PersonalBack,
+                payload: JSON.stringify({
+                    month: execData.month
+                })
+            })) as AmountChangeInDB;
+            await ctx.model.User.update(
+                { _id: owner },
+                {
+                    balance: ownerInfo.balance + execData.amount,
+                    amountChanges: [ ...ownerInfo.amountChanges!, amountChange._id ]
+                }
+            );
         }
         return null;
     }
 
     public async execEnterpriseBack(workOrder: WorkOrder) {
         const { ctx } = this;
-        const { payload } = workOrder;
+        const { payload, owner } = workOrder;
         if (payload) {
             const execData = JSON.parse(payload) as EnterpriseFundBackSubmitData;
 
             await Promise.all(
                 execData.amountMap.map(async amountInfo => {
-                    const amount = amountInfo.amount;
-                    await Promise.all(
-                        amountInfo.usernames.map(async username => {
-                            const targetUserInfo = await ctx.model.User.findOne({ username });
-                            await ctx.model.User.update({ username }, { balance: targetUserInfo.balance + amount });
+                    const amount = amountInfo.amount * 2;
+                    const targetUserInfo = await ctx.model.User.findOne({ username: amountInfo.username });
+
+                    const amountChange = (await ctx.model.AmountChange.create({
+                        owner: targetUserInfo._id,
+                        amount,
+                        type: AmountChangeType.Positive,
+                        source: AmountChangeSource.EnterpriseBack,
+                        payload: JSON.stringify({
+                            month: execData.month,
+                            entID: owner
                         })
+                    })) as AmountChangeInDB;
+                    await ctx.model.User.update(
+                        { username: amountInfo.username },
+                        {
+                            balance: targetUserInfo.balance + amount,
+                            amountChanges: [ ...targetUserInfo.amountChanges!, amountChange._id ]
+                        }
                     );
                 })
             );
@@ -83,18 +146,33 @@ export default class WorkOrderService extends Service {
 
     public async execEnterpriseRemit(workOrder: WorkOrder) {
         const { ctx } = this;
-        const { payload } = workOrder;
+        const { payload, owner } = workOrder;
         if (payload) {
             const execData = JSON.parse(payload) as EnterpriseFundRemitSubmitData;
 
             await Promise.all(
                 execData.amountMap.map(async amountInfo => {
-                    const amount = amountInfo.amount;
-                    await Promise.all(
-                        amountInfo.usernames.map(async username => {
-                            const targetUserInfo = await ctx.model.User.findOne({ username });
-                            await ctx.model.User.update({ username }, { balance: targetUserInfo.balance + amount });
+                    const amount = amountInfo.amount * 2;
+                    const targetUserInfo = (await ctx.model.User.findOne({
+                        username: amountInfo.username
+                    })) as UserInDB;
+
+                    const amountChange = (await ctx.model.AmountChange.create({
+                        owner: targetUserInfo._id,
+                        amount,
+                        type: AmountChangeType.Positive,
+                        source: AmountChangeSource.EnterpriseRemit,
+                        payload: JSON.stringify({
+                            month: execData.month,
+                            entID: owner
                         })
+                    })) as AmountChangeInDB;
+                    await ctx.model.User.update(
+                        { username: amountInfo.username },
+                        {
+                            balance: targetUserInfo.balance + amount,
+                            amountChanges: [ ...targetUserInfo.amountChanges!, amountChange._id ]
+                        }
                     );
                 })
             );
@@ -113,8 +191,69 @@ export default class WorkOrderService extends Service {
                 return MsgType.INSUFFICIENT_BALANCE;
             }
 
-            await ctx.model.User.update({ _id: owner }, { balance: ownerInfo.balance - execData.amount });
+            switch (execData.type) {
+                case DrawType.Partial: {
+                    const amountChange = (await ctx.model.AmountChange.create({
+                        owner,
+                        amount: execData.amount,
+                        type: AmountChangeType.Negative,
+                        source: AmountChangeSource.PersonalPartialDraw
+                    })) as AmountChangeInDB;
+                    await ctx.model.User.update(
+                        { _id: owner },
+                        {
+                            balance: ownerInfo.balance - execData.amount,
+                            amountChanges: [ ...ownerInfo.amountChanges!, amountChange._id ]
+                        }
+                    );
+                    break;
+                }
+                case DrawType.Cancellation: {
+                    const amountChange = (await ctx.model.AmountChange.create({
+                        owner,
+                        amount: ownerInfo.balance,
+                        type: AmountChangeType.Negative,
+                        source: AmountChangeSource.PersonalCancellationDraw
+                    })) as AmountChangeInDB;
+                    await ctx.model.User.update(
+                        { _id: owner },
+                        {
+                            status: UserStatus.Disabled,
+                            balance: 0,
+                            amountChanges: [ ...ownerInfo.amountChanges!, amountChange._id ]
+                        }
+                    );
+                    break;
+                }
+                default: {
+                    return MsgType.ILLEGAL_ARGS;
+                }
+            }
         }
+        return null;
+    }
+
+    public async execDisableOrExportUser(workOrder: WorkOrder) {
+        const { ctx } = this;
+        const { owner } = workOrder;
+
+        const ownerInfo = (await ctx.model.User.findOne({ _id: owner })) as UserInDB;
+
+        const amountChange = (await ctx.model.AmountChange.create({
+            owner,
+            amount: ownerInfo.balance,
+            type: AmountChangeType.Negative,
+            source: AmountChangeSource.PersonalCancellationDraw
+        })) as AmountChangeInDB;
+        await ctx.model.User.update(
+            { _id: owner },
+            {
+                status: UserStatus.Disabled,
+                balance: 0,
+                amountChanges: [ ...ownerInfo.amountChanges!, amountChange._id ]
+            }
+        );
+
         return null;
     }
 
@@ -156,7 +295,7 @@ export default class WorkOrderService extends Service {
             const ownerInfo = (await ctx.model.User.findOne({ _id: owner })) as UserInDB;
             const execData = JSON.parse(payload) as EnterpriseSubUserRemoveSubmitData;
 
-            const newSubUsers = (ownerInfo.subUser as string[])
+            const newSubUsers = ownerInfo.subUser!
                 .map(subUserID => {
                     if (String(subUserID) !== execData.userID) {
                         return subUserID;
@@ -165,6 +304,14 @@ export default class WorkOrderService extends Service {
                 .filter(item => !!item) as string[];
 
             await ctx.model.User.updateOne({ _id: owner }, { subUser: newSubUsers });
+            await ctx.model.User.updateOne(
+                { _id: execData.userID },
+                {
+                    employerID: null,
+                    employeeID: null,
+                    personType: PersonType.Employees
+                }
+            );
         }
         return null;
     }
@@ -177,15 +324,21 @@ export default class WorkOrderService extends Service {
             const execData = JSON.parse(payload) as EnterpriseSubUserAddSubmitData;
 
             const newSubUserIDs = await Promise.all(
-                execData.usernames.map(async username => {
+                execData.usernames.map(async (username, index) => {
                     const targetUserInfo = (await ctx.model.User.findOne({ username })) as UserInDB;
+                    await ctx.model.User.updateOne(
+                        { username },
+                        {
+                            employerID: ownerInfo._id,
+                            employeeID: execData.employeeIDs[index],
+                            personType: PersonType.Employees
+                        }
+                    );
                     return targetUserInfo._id;
                 })
             );
 
-            const newSubUsers = [ ...(ownerInfo.subUser as string[]), ...newSubUserIDs ];
-
-            await ctx.model.User.updateOne({ _id: owner }, { subUser: newSubUsers });
+            await ctx.model.User.updateOne({ _id: owner }, { subUser: [ ...ownerInfo.subUser!, ...newSubUserIDs ] });
         }
         return null;
     }
@@ -193,17 +346,47 @@ export default class WorkOrderService extends Service {
     public async execSignUp(workOrder: WorkOrder) {
         const { ctx } = this;
         const { payload } = workOrder;
+        const { username } = ctx.session;
+
         if (payload) {
             const execData = JSON.parse(payload) as SignUpSubmitData;
 
             try {
-                await ctx.model.User.create({
+                const createdUser = (await ctx.model.User.create({
                     username: execData.username,
                     password: execData.password,
+                    name: execData.name,
+                    cardNo: execData.cardNo,
+                    employeeID: execData.employeeID,
                     type: execData.type,
+                    entType: execData.entType,
+                    personType: execData.personType,
                     status: UserStatus.Normal,
                     balance: execData.balance
-                });
+                })) as UserInDB;
+
+                if (execData.type === UserType.Common && execData.personType === PersonType.Employees) {
+                    const entUser = (await ctx.model.User.findOne({ username: execData.entID })) as UserInDB;
+                    await ctx.model.User.updateOne({ _id: createdUser._id }, { employerID: entUser._id });
+                    await ctx.model.User.updateOne(
+                        { username: execData.entID },
+                        { subUser: [ ...entUser.subUser!, createdUser._id ] }
+                    );
+                }
+
+                if (execData.balance) {
+                    const amountChange = (await ctx.model.AmountChange.create({
+                        owner: createdUser._id,
+                        amount: execData.balance,
+                        type: AmountChangeType.Positive,
+                        source: AmountChangeSource.AccountCreation
+                    })) as AmountChangeInDB;
+
+                    await ctx.model.User.updateOne(
+                        { username: createdUser.username },
+                        { amountChanges: [ ...createdUser.amountChanges!, amountChange._id ] }
+                    );
+                }
             } catch (error) {
                 ctx.logger.error(error);
                 return MsgType.OPT_FAILED;

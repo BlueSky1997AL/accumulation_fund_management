@@ -1,14 +1,18 @@
-import { Button, Form, Icon, Input, InputNumber, Upload } from 'antd';
+import { Button, DatePicker, Form, Icon, Input, InputNumber, Upload } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
 import { UploadChangeParam } from 'antd/lib/upload';
 import { UploadFile } from 'antd/lib/upload/interface';
 import Cookies from 'js-cookie';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+
+const { MonthPicker } = DatePicker;
 
 import { FileInfo } from '~server/app/util/interface/file';
 import { uploadFilesToFileInfos } from '~utils/file';
+import { moneyToHumanReadable } from '~utils/user';
 
 export interface PersonalFundBackSubmitData {
+    month: string;
     amount: number;
     comments?: string;
     accessory?: FileInfo[];
@@ -21,7 +25,22 @@ interface PersonalFundBackFormProps extends FormComponentProps {
 const csrfToken = Cookies.get('csrfToken');
 
 function PersonalFundBackForm (props: PersonalFundBackFormProps) {
-    const { getFieldDecorator, validateFields } = props.form;
+    const { getFieldDecorator, validateFields, getFieldValue } = props.form;
+    const [ amount, setAmount ] = useState<number | undefined>();
+
+    useEffect(() => {
+        const baseAmount = getFieldValue('baseAmount');
+        const ratio = getFieldValue('ratio');
+
+        if (baseAmount && ratio && ratio >= 5 && ratio <= 12) {
+            const newAmount = Math.round(baseAmount * ratio * 2);
+            if (newAmount > 609600) {
+                setAmount(609600);
+            } else {
+                setAmount(newAmount);
+            }
+        }
+    });
 
     function onSubmit () {
         validateFields(async (errors, formData) => {
@@ -31,7 +50,8 @@ function PersonalFundBackForm (props: PersonalFundBackFormProps) {
             }
 
             const submitData: PersonalFundBackSubmitData = {
-                amount: formData.amount * 100,
+                month: formData.month,
+                amount: amount!,
                 comments: formData.comments,
                 accessory: uploadFilesToFileInfos(formData.accessory)
             };
@@ -56,20 +76,40 @@ function PersonalFundBackForm (props: PersonalFundBackFormProps) {
             }}
             className="login-form"
         >
-            <Form.Item label="补缴金额（元/人民币）">
-                {getFieldDecorator('amount', {
-                    rules: [ { required: true, message: '请输入补缴金额' }, { type: 'number', message: '补缴金额应为数值' } ]
+            <Form.Item label="补缴月份">
+                {getFieldDecorator('month', {
+                    rules: [ { required: true, message: '请选择补缴月份' } ]
+                })(<MonthPicker placeholder="选择补缴月份" />)}
+            </Form.Item>
+            <Form.Item label="缴存基数（元/人民币）">
+                {getFieldDecorator('baseAmount', {
+                    rules: [ { required: true, message: '请输入缴存基数' }, { type: 'number', message: '缴存基数应为数值' } ]
                 })(<InputNumber style={{ width: '100%' }} />)}
+            </Form.Item>
+            <Form.Item label="缴存比例（元/人民币）">
+                {getFieldDecorator('ratio', {
+                    rules: [ { required: true, message: '请输入补缴金额' }, { type: 'number', message: '补缴金额应为数值' } ]
+                })(<InputNumber max={12} min={5} style={{ width: '100%' }} />)}
+            </Form.Item>
+            <Form.Item label="应缴额（元/人民币）">
+                <Input
+                    value={moneyToHumanReadable(amount)}
+                    disabled={true}
+                    max={12}
+                    min={5}
+                    style={{ width: '100%' }}
+                />
             </Form.Item>
             <Form.Item label="备注">
                 {getFieldDecorator('comments', {
-                    rules: []
+                    rules: [ { required: true, message: '请输入相关备注内容' } ]
                 })(<Input.TextArea autosize={true} />)}
             </Form.Item>
             <Form.Item label="相关材料">
                 {getFieldDecorator('accessory', {
                     valuePropName: 'fileList',
-                    getValueFromEvent: normFile
+                    getValueFromEvent: normFile,
+                    rules: [ { required: true, message: '请上传相关材料' } ]
                 })(
                     <Upload action={`/api/file/upload?_csrf=${csrfToken}`}>
                         <Button>

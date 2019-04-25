@@ -1,3 +1,5 @@
+type objectID = string;
+
 export interface File {
     filename: string;
     encoding: string;
@@ -6,9 +8,9 @@ export interface File {
 }
 
 export interface FileInDB extends File {
-    _id: string;
-    createdAt: string;
-    updatedAt: string;
+    _id: objectID;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 export interface FileInfo {

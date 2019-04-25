@@ -3,16 +3,26 @@
 import { Controller } from 'egg';
 
 import { MsgType, ResponseData } from '../util/interface/common';
-import { UserInDB, UserStatus, UserType } from '../util/interface/user';
+import { EnterpriseType, PersonType, UserInDB, UserStatus, UserType } from '../util/interface/user';
 
 import { PasswordModificationSubmitData } from '../../../client/src/components/passwordModification';
 
 export interface UserInfoRespData {
     id: string;
     username: string;
+    name: string;
+    cardNo?: string;
+    employeeID?: string;
     type: UserType;
+    entType?: EnterpriseType;
+    entInfo?: {
+        name: string;
+        username: string;
+    };
+    personType?: PersonType;
     status: UserStatus;
     balance: number;
+    subUserCount: number;
 }
 
 export default class UserController extends Controller {
@@ -30,6 +40,8 @@ export default class UserController extends Controller {
             ctx.session.username = username;
             ctx.session.password = password;
             ctx.session.userType = userInfo.type;
+            ctx.session.personType = userInfo.personType;
+            ctx.session.name = userInfo.name;
             response.message = MsgType.LOGIN_SUCCESS;
         } else if (!userInfo) {
             response.message = MsgType.INCORRECT_USERNAME;
@@ -67,13 +79,27 @@ export default class UserController extends Controller {
         };
 
         const userInfo = (await ctx.model.User.findOne({ username })) as UserInDB;
+        let entInfo: UserInDB = {} as any;
+        if (userInfo.type === UserType.Common && userInfo.personType === PersonType.Employees) {
+            entInfo = (await ctx.model.User.findById(userInfo.employerID)) as UserInDB;
+        }
         response.message = MsgType.OPT_SUCCESS;
         response.data = {
             id: userInfo._id,
             username: userInfo.username,
+            name: userInfo.name,
+            cardNo: userInfo.cardNo,
+            employeeID: userInfo.employeeID,
             type: userInfo.type,
+            entType: userInfo.entType,
+            entInfo: {
+                name: entInfo && entInfo.name,
+                username: entInfo && entInfo.username
+            },
+            personType: userInfo.personType,
             status: userInfo.status,
-            balance: userInfo.balance
+            balance: userInfo.balance,
+            subUserCount: userInfo.subUser!.length
         };
 
         ctx.body = response;
@@ -82,26 +108,47 @@ export default class UserController extends Controller {
     public async getTargetUserInfo() {
         const { ctx } = this;
         const { username } = ctx.session;
-        const { userID } = ctx.query;
+        const { userID, username: targetUsername } = ctx.query;
 
         const response: ResponseData<UserInfoRespData | null> = {
             message: MsgType.UNKNOWN_ERR,
             data: null
         };
 
+        const queryInfo: { [propName: string]: string } = {};
+        if (userID) {
+            queryInfo._id = userID;
+        }
+        if (targetUsername) {
+            queryInfo.username = targetUsername;
+        }
+
         const userInfo = (await ctx.model.User.findOne({ username })) as UserInDB;
-        if (userInfo.type !== UserType.Enterprise || (userInfo.subUser as string[]).indexOf(userID) === -1) {
-            response.message = MsgType.NO_PERMISSION;
-        } else {
-            const targetUserInfo = (await ctx.model.User.findOne({ _id: userID })) as UserInDB;
+        const targetUserInfo = (await ctx.model.User.findOne(queryInfo)) as UserInDB;
+
+        if (!targetUserInfo) {
+            response.message = MsgType.INCORRECT_USERNAME;
+            ctx.body = response;
+            return;
+        }
+
+        if (userInfo.type === UserType.Admin || userInfo.type === UserType.Enterprise) {
             response.data = {
                 id: targetUserInfo._id,
                 username: targetUserInfo.username,
+                name: targetUserInfo.name,
+                cardNo: targetUserInfo.cardNo,
+                employeeID: targetUserInfo.employeeID,
                 type: targetUserInfo.type,
+                entType: targetUserInfo.entType,
+                personType: targetUserInfo.personType,
                 status: targetUserInfo.status,
-                balance: targetUserInfo.balance
+                balance: targetUserInfo.balance,
+                subUserCount: targetUserInfo.subUser!.length
             };
             response.message = MsgType.OPT_SUCCESS;
+        } else {
+            response.message = MsgType.NO_PERMISSION;
         }
 
         ctx.body = response;
@@ -110,7 +157,7 @@ export default class UserController extends Controller {
     public async getFullUserInfo() {
         const { ctx } = this;
         const { username } = ctx.session;
-        const { id } = ctx.query;
+        const { id, username: targetUsername } = ctx.query;
 
         const response: ResponseData<UserInDB | null> = {
             message: MsgType.UNKNOWN_ERR,
@@ -121,7 +168,15 @@ export default class UserController extends Controller {
         if (userInfo.type !== UserType.Admin) {
             response.message = MsgType.NO_PERMISSION;
         } else {
-            const targetUserInfo = (await ctx.model.User.findOne({ _id: id })) as UserInDB;
+            const queryInfo: { [propName: string]: string } = {};
+            if (id) {
+                queryInfo._id = id;
+            }
+            if (targetUsername) {
+                queryInfo.username = targetUsername;
+            }
+
+            const targetUserInfo = (await ctx.model.User.findOne(queryInfo)) as UserInDB;
             response.message = MsgType.OPT_SUCCESS;
             response.data = targetUserInfo;
         }
@@ -163,14 +218,16 @@ export default class UserController extends Controller {
         if (userInfo.type !== UserType.Enterprise) {
             response.message = MsgType.NO_PERMISSION;
         } else {
-            const subsUserIDs = ((await ctx.model.User.findOne({ username })) as UserInDB).subUser as string[];
+            const subsUserIDs = userInfo.subUser!;
             const retData = await Promise.all(
                 subsUserIDs.map(async userID => {
                     const targetUserInfo = (await ctx.model.User.findOne({ _id: userID })) as UserInDB;
                     return {
                         id: targetUserInfo._id,
                         username: targetUserInfo.username,
-                        type: targetUserInfo.type,
+                        name: targetUserInfo.name,
+                        cardNo: targetUserInfo.cardNo,
+                        employeeID: targetUserInfo.employeeID,
                         status: targetUserInfo.status,
                         balance: targetUserInfo.balance
                     } as UserInfoRespData;

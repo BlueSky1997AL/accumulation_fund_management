@@ -1,5 +1,7 @@
 import { InputNumber, Select } from 'antd';
-import React, { forwardRef, useImperativeHandle, useState } from 'react';
+import React, { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
+
+import { moneyToHumanReadable } from '~utils/user';
 
 export interface AmountMap {
     usernames: string[];
@@ -15,6 +17,9 @@ function AmountMapInput ({ value = {} as AmountMap, onChange }: AmountMapInputPr
     const [ usernames, setUsernames ] = useState<string[]>([]);
     const [ amount, setAmount ] = useState<number | undefined>();
 
+    const [ baseAmount, setBaseAmount ] = useState<number | undefined>();
+    const [ ratio, setRatio ] = useState<number | undefined>();
+
     useImperativeHandle(ref, () => ({}));
 
     function triggerChange (changedValue: any) {
@@ -22,6 +27,22 @@ function AmountMapInput ({ value = {} as AmountMap, onChange }: AmountMapInputPr
             onChange(Object.assign({}, { usernames, amount }, changedValue));
         }
     }
+
+    useEffect(
+        () => {
+            if (baseAmount && ratio) {
+                const newAmount = baseAmount * ratio / 100;
+                if (newAmount > 3048) {
+                    setAmount(3048);
+                    triggerChange({ amount: 3048 });
+                } else {
+                    setAmount(newAmount);
+                    triggerChange({ amount: newAmount });
+                }
+            }
+        },
+        [ baseAmount, ratio ]
+    );
 
     return (
         <span>
@@ -35,21 +56,35 @@ function AmountMapInput ({ value = {} as AmountMap, onChange }: AmountMapInputPr
                 }}
                 allowClear={true}
                 tokenSeparators={[ ',', '，', ' ' ]}
-                placeholder="输入用户名，多个用户名请使用逗号或空格分割"
+                placeholder="输入员工身份证号码"
                 style={{
-                    width: '75%',
+                    width: '35%',
                     marginRight: 16
                 }}
             />
             <InputNumber
-                value={'amount' in value ? value.amount : amount}
-                style={{ marginRight: 16 }}
-                placeholder="输入金额"
-                onChange={newAmount => {
-                    setAmount(newAmount);
-                    triggerChange({ amount: newAmount });
+                style={{ marginRight: 8 }}
+                placeholder="缴存基数"
+                onChange={newBaseAmount => {
+                    setBaseAmount(newBaseAmount);
                 }}
             />
+            <span>元</span>
+            <InputNumber
+                style={{ marginLeft: 16, marginRight: 8 }}
+                placeholder="缴存比例"
+                min={5}
+                max={12}
+                onChange={newRatio => {
+                    if (newRatio && newRatio >= 5 && newRatio <= 12) {
+                        setRatio(newRatio);
+                    }
+                }}
+            />
+            <span style={{ marginRight: 16 }}>%</span>
+            <span>应缴额：</span>
+            <span>{moneyToHumanReadable('amount' in value ? value.amount * 100 : amount && amount * 100)}</span>
+            <span style={{ marginRight: 16 }}>元</span>
         </span>
     );
 }

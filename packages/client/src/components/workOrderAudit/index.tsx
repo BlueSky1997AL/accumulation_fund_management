@@ -1,4 +1,5 @@
 import { Button, Card, Col, Divider, Input, notification, Row } from 'antd';
+import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
 
@@ -7,6 +8,7 @@ import './index.less';
 import { MsgType } from '~server/app/util/interface/common';
 import { WorkOrderStatus, WorkOrderWithUserInfo } from '~server/app/util/interface/workOrder';
 
+import { UserType } from '~server/app/util/interface/user';
 import { getWorkOrderInfo } from '~utils/commonRequest';
 import { userStatusToString, userTypeToString } from '~utils/user';
 import { workOrderStatusToString, workOrderTypeToString } from '~utils/workOrder';
@@ -122,6 +124,50 @@ function WorkOrderAudit ({ workOrderID, history }: WorkOrderAuditProps) {
         );
     }
 
+    function getCreatorLabelContent () {
+        switch (workOrderInfo && workOrderInfo.owner.type) {
+            case UserType.Enterprise: {
+                return '创建人统一社会信用代码';
+            }
+            case UserType.Common: {
+                return '创建人身份证号';
+            }
+            default: {
+                return '创建人用户名';
+            }
+        }
+    }
+
+    function getAuditTimestampRow () {
+        if (workOrderInfo && workOrderInfo.status !== WorkOrderStatus.Open) {
+            return (
+                <Row className="info-row">
+                    <Col span={labelSpan} className="info-text info-label">
+                        工单审核时间：
+                    </Col>
+                    <Col span={contentSpan} className="info-text">
+                        {moment(workOrderInfo.auditTimestamp).format('YYYY-MM-DD HH:mm:ss')}
+                    </Col>
+                </Row>
+            );
+        }
+    }
+
+    function getCreateTimestampRow () {
+        if (workOrderInfo) {
+            return (
+                <Row className="info-row">
+                    <Col span={labelSpan} className="info-text info-label">
+                        工单创建时间：
+                    </Col>
+                    <Col span={contentSpan} className="info-text">
+                        {moment(workOrderInfo.createdAt).format('YYYY-MM-DD HH:mm:ss')}
+                    </Col>
+                </Row>
+            );
+        }
+    }
+
     const labelSpan = 9;
     const contentSpan = 24 - labelSpan;
 
@@ -136,11 +182,19 @@ function WorkOrderAudit ({ workOrderID, history }: WorkOrderAuditProps) {
                     justifyContent: 'center',
                     alignItems: 'center'
                 }}
+                extra={
+                    <div>
+                        <span className="id-zone">工单唯一标识：</span>
+                        <span className="id-zone">{workOrderInfo && workOrderInfo._id}</span>
+                    </div>
+                }
             >
                 <div className="info-container">
+                    {getCreateTimestampRow()}
+                    {getAuditTimestampRow()}
                     <Row className="info-row">
                         <Col span={labelSpan} className="info-text info-label">
-                            创建人：
+                            {getCreatorLabelContent()}：
                         </Col>
                         <Col span={contentSpan} className="info-text">
                             {workOrderInfo && workOrderInfo.owner.username}
@@ -164,7 +218,7 @@ function WorkOrderAudit ({ workOrderID, history }: WorkOrderAuditProps) {
                     </Row>
                     <Row className="info-row">
                         <Col span={labelSpan} className="info-text info-label">
-                            状态：
+                            工单状态：
                         </Col>
                         <Col span={contentSpan} className="info-text">
                             {workOrderStatusToString(workOrderInfo && workOrderInfo.status)}
@@ -172,18 +226,13 @@ function WorkOrderAudit ({ workOrderID, history }: WorkOrderAuditProps) {
                     </Row>
                     <Row className="info-row">
                         <Col span={labelSpan} className="info-text info-label">
-                            类型：
+                            工单类型：
                         </Col>
                         <Col span={contentSpan} className="info-text">
                             {workOrderTypeToString(workOrderInfo && workOrderInfo.type)}
                         </Col>
                     </Row>
-                    {getWorkOrderDetailComponent(
-                        contentSpan,
-                        labelSpan,
-                        workOrderInfo && workOrderInfo.payload,
-                        workOrderInfo && workOrderInfo.type
-                    )}
+                    {getWorkOrderDetailComponent(contentSpan, labelSpan, workOrderInfo)}
                     {getCommentBox(workOrderInfo)}
                     {getOperationButtons(workOrderInfo && workOrderInfo.status)}
                 </div>
