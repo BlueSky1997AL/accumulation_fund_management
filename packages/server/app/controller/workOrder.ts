@@ -205,7 +205,8 @@ export default class WorkOrderController extends Controller {
             auditer: workOrderInfo.auditer,
             payload: workOrderInfo.payload,
             createdAt: workOrderInfo.createdAt,
-            updatedAt: workOrderInfo.updatedAt
+            updatedAt: workOrderInfo.updatedAt,
+            auditTimestamp: workOrderInfo.auditTimestamp
         };
 
         if (`${userInfo._id}` === `${workOrderInfo.owner}`) {
