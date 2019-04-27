@@ -1,4 +1,4 @@
-import { Button, Card, Col, Divider, Form, Icon, Input, notification, Row, Upload } from 'antd';
+import { Button, Card, Col, Divider, Form, Icon, Input, notification, Row, Tooltip, Upload } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
 import Cookies from 'js-cookie';
 import React, { useEffect, useState } from 'react';
@@ -186,7 +186,25 @@ function EnterpriseSubUserRemoveWorkflow ({ userID, form }: EnterpriseSubUserRem
                                     rules: [ { required: true, message: '请填写申请备注' } ]
                                 })(<Input.TextArea autosize={{ minRows: 4 }} />)}
                             </Form.Item>
-                            <Form.Item label="相关材料">
+                            <Form.Item
+                                label={
+                                    <Tooltip
+                                        title={
+                                            <div>
+                                                <div>单个文件大小 ≤ 4MB</div>
+                                                <div>
+                                                    支持的格式：.jpg / .jpeg / .png / .gif / .bmp / .wbmp / .webp / .tif /
+                                                    .psd / .svg / .js / .jsx / .json / .css / .less / .html / .htm /
+                                                    .xml / .zip / .gz / .tgz / .gzip / .mp3 / .mp4 / .avi / .rar / .iso
+                                                    / .doc / .docx / .ppt / .pptx / .xls / .xlsx / .wps / .txt / .pdf
+                                                </div>
+                                            </div>
+                                        }
+                                    >
+                                        相关材料 <Icon style={{ color: 'rgba(0, 0, 0, 0.35)' }} type="info-circle" />
+                                    </Tooltip>
+                                }
+                            >
                                 {getFieldDecorator('accessory', {
                                     valuePropName: 'fileList',
                                     getValueFromEvent: normFile,

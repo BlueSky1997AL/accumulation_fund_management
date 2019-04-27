@@ -1,4 +1,4 @@
-import { Button, Collapse, DatePicker, Divider, Form, Icon, Input, InputNumber, Upload } from 'antd';
+import { Button, Collapse, DatePicker, Divider, Form, Icon, Input, InputNumber, Tooltip, Upload } from 'antd';
 import { FormComponentProps } from 'antd/lib/form';
 import { UploadChangeParam } from 'antd/lib/upload';
 import { UploadFile } from 'antd/lib/upload/interface';
@@ -133,7 +133,25 @@ function PersonalFundBackForm (props: PersonalFundBackFormProps) {
                         rules: [ { required: true, message: '请输入相关备注内容' } ]
                     })(<Input.TextArea autosize={true} />)}
                 </Form.Item>
-                <Form.Item label="相关材料">
+                <Form.Item
+                    label={
+                        <Tooltip
+                            title={
+                                <div>
+                                    <div>单个文件大小 ≤ 4MB</div>
+                                    <div>
+                                        支持的格式：.jpg / .jpeg / .png / .gif / .bmp / .wbmp / .webp / .tif / .psd / .svg /
+                                        .js / .jsx / .json / .css / .less / .html / .htm / .xml / .zip / .gz / .tgz /
+                                        .gzip / .mp3 / .mp4 / .avi / .rar / .iso / .doc / .docx / .ppt / .pptx / .xls /
+                                        .xlsx / .wps / .txt / .pdf
+                                    </div>
+                                </div>
+                            }
+                        >
+                            相关材料 <Icon style={{ color: 'rgba(0, 0, 0, 0.35)' }} type="info-circle" />
+                        </Tooltip>
+                    }
+                >
                     {getFieldDecorator('accessory', {
                         valuePropName: 'fileList',
                         getValueFromEvent: normFile,
