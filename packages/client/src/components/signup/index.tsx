@@ -326,7 +326,7 @@ function SignUpView (props: FormComponentProps) {
                                         if (!value) {
                                             callback();
                                         }
-                                        if (/^([1-9]{1})(\d{14}|\d{18})$/.test(value)) {
+                                        if (/^[0-9]{16,19}$/.test(value)) {
                                             callback();
                                         }
                                         callback('银行卡号不合法，请检查您的输入是否正确');

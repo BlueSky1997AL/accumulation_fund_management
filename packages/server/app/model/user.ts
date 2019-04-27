@@ -42,7 +42,7 @@ export default (app: Application) => {
                 validate(val: string) {
                     const that = this as User;
                     if (that.type === UserType.Common || that.type === UserType.Enterprise) {
-                        return /^([1-9]{1})(\d{14}|\d{18})$/.test(val);
+                        return /^[0-9]{16,19}$/.test(val);
                     }
                     return true;
                 },
