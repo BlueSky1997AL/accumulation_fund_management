@@ -627,14 +627,17 @@ export default class WorkOrderController extends Controller {
                 targetAmount = userInfo.balance;
             }
 
-            const entInfoInDB = (await ctx.model.User.findOne({ _id: userInfo.employerID })) as UserInDB;
-            const entInfo = {
-                username: entInfoInDB.username,
-                name: entInfoInDB.name,
-                cardNo: entInfoInDB.cardNo,
-                entType: entInfoInDB.entType,
-                status: entInfoInDB.status
-            };
+            let entInfo;
+            if (userInfo.personType === PersonType.Employees) {
+                const entInfoInDB = (await ctx.model.User.findOne({ _id: userInfo.employerID })) as UserInDB;
+                entInfo = {
+                    username: entInfoInDB.username,
+                    name: entInfoInDB.name,
+                    cardNo: entInfoInDB.cardNo,
+                    entType: entInfoInDB.entType,
+                    status: entInfoInDB.status
+                };
+            }
 
             const payload = JSON.stringify({ type, amount: targetAmount, comments, accessory, entInfo });
             const workOrder: WorkOrder = {
