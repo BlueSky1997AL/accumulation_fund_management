@@ -48,7 +48,7 @@ export default class HomeController extends Controller {
             const respData = {} as SysOverviewInfo;
             let totalBalance = 0;
 
-            const allUsers = (await ctx.model.User.find()) as UserInDB[];
+            const allUsers = (await ctx.model.User.find({ $nor: [ { status: UserStatus.Disabled } ] })) as UserInDB[];
             const adminUsers = allUsers
                 .map(user => {
                     if (user.type === UserType.Admin) {

@@ -13,7 +13,7 @@ export default (app: Application) => {
             filename: { required: true, type: String },
             encoding: { required: true, type: String },
             mime: { required: true, type: String },
-            content: { required: true, type: Buffer }
+            content: Buffer
         },
         {
             timestamps: true
