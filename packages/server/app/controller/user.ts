@@ -301,6 +301,14 @@ export default class UserController extends Controller {
                     { _id: createdUser._id },
                     { amountChanges: [ ...createdUser.amountChanges!, amountChange._id ] }
                 );
+
+                if (personType === PersonType.Employees) {
+                    const entUser = (await ctx.model.User.findOne({ _id: employerID })) as UserInDB;
+                    await ctx.model.User.updateOne(
+                        { _id: employerID },
+                        { subUser: [ ...entUser.subUser!, createdUser._id ] }
+                    );
+                }
             }
 
             response.message = MsgType.OPT_SUCCESS;
