@@ -25,7 +25,7 @@ export interface AmountChangeInDBWithOwnerInfo extends AmountChangeInDB {
         employerID?: objectID;
         personType?: PersonType;
         status: UserStatus;
-    }
+    };
 }
 
 export enum AmountChangeType {
@@ -41,5 +41,6 @@ export enum AmountChangeSource {
     PersonalDeposit,
     PersonalPartialDraw,
     PersonalCancellationDraw,
-    AdminUserCreate
+    AdminUserCreate,
+    Interest
 }

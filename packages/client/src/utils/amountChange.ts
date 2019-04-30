@@ -29,6 +29,8 @@ export function amountChangeSourceToString (source: AmountChangeSource) {
             return '销户支取';
         case AmountChangeSource.AdminUserCreate:
             return '账户创建（管理员）';
+        case AmountChangeSource.Interest:
+            return '余额计息';
         default:
             return '未知金额变动来源';
     }
