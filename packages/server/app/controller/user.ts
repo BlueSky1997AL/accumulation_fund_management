@@ -42,6 +42,9 @@ export default class UserController extends Controller {
             ctx.session.userType = userInfo.type;
             ctx.session.personType = userInfo.personType;
             ctx.session.name = userInfo.name;
+
+            ctx.rotateCsrfSecret();
+
             response.message = MsgType.LOGIN_SUCCESS;
         } else if (!userInfo) {
             response.message = MsgType.INCORRECT_USERNAME;
@@ -65,6 +68,8 @@ export default class UserController extends Controller {
         ctx.session.username = '';
         ctx.session.password = '';
         ctx.session.userType = '';
+        ctx.session.personType = '';
+        ctx.session.name = '';
 
         ctx.body = response;
     }
