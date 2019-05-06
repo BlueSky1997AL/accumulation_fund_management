@@ -245,20 +245,26 @@ export default class WorkOrderService extends Service {
 
         const ownerInfo = (await ctx.model.User.findOne({ _id: owner })) as UserInDB;
 
-        const amountChange = (await ctx.model.AmountChange.create({
-            owner,
-            amount: ownerInfo.balance,
-            type: AmountChangeType.Negative,
-            source: AmountChangeSource.PersonalCancellationDraw
-        })) as AmountChangeInDB;
-        await ctx.model.User.update(
-            { _id: owner },
-            {
-                status: UserStatus.Disabled,
-                balance: 0,
-                amountChanges: [ ...ownerInfo.amountChanges!, amountChange._id ]
-            }
-        );
+        if (ownerInfo.type === UserType.Common) {
+            const amountChange = (await ctx.model.AmountChange.create({
+                owner,
+                amount: ownerInfo.balance,
+                type: AmountChangeType.Negative,
+                source: AmountChangeSource.PersonalCancellationDraw
+            })) as AmountChangeInDB;
+            await ctx.model.User.update(
+                { _id: owner },
+                {
+                    status: UserStatus.Disabled,
+                    balance: 0,
+                    amountChanges: [ ...ownerInfo.amountChanges!, amountChange._id ]
+                }
+            );
+        } else if (ownerInfo.type === UserType.Enterprise) {
+            await ctx.model.User.update({ _id: owner }, { status: UserStatus.Disabled });
+        } else {
+            return MsgType.ILLEGAL_ARGS;
+        }
 
         return null;
     }

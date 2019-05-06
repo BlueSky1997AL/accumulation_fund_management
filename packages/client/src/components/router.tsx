@@ -10,6 +10,7 @@ import { WorkOrderType } from '~server/app/util/interface/workOrder';
 import { Card } from 'antd';
 import AccountCreateForm from './accountCreateForm';
 import AccountModificationForm from './accountModificationForm';
+import AdminOverview from './adminOverview';
 import AmountChangeList from './amountChangeList';
 import CommonWorkflow from './commonWorkflow';
 import EnterpriseSubUserAddWorkflow from './enterpriseSubUserAddWorkflow';
@@ -27,7 +28,6 @@ import WorkflowFrame from './workflowFrame';
 import WorkOrderAudit from './workOrderAudit';
 import WorkOrderList from './workOrderList';
 import WorkOrderQuery from './workOrderQuery';
-import AdminOverview from './adminOverview';
 
 function Page404 () {
     return <Exception type="404" backText="返回首页" redirect="/web" />;
