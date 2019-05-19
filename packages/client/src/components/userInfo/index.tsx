@@ -17,6 +17,7 @@ import {
     userTypeToString
 } from '~utils/user';
 import { userLost } from './request';
+
 function UserInfo () {
     const [ userInfo, setUserInfo ] = useState<UserInfoRespData>();
 
@@ -176,19 +177,48 @@ function UserInfo () {
         }
     }
 
-    function getUsernameRowLabel () {
-        switch (userInfo && userInfo.type) {
-            case UserType.Common:
-                return '身份证号码';
-            case UserType.Enterprise:
-                return '统一社会信用代码';
-            default:
-                return '用户名';
+    function getUsernameRow () {
+        if (userInfo && userInfo.status !== UserStatus.Lost) {
+            switch (userInfo.type) {
+                case UserType.Common:
+                    return (
+                        <Row className="info-row">
+                            <Col span={labelSpan} className="info-text info-label">
+                                身份证号码：
+                            </Col>
+                            <Col span={contentSpan} className="info-text">
+                                {userInfo && userInfo.username}
+                            </Col>
+                        </Row>
+                    );
+                case UserType.Enterprise:
+                    return (
+                        <Row className="info-row">
+                            <Col span={labelSpan} className="info-text info-label">
+                                统一社会信用代码：
+                            </Col>
+                            <Col span={contentSpan} className="info-text">
+                                {userInfo && userInfo.username}
+                            </Col>
+                        </Row>
+                    );
+                default:
+                    return (
+                        <Row className="info-row">
+                            <Col span={labelSpan} className="info-text info-label">
+                                用户名：
+                            </Col>
+                            <Col span={contentSpan} className="info-text">
+                                {userInfo && userInfo.username}
+                            </Col>
+                        </Row>
+                    );
+            }
         }
     }
 
     function getPersonTypeRow () {
-        if (userInfo && userInfo.type === UserType.Common) {
+        if (userInfo && userInfo.status !== UserStatus.Lost && userInfo.type === UserType.Common) {
             return (
                 <Row className="info-row">
                     <Col span={labelSpan} className="info-text info-label">
@@ -203,7 +233,12 @@ function UserInfo () {
     }
 
     function getEntNameRow () {
-        if (userInfo && userInfo.type === UserType.Common && userInfo.personType === PersonType.Employees) {
+        if (
+            userInfo &&
+            userInfo.status !== UserStatus.Lost &&
+            userInfo.type === UserType.Common &&
+            userInfo.personType === PersonType.Employees
+        ) {
             return (
                 <Row className="info-row">
                     <Col span={labelSpan} className="info-text info-label">
@@ -219,7 +254,12 @@ function UserInfo () {
     }
 
     function getEmployeeIDRow () {
-        if (userInfo && userInfo.type === UserType.Common && userInfo.personType === PersonType.Employees) {
+        if (
+            userInfo &&
+            userInfo.status !== UserStatus.Lost &&
+            userInfo.type === UserType.Common &&
+            userInfo.personType === PersonType.Employees
+        ) {
             return (
                 <Row className="info-row">
                     <Col span={labelSpan} className="info-text info-label">
@@ -234,7 +274,7 @@ function UserInfo () {
     }
 
     function getSubUserCount () {
-        if (userInfo && userInfo.type === UserType.Enterprise) {
+        if (userInfo && userInfo.status !== UserStatus.Lost && userInfo.type === UserType.Enterprise) {
             return (
                 <Row className="info-row">
                     <Col span={labelSpan} className="info-text info-label">
@@ -249,7 +289,12 @@ function UserInfo () {
     }
 
     function getEntUsernameRow () {
-        if (userInfo && userInfo.type === UserType.Common && userInfo.personType === PersonType.Employees) {
+        if (
+            userInfo &&
+            userInfo.status !== UserStatus.Lost &&
+            userInfo.type === UserType.Common &&
+            userInfo.personType === PersonType.Employees
+        ) {
             return (
                 <Row className="info-row">
                     <Col span={labelSpan} className="info-text info-label">
@@ -265,7 +310,11 @@ function UserInfo () {
     }
 
     function getCardNoRow () {
-        if (userInfo && (userInfo.type === UserType.Common || userInfo.type === UserType.Enterprise)) {
+        if (
+            userInfo &&
+            userInfo.status !== UserStatus.Lost &&
+            (userInfo.type === UserType.Common || userInfo.type === UserType.Enterprise)
+        ) {
             return (
                 <Row className="info-row">
                     <Col span={labelSpan} className="info-text info-label">
@@ -280,7 +329,7 @@ function UserInfo () {
     }
 
     function getEntTypeRow () {
-        if (userInfo && userInfo.type === UserType.Enterprise) {
+        if (userInfo && userInfo.status !== UserStatus.Lost && userInfo.type === UserType.Enterprise) {
             return (
                 <Row className="info-row">
                     <Col span={labelSpan} className="info-text info-label">
@@ -318,14 +367,7 @@ function UserInfo () {
                     </div>
                 }
             >
-                <Row className="info-row">
-                    <Col span={labelSpan} className="info-text info-label">
-                        {getUsernameRowLabel()}：
-                    </Col>
-                    <Col span={contentSpan} className="info-text">
-                        {userInfo && userInfo.username}
-                    </Col>
-                </Row>
+                {getUsernameRow()}
                 <Row className="info-row">
                     <Col span={labelSpan} className="info-text info-label">
                         {getNameRowLabel()}：
